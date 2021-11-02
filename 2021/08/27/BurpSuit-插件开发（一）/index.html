@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BurpSuit 插件开发（一） - Lamber&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Lamber,"> 
+    <meta name="description" content="一、前言
+burp官方支持三种语言开发插件：Java、Python、Ruby。但一般情况下推荐使用Java来做插件开发。原因有以下两点：
+当用python去做插件的时候，如果需要使用到某个库，而这个,"> 
+    <meta name="author" content="Lamber"> 
+    <link rel="alternative" href="atom.xml" title="Lamber&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">Lamber&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">BurpSuit 插件开发（一）</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">BurpSuit 插件开发（一）</h1>
+        <div class="stuff">
+            <span>八月 27, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/Burp/" rel="tag">Burp</a></li><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/Java/" rel="tag">Java</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h2 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h2><ol>
+<li>burp官方支持三种语言开发插件：Java、Python、Ruby。但一般情况下推荐使用Java来做插件开发。原因有以下两点：<ol>
+<li>当用python去做插件的时候，如果需要使用到某个库，而这个库又是用C语言实现的。那么插件将无法正常运行。因为burp在执行python写的插件的时候，是通过Jython（Jython是一种完整的语言，而不是一个Java翻译器或仅仅是一个Python编译器，它是一个Python语言在Java中的完全实现。）去解析执行的。而Jython是无法使用C写的模块，所以在这时候插件就不能正常运行。</li>
+<li>burp本身是Java写的，使用Java去开发插件兼容性最高，会少很多莫名其妙的错误。而且当使用Java的时候，可以很方便的和ide进行远程调试。而在使用python写插件进行调试时，只能尽量通过输出去获取信息，没有好的办法进行下断点的动态调试</li>
+</ol>
+</li>
+</ol>
+<p>  所以说Java是写插件的最优选择</p>
+<ol start="2">
+<li>回调的概念<br>我们所写的插件，都是被burp所调用的，实质上就是个回调<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/1.png" class=""></li>
+</ol>
+<h2 id="二、入门准备"><a href="#二、入门准备" class="headerlink" title="二、入门准备"></a>二、入门准备</h2><ol>
+<li>在本文中是使用java来进行开发，所以主要讲一下java中的调试方法。其他语言就多写点print就可以了。</li>
+<li>由于国内大多数是用的破解版burp，所以在调试方法的准备上稍微需要一点改变。一般情况下破解版burp有使用helper的，有使用keygen的。而如果想要进入调试状态，则需要使用kygen。在我的调试环境下，有如下两个文件<ol>
+<li><strong>burp-loader-keygen.jar</strong></li>
+<li><strong>burpsuite_pro_v1.7.31.jar</strong></li>
+</ol>
+</li>
+</ol>
+<p>  用如下命令启动burp并让它处于调试的监听方：<code>java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -Xbootclasspath/p:burp-loader-keygen.jar -jar burpsuite_pro_v1.7.31.jar</code>这个命令和调试正版burp的区别在于，这个命令需要加<code>-Xbootclasspath/p:burp-loader-keygen.jar</code>这一段。<br>  可以将这条指令保存为bat文件，方便一键启动。<br>3. 另一边就是IDE的配置了，以idea为例（注意jdk环境不能太高，否则你打包的jar包burp不能正常加载，推荐使用jdk1.8）</p>
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/2.png" class="">
+<p>如上debug模式的burp和IDEA都配置好后，就可以进行下断点调试了。需要注意的是，需要保持IDEA中的代码和你打包的插件的代码一致。</p>
+<ol start="4">
+<li>顺便在这里再码一篇写的很棒的文章 <a target="_blank" rel="noopener" href="https://blog.netspi.com/debugging-burp-extensions/">https://blog.netspi.com/debugging-burp-extensions/</a><br>还有，官方资料都是最好的资料 <a target="_blank" rel="noopener" href="https://portswigger.net/burp/extender#SampleExtensions">https://portswigger.net/burp/extender#SampleExtensions</a></li>
+</ol>
+<h2 id="三、Hello-World"><a href="#三、Hello-World" class="headerlink" title="三、Hello World"></a>三、Hello World</h2><ol>
+<li>首先我们创建一个IDEA工程文件，并且创建一个名叫burp的包。然后启动之前准备好的bat文件。并将burp里面的API接口文件导出到IDEA的burp包里面。再之后，新建一个class文件，名字为BurpExtender。然后写入以下代码。<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/3.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/4.png" class=""></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> burp;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BurpExtender</span> <span class="keyword">implements</span> <span class="title">IBurpExtender</span></span>&#123;</span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// implements IBurpExtender</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">registerExtenderCallbacks</span><span class="params">(IBurpExtenderCallbacks callbacks)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// set our extension name</span></span><br><span class="line">        callbacks.setExtensionName(<span class="string">&quot;Hello world extension&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// obtain our output and error streams</span></span><br><span class="line">        PrintWriter stdout = <span class="keyword">new</span> PrintWriter(callbacks.getStdout(), <span class="keyword">true</span>);</span><br><span class="line">        PrintWriter stderr = <span class="keyword">new</span> PrintWriter(callbacks.getStderr(), <span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to our output stream</span></span><br><span class="line">        stdout.println(<span class="string">&quot;This is output&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to our error stream</span></span><br><span class="line">        stderr.println(<span class="string">&quot;This is errors&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to the Burp alerts tab</span></span><br><span class="line">        callbacks.issueAlert(<span class="string">&quot;Hello alerts&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// throw an exception that will appear in our error stream</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;Hello exception&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>将项目打包为jar包然后从burp导入jar包</p>
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/5.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/6.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/7.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/8.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/9.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/10.png" class="">
+
+<p>最后成功输出结果</p>
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/11.png" class="">
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="https://link.hhtjim.com/163/1815162101.mp3">
+            </audio>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='false'
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>

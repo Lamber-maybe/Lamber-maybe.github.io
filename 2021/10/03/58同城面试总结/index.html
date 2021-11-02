@@ -1,0 +1,198 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>58同城面试总结 - Lamber&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Lamber,"> 
+    <meta name="description" content="1. 你先做个自我介绍吧2. 假如说有个SQL注入如下1select * from user where userid = &amp;#123;&amp;#125;;
+
+response里面没有返回内容
+1s就超时,"> 
+    <meta name="author" content="Lamber"> 
+    <link rel="alternative" href="atom.xml" title="Lamber&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">Lamber&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">58同城面试总结</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">58同城面试总结</h1>
+        <div class="stuff">
+            <span>十月 03, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E8%AE%B0%E5%BD%95/" rel="tag">记录</a></li><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag">面试</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h2 id="1-你先做个自我介绍吧"><a href="#1-你先做个自我介绍吧" class="headerlink" title="1. 你先做个自我介绍吧"></a>1. 你先做个自我介绍吧</h2><h2 id="2-假如说有个SQL注入如下"><a href="#2-假如说有个SQL注入如下" class="headerlink" title="2. 假如说有个SQL注入如下"></a>2. 假如说有个SQL注入如下</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> userid <span class="operator">=</span> &#123;&#125;;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>response里面没有返回内容</li>
+<li>1s就超时了，直接返回404页面</li>
+</ol>
+<p><strong>这种情况下如何注入?</strong></p>
+<p>我: 我没有更好的思路了<br>面试官: 这个时间盲注1s钟嘛,可以用更小单位一点的</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> userid <span class="operator">=</span> <span class="number">1</span> <span class="keyword">or</span> <span class="number">1</span><span class="operator">=</span><span class="number">1</span> <span class="keyword">and</span> sleep(<span class="number">0.0</span><span class="number">.1</span>);</span><br></pre></td></tr></table></figure>
+
+<p>即使sleep很小一个值, 如果user表够大的话, 还是会超时</p>
+<p>所以可以用一些嵌套查询的方式去做, if语句之类的</p>
+<h2 id="3-比如说我写一个安全SDK"><a href="#3-比如说我写一个安全SDK" class="headerlink" title="3. 比如说我写一个安全SDK"></a>3. 比如说我写一个安全SDK</h2><p><strong>1. sql注入的修复, 怎么写(伪代码)</strong></p>
+<p>我: 我倾向于使用预编译的方式<br>面试官: 但是预编译的话, 研发可能不会用怎么办呢, 就是说如果他觉得改起来太麻烦了能不能更方便一点. 因为预编译的话, 我每条SQL每条查询都得去改.</p>
+<p>我: 那设计一个白名单怎么样呢<br>面试官: 那你大概写一下怎样设计一个白名单. 你可以分场景, 比如说什么场景什么场景的SQL注入, 或者是参数里面应该做什么操作</p>
+<p><strong>2. xss的修复, 怎么写(伪代码)</strong><br>我: 用实体化转义<br>面试官: 但是我们有一个场景啊, 你看我们上传简历这里, 有时候会支持上传html的简历, 对吧. 他本身业务就需要用到html, 如果用html实体化转义的话, 他全都会被转义, 那这样的话业务就崩了嘛, 对不对. 那这种情况下我们要怎么样去写一个xss的过滤, 或者是说转义, 去解决这个类似于简历这个场景. 你可以想一想, 写不出来代码也没关系.</p>
+<p>我: 白名单限制, 黑名单过滤.<br>面试官: 其实我们自己是这样做的, 对于这种情况, 我们第一是会做一个html标签的白名单, 第二是事件的白名单. 黑名单我们就不搞了.</p>
+<p><strong>3. rce的修复, 怎么写(伪代码)(java或者python的命令执行)</strong><br>我: 白名单限制, 只允许需要的函数. 但RCE的话我感觉在业务场景当中, 一般来说也不是很容易出现<br>面试官: 欸, 我们就出现了很多. 尤其是运维部门.</p>
+<p>我: 我打CTF比较多, 我了解的RCE都是PHP方面的. 比如说system, popen之类的. 一般来说都是直接做过滤<br>面试官: 那PHP中这些函数全部被黑名单了, 你还有什么方法</p>
+<p>我: 字符串拼接 <code>$a=p.h.p.i.n.f.o()</code><br>面试官: 你有没有用过php里面的反引号啊</p>
+<p>我: 还有用 <code>chr()</code> 函数来绕过<br>面试官: 编码是吧</p>
+<p><strong>4. xxe的修复, 怎么写(伪代码)</strong><br>我: 对XXE来说, 我只了解他的攻击方式, 对他的防御不是很了解. 攻击方式就是做XML的外部实体化注入. 一个攻击模板, 可以读文件, 可以做命令执行<br>面试官: XXE怎么做命令执行呢, 就拿php来说, XXE怎么做命令执行</p>
+<p>我: emmmm, 这个想不起来了<br>面试官: XXE这个命令执行是要他的服务端本身支持某些特殊的协议, 一般来说是不行的</p>
+<h2 id="4-了解过自动化代码审计的工具吗-类似于fortify这种"><a href="#4-了解过自动化代码审计的工具吗-类似于fortify这种" class="headerlink" title="4. 了解过自动化代码审计的工具吗, 类似于fortify这种"></a>4. 了解过自动化代码审计的工具吗, 类似于fortify这种</h2><p>我: 我只用过那个一个比较老的那个, 我想不起来了(指seay)<br>面试官: 没关系, 那你有没有了解过他的一些原理, 大概怎么做的</p>
+<p>我: 他原理一般都是通过匹配一些特殊函数, 去定位可能出现漏洞的函数的位置<br>面试官: 但这种的话他误报很高欸, 就像我这种RCE的话, 你直接匹配的话他很多都是误报了, 很多他都不是web思路的</p>
+<p>我: 还有一种是, 给他加一些自定义规则<br>面试官: 那有没有更好的办法呢, 误报太多了我们没办法接受啊</p>
+<p>我: 我有一个想法就是, 他自己匹配了之后, 能不能从前端从一个黑盒的层面再去验证一遍<br>面试官: 那黑盒验证, 我就有需求是, 首先我得知道, 首先我php里面我这个函数到底是哪个入口传进来的, 对吧. 但这个有可能经过了层层调用, 甚至有可能是<code>include()</code>这种, 那这种的话, 对于我来说 , 我并不知道他影响到了哪一些入口, 这种情况怎么办呢</p>
+<p>我: 巴拉巴拉阿巴阿巴<br>面试官: emm那个, 你们学校有学编译原理吗</p>
+<p>我: 额, 没有<br>面试官: 那, 那可以理解了. 但是其实我觉得安全专业还是要学一下编译原理</p>
+<p>面试官: 其实是这样的, 我们也会自建这种自动化代码审计工具嘛, 他大概是什么原理呢, 因为我们做的是java的, 他是在java编译的过程中, 他会去搜集他的编译的过程信息, 比如说他类与类之间的关系. 然后他会有一个3d字码这样的东西, 他会更贴近于机器码, 他就不是java的AST啊这种. 3d字码对应的每一个函数和方法之间的引用, 或者是每个java文件和java文件之间的引用, class和class之间的关系, 他会组成一张很大的图, 这样的话你有一个这样很大的图的话, 你再去看哪些是满足参数是外部输入的, 以及他哪一些比如说像, 他这是一个污点分析的模型嘛, 他有个source think join函数这么一个模型, 当这两点存在一个通路的时候, 我们就认为他这两点存在一个漏洞, 那这样的话其实他精度就非常高了, 这是跟他的代码的数据流相关的, 他数据流存在, 我才认为他是有问题的, 比那种正则匹配的精度会高非常多. 主要原理就是编译原理中, 在他的编译过程中收集源代码信息. PHP也能做, 可以通过他的AST语法树去做, 因为PHP是边运行的时候边编译的. </p>
+<h2 id="5-有没有搞过linux的这种后渗透相关的"><a href="#5-有没有搞过linux的这种后渗透相关的" class="headerlink" title="5. 有没有搞过linux的这种后渗透相关的"></a>5. 有没有搞过linux的这种后渗透相关的</h2><p>面试官: 比如这个linux被我攻陷了, 我想去拿到更多的信息, 比如说一些横向的信息, 那种有没有搞过<br>我: 这种不是很了解, 但windows的会一点</p>
+<p>面试官: 那你可以简单讲一下, 比如你先攻陷一台windows的机器, 然后我想在这个windows的域内去做一些横向移动, 我想把这个windows的域的权限给拿到, 这种你该怎么做<br>我: 通过票据伪造, 白银票据和黄金票据<br>面试官: 你这个票据伪造要怎么做呢<br>我: 一般用mimikatz就可以了吧</p>
+<p>面试官: 你mimikatz抓取的是内存里面的密码和一些他的票据, 那我如果本身是低权限的呢, 就我本身抓不了密码, 或者我抓到的用户密码并不是域账号的, 是一个低权限账号呢. 因为大部分渗透进来都是个应用, 应用他可能并没有域权限<br>我: 从低权限往上提</p>
+<p>面试官: 那你一般会怎么提权<br>我: 一般windows的漏洞吧<br>面试官: 那现在就用这个windows系统的提权, 我现在就一个webshell, 那我怎么样去提权</p>
+<p>面试官: 你可以这样嘛, 你上传一个提权的脚本或者exe嘛, 你webshell去跑这个exe, 他就把这个web应用权限提权了</p>
+<h2 id="6-那你最后有什么想问我的吗"><a href="#6-那你最后有什么想问我的吗" class="headerlink" title="6. 那你最后有什么想问我的吗"></a>6. 那你最后有什么想问我的吗</h2><p>我: 我想问一下, java的业务, 做java安全大概是怎样的一个思路</p>
+<p>面试官: java安全分甲方和乙方,<br>甲方的话其实他更多的是一些正向的建设, 就是说我怎样去保证整个甲方的应用安全, 那我们这边其实是分了好几块, </p>
+<ul>
+<li>一块是我们黑盒扫描器, 就类似于AWVS这种, 我们会把我们的整个镜像流量镜像下来, 然后把cookie去掉或者替换成自己扫描器的cookie去进行一个扫描. </li>
+<li>第二种是我们会去做一个白盒扫描器, 我们会根据这个污点分析的逻辑去做这个漏洞的扫描. </li>
+<li>第三个就是我们会有一个java agent, 他会去动态的捕捉, 比如说测试环境里面, 我们就会去把他很多比如说request方法, system方法, runtime, exec… 等等这种我们认为是危险的, 甚至说是入口函数的, 全部破坏掉. 配合我们的黑盒, 以及它本身的流量, 因为他本身的流量是满足这么一个污点分析的过程的, 这样我们可以去把他的漏洞给找出来. </li>
+<li>最后一步呢, 就是我们会去结合这个IDS或者是HIDS, 我们去在这个线上应用里面去插一个ISP, 这样就可以补充流量里面 (如果没有ISP, 我们整个反入侵是缺少应用内信息的, 我们只有流量信息和主机里面的一些行为, 他缺少应用内行为) 我如果我在ISP里面插入java agent, 去hook他的危险函数, 那我其实可以把他的每条流量, 应用里面发现了什么, 他的堆栈信息是怎么样的, 到了主机层他又发生了什么事情, 全部串联起来. 那我可以完成一个一条流量的完整攻击链路. 可能会比较贴近各个领域的需求吧, 比如说RST, 我们可能认为是个反入侵的技术, 其实本质上还是java安全. </li>
+</ul>
+<p>乙方的话我认为比较偏向一个java漏洞的利用和研究和攻击吧, 以及他的java漏洞的后渗透, 比如我有一个seiruo. 我怎样能很快的发现这个问题, 以及怎样去获取到持久化的权限, 怎么样一键的去维持这样的权限, 怎么样去横向扩展, 以及攻击思路自动化的这种需求</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="https://link.hhtjim.com/163/1815162101.mp3">
+            </audio>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='false'
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>

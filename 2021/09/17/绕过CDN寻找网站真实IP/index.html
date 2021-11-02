@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>绕过CDN寻找网站真实IP - Lamber&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Lamber,"> 
+    <meta name="description" content="一. 什么是CDN, 为什么要绕过CDN什么是CDN以及CDN加速?CDN全称是(Content Delivery Network), 即内容分发网络. CDN是构建在现有网络基础之上的智能虚拟网络,"> 
+    <meta name="author" content="Lamber"> 
+    <link rel="alternative" href="atom.xml" title="Lamber&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">Lamber&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">绕过CDN寻找网站真实IP</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">绕过CDN寻找网站真实IP</h1>
+        <div class="stuff">
+            <span>九月 17, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/CDN/" rel="tag">CDN</a></li><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/IP/" rel="tag">IP</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h2 id="一-什么是CDN-为什么要绕过CDN"><a href="#一-什么是CDN-为什么要绕过CDN" class="headerlink" title="一. 什么是CDN, 为什么要绕过CDN"></a>一. 什么是CDN, 为什么要绕过CDN</h2><h3 id="什么是CDN以及CDN加速"><a href="#什么是CDN以及CDN加速" class="headerlink" title="什么是CDN以及CDN加速?"></a>什么是CDN以及CDN加速?</h3><p>CDN全称是(Content Delivery Network), 即内容分发网络. CDN是构建在现有网络基础之上的智能虚拟网络，依靠部署在各地的边缘服务器，通过中心平台的负载均衡、内容分发、调度等功能模块，使用户就近获取所需内容，降低网络拥塞，提高用户访问响应速度和命中率。CDN的关键技术主要有内容存储和分发技术。</p>
+<h3 id="CDN对网站有什么好处"><a href="#CDN对网站有什么好处" class="headerlink" title="CDN对网站有什么好处?"></a>CDN对网站有什么好处?</h3><p>首先，开启CDN后的网站，会根据用户所在地的不同访问CDN的节点服务器，并不直接访问源服务器，这样可以减少网站服务器宽带资源,降低服务器压力。这也就是大家都在ping百度,但是不同地区得到的反馈ip不一样的原因。</p>
+<p>其次，由于CDN节点的阻挡防护，可以更好的保护员服务器的安全。具体来说，CDN其实是充当了一个替身的角色，无论服务器是渗透还是DD0S攻击，攻击的目标都将是CDN节点，这样一来便间接的保护了网站本身。</p>
+<h3 id="为什么我们需要绕过CDN"><a href="#为什么我们需要绕过CDN" class="headerlink" title="为什么我们需要绕过CDN?"></a>为什么我们需要绕过CDN?</h3><p>对于我们渗透测试者来说，我们在信息收集中重要的一步就是要得到目标服务器主机的<strong>真实IP地址</strong>，但如果目标服务器部署了CDN服务，那么往往我们直接访问得到的IP只是CDN节点服务器的IP，而不是真实的源服务器的IP地址，这是就需要我们想办法绕过CDN获取源服务器IP。</p>
+<h2 id="二-验证是否存在CDN"><a href="#二-验证是否存在CDN" class="headerlink" title="二. 验证是否存在CDN"></a>二. 验证是否存在CDN</h2><h3 id="1-多地Ping查询"><a href="#1-多地Ping查询" class="headerlink" title="1. 多地Ping查询"></a>1. 多地Ping查询</h3><p>使用不同区域ping，查看ping的ip结果是否唯一。若不唯一，则目标网站可能存在CDN。</p>
+<p>多地ping网站: </p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://ping.aizhan.com/">http://ping.aizhan.com/</a></li>
+<li><a target="_blank" rel="noopener" href="http://ping.chinaz.com/">http://ping.chinaz.com/</a></li>
+<li><a target="_blank" rel="noopener" href="http://ce.cloud.360.cn/">http://ce.cloud.360.cn/</a></li>
+</ul>
+<h3 id="2-nslookup"><a href="#2-nslookup" class="headerlink" title="2. nslookup"></a>2. nslookup</h3><p>原理同上, 如果返回域名解析对应多个IP地址多半是使用了CDN. </p>
+<p>有CDN的示例 </p>
+<img src="/2021/09/17/%E7%BB%95%E8%BF%87CDN%E5%AF%BB%E6%89%BE%E7%BD%91%E7%AB%99%E7%9C%9F%E5%AE%9EIP/qun9EBu.png" class="">
+
+<p>无CDN的示例:</p>
+<img src="/2021/09/17/%E7%BB%95%E8%BF%87CDN%E5%AF%BB%E6%89%BE%E7%BD%91%E7%AB%99%E7%9C%9F%E5%AE%9EIP/mm6XPZb.png" class="">
+
+
+<h3 id="3-使用工具直接查询"><a href="#3-使用工具直接查询" class="headerlink" title="3. 使用工具直接查询"></a>3. 使用工具直接查询</h3><p>参考如下网站</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://www.cdnplanet.com/tools/cdnfinder/">http://www.cdnplanet.com/tools/cdnfinder/</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.ipip.net/ip.html">https://www.ipip.net/ip.html</a></li>
+</ul>
+<h2 id="三-绕过CDN查找真实IP"><a href="#三-绕过CDN查找真实IP" class="headerlink" title="三. 绕过CDN查找真实IP"></a>三. 绕过CDN查找真实IP</h2><h3 id="1-查询子域名"><a href="#1-查询子域名" class="headerlink" title="1. 查询子域名"></a>1. 查询子域名</h3><p>由于CDN本身也不便宜, 再加上某些企业业务线众多, 所以很多站长可能只会对主站或者流量大的子站点做了 CDN, 而很多小站子站点又跟主站在同一台服务器或者同一个C段内, 此时就可以通过查询子域名对应的 IP 来辅助查找网站的真实IP.<br>查询子域名的方法就很多了：</p>
+<ol>
+<li>各种子域名扫描器: subDomainsBrute、Sublist3r等</li>
+<li>Google hack</li>
+<li>还有某些网站可以进行查询。例如:<br><a target="_blank" rel="noopener" href="https://dnsdb.io/zh-cn/">https://dnsdb.io/zh-cn/</a><br><a target="_blank" rel="noopener" href="https://x.threatbook.cn/">https://x.threatbook.cn/</a></li>
+</ol>
+<h3 id="2-利用网站漏洞查询"><a href="#2-利用网站漏洞查询" class="headerlink" title="2. 利用网站漏洞查询"></a>2. 利用网站漏洞查询</h3><ol>
+<li>敏感文件泄漏, 比如: phpinfo之类的探针, Github信息泄漏, Apache status和Jboss status敏感信息泄露, 网页源代码泄露, svn信息泄露信、github信息泄露等。</li>
+<li>若存在web漏洞，服务器主动与我们发起请求连接，我们也能获取目标站点真实ip。例如: XSS盲打、SSRF、命令执行反弹shell等。</li>
+<li>无论是用社工还是其他手段, 拿到了目标网站管理员在CDN的帐号, 从CDN的配置中找到网站的真实IP</li>
+</ol>
+<h3 id="3-查询历史DNS记录"><a href="#3-查询历史DNS记录" class="headerlink" title="3. 查询历史DNS记录"></a>3. 查询历史DNS记录</h3><p>查询ip与域名绑定的历史记录，可能会发现使用CDN之前的记录。相关查询网站有：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://dnsdb.io/zh-cn/">https://dnsdb.io/zh-cn/</a>  DNS查询</li>
+<li><a target="_blank" rel="noopener" href="https://x.threatbook.cn/">https://x.threatbook.cn/</a>  微步在线</li>
+<li><a target="_blank" rel="noopener" href="http://toolbar.netcraft.com/site_report?url=">http://toolbar.netcraft.com/site_report?url=</a>  在线域名信息查询</li>
+<li><a target="_blank" rel="noopener" href="http://viewdns.info/">http://viewdns.info/</a>  DNS、IP等查询</li>
+<li><a target="_blank" rel="noopener" href="https://tools.ipip.net/cdn.php">https://tools.ipip.net/cdn.php</a> CDN查询IP</li>
+<li><a target="_blank" rel="noopener" href="http://www.17ce.com/">http://www.17ce.com/</a></li>
+<li><a target="_blank" rel="noopener" href="https://community.riskiq.com/">https://community.riskiq.com/</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.crimeflare.com/cfssl.html">http://www.crimeflare.com/cfssl.html</a></li>
+</ul>
+<h3 id="4-利用网站返回的内容寻找真实原始IP"><a href="#4-利用网站返回的内容寻找真实原始IP" class="headerlink" title="4. 利用网站返回的内容寻找真实原始IP"></a>4. 利用网站返回的内容寻找真实原始IP</h3><p>如果原始服务器IP也返回了网站的内容，那么可以在网上搜索大量的相关数据。</p>
+<p>浏览网站源代码，寻找独特的代码片段。在JavaScript中使用具有访问或标识符参数的第三方服务（例如Google Analytics，reCAPTCHA）是攻击者经常使用的方法。</p>
+<p>以下是从HackTheBox网站获取的Google Analytics跟踪代码示例：</p>
+<p>ga（’create’，’UA-93577176-1’，’auto’）;<br>可以使用80.http.get.body：参数通过body/source过滤Censys数据，不幸的是，正常的搜索字段有局限性，但你可以在Censys请求研究访问权限，该权限允许你通过Google BigQuery进行更强大的查询。</p>
+<p>Shodan是一种类似于Censys的服务，也提供了http.html搜索参数。<br>搜索示例：<a target="_blank" rel="noopener" href="https://www.shodan.io/search?query=http.html:UA-32023260-1">https://www.shodan.io/search?query=http.html%3AUA-32023260-1</a></p>
+<h3 id="5-Mx记录或邮件"><a href="#5-Mx记录或邮件" class="headerlink" title="5. Mx记录或邮件"></a>5. Mx记录或邮件</h3><p>很多站点都有发送邮件sendmail的功能, 如RSS邮件订阅等. 而且一般的邮件系统很多都是在内部, 没有经过CDN的解析. 查看邮件源码里面就会包含服务器的真实IP.</p>
+<h3 id="6-使用国外主机解析域名"><a href="#6-使用国外主机解析域名" class="headerlink" title="6. 使用国外主机解析域名"></a>6. 使用国外主机解析域名</h3><p>国内很多 CDN 厂商因为各种原因只做了国内的线路, 而针对国外的线路可能几乎没有, 通过国外的一些冷门的DNS或IP去请求目标, 通过国外代理访问就能查看真实IP了, 或者通过国外的DNS解析，可能就能得到真实的IP查询网站：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://asm.ca.com/en/ping.php">https://asm.ca.com/en/ping.php</a></li>
+</ul>
+<h3 id="7-利用Zgrab绕CDN找真实IP"><a href="#7-利用Zgrab绕CDN找真实IP" class="headerlink" title="7. 利用Zgrab绕CDN找真实IP"></a>7. 利用Zgrab绕CDN找真实IP</h3><p>通过信息收集，缩小扫描范围，确定一个相对小的IP和端口范围（中国？AS号？B段？等）<br>通过http指纹特征和keyword等做综合判断。可使用工具如下：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/zmap/zgrab/">https://github.com/zmap/zgrab/</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.ipdeny.com/ipblocks/">http://www.ipdeny.com/ipblocks/</a></li>
+</ul>
+<p>zgrab是基于zmap无状态扫描的应用层扫描器,可以自定义数据包，以及ip、domain之间的关联。可用于快速指纹识别爆破等场景。<br>可参考这篇文章：<a href="https://link.zhihu.com/?target=https://levyhsu.com/2017/05/%25e5%2588%25a9%25e7%2594%25a8zgrab%25e7%25bb%2595cdn%25e6%2589%25be%25e7%259c%259f%25e5%25ae%259eip/">利用Zgrab绕CDN找真实IP - Levy Hsu</a></p>
+<h3 id="8-用-Zmap-扫全网"><a href="#8-用-Zmap-扫全网" class="headerlink" title="8. 用 Zmap 扫全网"></a>8. 用 Zmap 扫全网</h3><p>直接Zmap硬扫<br>可参考这篇文章：<a href="https://link.zhihu.com/?target=http://bobao.360.cn/learning/detail/211.html">简单获取CDN背后网站的真实IP - 安全客 - 有思想的安全新媒体</a><br>假如需要找 xiaix.me 网站的真实 IP, 我们首先从 apnic 获取 IP 段, 然后使用 Zmap 的 banner-grab 扫描出来 80 端口开放的主机进行 banner 抓取, 最后在 http-req 中的 Host 写 xiaix.me。</p>
+<h3 id="9-网络空间引擎搜索法"><a href="#9-网络空间引擎搜索法" class="headerlink" title="9. 网络空间引擎搜索法"></a>9. 网络空间引擎搜索法</h3><p>比如 zoomeye、fofa、shodan<br>通过这些公开的安全搜索引擎爬取得历史快照，主要得一些特征总结如下：</p>
+<ul>
+<li>特有的http头部（如server类型、版本、cookie等信息)、</li>
+<li>特定keyword（如title、css、js、url等）、</li>
+<li>特定的IP段搜索（如fofa支持C段搜索），</li>
+</ul>
+<p>有些时候爬取的时候不一定含有上面那些特征，但是我们仍然需要仔细排查。<br>以fofa为例，只需输入：<code>title:&quot;网站的title关键字&quot;</code> 或者 <code>body：&quot;网站的body特征&quot;</code> 就可以找出fofa收录的有这些关键字的ip域名，很多时候能获取网站的真实ip</p>
+<h3 id="10-利用SSL证书寻找真实原始IP"><a href="#10-利用SSL证书寻找真实原始IP" class="headerlink" title="10. 利用SSL证书寻找真实原始IP"></a>10. 利用SSL证书寻找真实原始IP</h3><p>此方法来自于去年CplusHua表哥在Freebuf公开课《HTTP盲攻击的几种思路》中分享的：<br>查询网站：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://censys.io/">https://censys.io/</a><br>这个网址会将互联网所有的ip进行扫面和连接，以及证书探测。若目标站点有https证书，并且默认虚拟主机配了https证书，我们就可以找所有目标站点是该https证书的站点。<br><code>443.https.tls.certificate.parsed.extensions.subject_alt_name.dns_names:www.xxx.com</code></li>
+</ul>
+<h3 id="11-F5-LTM-负载均衡解码获取真实内网ip"><a href="#11-F5-LTM-负载均衡解码获取真实内网ip" class="headerlink" title="11. F5 LTM 负载均衡解码获取真实内网ip"></a>11. F5 LTM 负载均衡解码获取真实内网ip</h3><p>参考文章: <a href="https://link.zhihu.com/?target=https://threathunter.org/topic/5940c85d9c58e020408a79fe">透过F5获取服务器真实内网IP - ThreatHunter</a><br>当服务器使用F5 LTM做负载均衡时, 通过对set-cookie关键字的解码真实ip也可被获取, 例如：Set-Cookie: BIGipServerpool_8.29_8030=487098378.24095.0000, 先把第一小节的十进制数即487098378取出来, 然后将其转为十六进制数1d08880a, 接着从后至前，以此取四位数出来, 也就是0a.88.08.1d, 最后依次把他们转为十进制数10.136.8.29, 也就是最后的真实ip。</p>
+<h3 id="12-利用HTTP标头寻找真实原始IP"><a href="#12-利用HTTP标头寻找真实原始IP" class="headerlink" title="12. 利用HTTP标头寻找真实原始IP"></a>12. 利用HTTP标头寻找真实原始IP</h3><p>借助SecurityTrails这样的平台，任何人都可以在茫茫的大数据搜索到自己的目标，甚至可以通过比较HTTP标头来查找到原始服务器。</p>
+<p>特别是当用户拥有一个非常特别的服务器名称与软件名称时，攻击者找到你就变得更容易。</p>
+<p>如果要搜索的数据相当多，如上所述，攻击者可以在Censys上组合搜索参数。假设你正在与1500个Web服务器共享你的服务器HTTP标头，这些服务器都发送的是相同的标头参数和值的组合。而且你还使用新的PHP框架发送唯一的HTTP标头（例如：X-Generated-Via：XYZ框架），目前约有400名网站管理员使用了该框架。而最终由三个服务器组成的交集，只需手动操作就可以找到了IP，整个过程只需要几秒钟。</p>
+<p>例如，Censys上用于匹配服务器标头的搜索参数是80.http.get.headers.server :，查找由CloudFlare提供服务的网站的参数如下：<br>80.http.get.headers.server:cloudflare</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="https://link.hhtjim.com/163/1815162101.mp3">
+            </audio>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='false'
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>

