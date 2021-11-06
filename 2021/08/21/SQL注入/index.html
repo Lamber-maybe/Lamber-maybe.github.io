@@ -76,7 +76,22 @@ A SQL injection attack consists of insert,">
 <h2 id="SQL注入的危害"><a href="#SQL注入的危害" class="headerlink" title="SQL注入的危害"></a>SQL注入的危害</h2><ul>
 <li>窃取数据库信息, 造成信息泄露</li>
 </ul>
-<h2 id="SQL注入的种类"><a href="#SQL注入的种类" class="headerlink" title="SQL注入的种类"></a>SQL注入的种类</h2><h3 id="联合型"><a href="#联合型" class="headerlink" title="联合型"></a>联合型</h3><h3 id="布尔型"><a href="#布尔型" class="headerlink" title="布尔型"></a>布尔型</h3><h3 id="报错型"><a href="#报错型" class="headerlink" title="报错型"></a>报错型</h3><h3 id="盲SQL"><a href="#盲SQL" class="headerlink" title="盲SQL"></a>盲SQL</h3>
+<h2 id="SQL注入的种类"><a href="#SQL注入的种类" class="headerlink" title="SQL注入的种类"></a>SQL注入的种类</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├─内联型SQL注入</span><br><span class="line">│  ├─基于ERROR的SQL注入（报错型）</span><br><span class="line">│  └─基于UNION的SQL注入（联合型）</span><br><span class="line">├─SQL盲注</span><br><span class="line">│  ├─基于布尔值的SQL注入（布尔盲注）</span><br><span class="line">│  └─基于时间的SQL注入（时间盲注）</span><br><span class="line">├─带外SQL（Out-Of-Band）</span><br><span class="line">└─基于语音的SQL注入</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>内联型SQL注入，是最常见和最容易利用的SQL注入。当攻击者能够使用相同的通信通道发起攻击并收集结果的时候，就会发生内联SQL注入。并且向查询注入一些SQL代码之后，原来的查询仍然会<strong>全部执行</strong>。两种最常见的内联SQL注入是，报错型SQL注入和联合型SQL注入</li>
+<li>报错型SQL注入，通过数据库服务器抛出的错误信息来获取有关数据库结构的信息。在某些情况下，仅基于错误的SQL注入就足以让攻击者枚举整个数据库。</li>
+<li>联合型SQL注入，利用 UNION SQL语句将两个或多个 SELECT 语句的结果组合成 单个结果，然后作为HTTP响应的一部分返回。</li>
+<li>SQL盲注，SQL盲注与内联SQL注入不同，攻击者需要更长的时间来利用它。在SQL盲注中，实际上没有数据通过Web应用程序传输，攻击者将无法看到内联攻击的结果（这就是为什么要叫SQL盲注）。然而，攻击者能够通过发送 payload，观察Web应用程序的响应以及数据库服务器的结果来重建数据库结构。SQL盲注的两个种类是，布尔型SQL盲注和基于时间的SQL盲注</li>
+<li>布尔型SQL盲注（也叫基于内容的盲注），向数据库发送SQL查询后强制应用程序返回不同的结果，具体取决于查询结果为 True 或者 False。根据返回的结果，HTTP响应中的内容将发生变化或保持不变。这允许攻击者推断所使用的有效负载是否返回 True 或者 False，即使没有返回数据库中的数据</li>
+<li>时间盲注，向数据库发送SQL查询后，强制数据库在响应之前等待指定的时间。响应时间将向攻击者表明查询的结果是 True 还是 False。根据结果，HTTP响应 将延迟返回或者立即返回。这允许攻击者推断所使用的有效负载是否返回 True 或者 False，即使没有返回数据库中的数据</li>
+<li>带外SQL不是特别常见，它需要依赖于Web应用程序使用的数据库服务器上启用的功能。当攻击者无法使用同一通道发起攻击并收集结果时，会使用到带外SQL注入。带外技术为攻击者提供了一种替代时间盲注的方法，尤其是在服务器响应不是很稳定的情况下（使基于时间的推理攻击不可靠）</li>
+<li>基于语音的SQL注入。可应用于 通过语音命令提供对数据库的访问 的应用程序。攻击者可以通过发送带有声音的SQL查询来从数据库中提取信息。</li>
+</ol>
+<h2 id="SQL注入常用工具"><a href="#SQL注入常用工具" class="headerlink" title="SQL注入常用工具"></a>SQL注入常用工具</h2><ul>
+<li>SQLMap</li>
+</ul>
+
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
                 <source type="audio/mpeg" src="https://link.hhtjim.com/163/1815162101.mp3">
@@ -171,6 +186,18 @@ A SQL injection attack consists of insert,">
 
 
 
+
+<!-- Google Analytics -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EBYLQYFYZC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-EBYLQYFYZC');
+</script>
+<!-- End Google Analytics -->
 
 
 </html>
