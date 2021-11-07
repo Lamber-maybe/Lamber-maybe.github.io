@@ -72,9 +72,12 @@ A SQL injection attack consists of insert,">
 <h2 id="什么是SQL注入"><a href="#什么是SQL注入" class="headerlink" title="什么是SQL注入"></a>什么是SQL注入</h2><blockquote>
 <p>A SQL injection attack consists of insertion or “injection” of a SQL query via the input data from the client to the application.</p>
 </blockquote>
-<p>SQL注入(SQL injection)是因为程序未能正确对用户的输入进行检查，将用户的输入以拼接的方式带入SQL语句中, 导致了SQL注入的产生</p>
-<h2 id="SQL注入的危害"><a href="#SQL注入的危害" class="headerlink" title="SQL注入的危害"></a>SQL注入的危害</h2><ul>
-<li>窃取数据库信息, 造成信息泄露</li>
+<p>SQL注入(SQL injection)是因为程序未能正确对用户的输入进行检查，将用户的输入以拼接的方式带入SQL语句中，</p>
+<h2 id="SQL注入的主要危害"><a href="#SQL注入的主要危害" class="headerlink" title="SQL注入的主要危害"></a>SQL注入的主要危害</h2><ul>
+<li>由于SQL数据库通常保存有敏感数据，因此丢失机密性是SQL注入常见的问题</li>
+<li>如果用危险的SQL命令来查询用户名和密码，可能会以其他用户的身份登录到系统，尽管攻击者不知道密码。</li>
+<li>如果授权信息保存在SQL数据库中，则有可能通过利用SQL注入漏洞来更改此信息</li>
+<li>正如可以读取敏感信息一样，也可以通过SQL注入来更改甚至删除这些信息。</li>
 </ul>
 <h2 id="SQL注入的种类"><a href="#SQL注入的种类" class="headerlink" title="SQL注入的种类"></a>SQL注入的种类</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├─内联型SQL注入</span><br><span class="line">│  ├─基于ERROR的SQL注入（报错型）</span><br><span class="line">│  └─基于UNION的SQL注入（联合型）</span><br><span class="line">├─SQL盲注</span><br><span class="line">│  ├─基于布尔值的SQL注入（布尔盲注）</span><br><span class="line">│  └─基于时间的SQL注入（时间盲注）</span><br><span class="line">├─带外SQL（Out-Of-Band）</span><br><span class="line">└─基于语音的SQL注入</span><br></pre></td></tr></table></figure>
 
@@ -90,6 +93,10 @@ A SQL injection attack consists of insert,">
 </ol>
 <h2 id="SQL注入常用工具"><a href="#SQL注入常用工具" class="headerlink" title="SQL注入常用工具"></a>SQL注入常用工具</h2><ul>
 <li>SQLMap</li>
+</ul>
+<h2 id="SQL注入清单"><a href="#SQL注入清单" class="headerlink" title="SQL注入清单"></a>SQL注入清单</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/payloadbox/sql-injection-payload-list">SQL Injection Payload List</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/swisskyrepo/PayloadsAllTheThings">Payloads All The Things</a></li>
 </ul>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->

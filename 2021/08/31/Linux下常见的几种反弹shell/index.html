@@ -10,7 +10,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="Lamber,"> 
-    <meta name="description" content="文件描述符重定向什么是反弹shell为什么要反弹shell反弹shell的本质是什么常见的反弹shell的语句总结"> 
+    <meta name="description" content="文件描述符
+linux文件描述符：可以理解为Linux跟踪打开文件时，分配的一个数字，这个数字有点类似于C语言操作文件时候的句柄，通过句柄就可以实现文件的读写操作。
+
+当linux启动的时候会默认打,"> 
     <meta name="author" content="Lamber"> 
     <link rel="alternative" href="atom.xml" title="Lamber&#39;s Blog" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -52,7 +55,38 @@
 
         </div>
         <div class="content markdown">
-            <h2 id="文件描述符"><a href="#文件描述符" class="headerlink" title="文件描述符"></a>文件描述符</h2><h2 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h2><h2 id="什么是反弹shell"><a href="#什么是反弹shell" class="headerlink" title="什么是反弹shell"></a>什么是反弹shell</h2><h2 id="为什么要反弹shell"><a href="#为什么要反弹shell" class="headerlink" title="为什么要反弹shell"></a>为什么要反弹shell</h2><h2 id="反弹shell的本质是什么"><a href="#反弹shell的本质是什么" class="headerlink" title="反弹shell的本质是什么"></a>反弹shell的本质是什么</h2><h2 id="常见的反弹shell的语句"><a href="#常见的反弹shell的语句" class="headerlink" title="常见的反弹shell的语句"></a>常见的反弹shell的语句</h2><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2>
+            <h2 id="文件描述符"><a href="#文件描述符" class="headerlink" title="文件描述符"></a>文件描述符</h2><blockquote>
+<p><strong>linux文件描述符</strong>：可以理解为Linux跟踪打开文件时，分配的一个数字，这个数字有点类似于C语言操作文件时候的句柄，通过句柄就可以实现文件的读写操作。</p>
+</blockquote>
+<p>当linux启动的时候会默认打开三个文件描述符，分别是：</p>
+<ol>
+<li>标准输入： <code>standard input 0</code> (默认设备键盘)</li>
+<li>标准输出： <code>standard output 1</code> (默认设备显示器)</li>
+<li>错误输出： <code>error output 2</code> (默认设备显示器)</li>
+</ol>
+<p>stdin 0 –&gt; /dev/tty0<br>stdout 1 –&gt; /dev/tty0<br>stderr 2 –&gt; /dev/tty0</p>
+<p>注意：</p>
+<ol>
+<li>以后再打开文件，描述符可以依次增加</li>
+<li>每一条shell命令，都会继承其父进程的文件描述符，因此所有的shell命令，都会默认有三个文件描述符。</li>
+</ol>
+<p><strong>文件所有输入输出都是由该进程所有打开的文件描述符控制的。（Linux一切皆文件，就连键盘显示器设备都是文件，因此他们的输入输出也是由文件描述符控制）</strong></p>
+<p>一条命令执行以前，先会按照默认的情况进行绑定（也就是上面所说的 0，1，2），如果我们有时候需要让输出不显示在显示器上，而是输出到文件或者其他设备，那我们就需要重定向。</p>
+<h2 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h2><p>重定向主要分为两种（其他复杂的情况都是由这两种情况衍生出来的）</p>
+<ol>
+<li>输入重定向 <code>&lt; &lt;&lt;</code></li>
+<li>输出重定向 <code>&gt; &gt;&gt;</code></li>
+</ol>
+<p>重点：</p>
+<ol>
+<li>bash在执行一条指令的时候，首先会检查命令中存不存在重定向的符号，如果存在，那么首先将文件描述符重定向（之前说过，输入输出操作都是依赖文件描述符实现的，重定向输入输出本质上就是重定向文件描述符），然后再把重定向去掉，执行指令</li>
+<li>如果指令中存在多个重定向，那么不要随便改变顺序，因为重定向是 <strong>从左向右</strong> 解析的，如果改变顺序，可能会带来完全不同的结果（这一点我们后面会展示）</li>
+<li><code>&lt;</code> 是对标准输入 0 重定向，<code>&gt;</code> 是对标准输出 1 重定向</li>
+<li><strong>再强调一下，重定向就是针对文件描述符的操作</strong></li>
+</ol>
+<h3 id="1-输入重定向"><a href="#1-输入重定向" class="headerlink" title="1. 输入重定向"></a>1. 输入重定向</h3><p>格式： <code>[n]&lt; word</code> <strong>(注意 [n] 与 &lt; 之间是没有空格的)</strong></p>
+<p>说明：将文件描述符 n 重定向到 word 指代的文件（以只读方式打开），<strong>如果 n 省略就是0</strong>（标准输入）</p>
+<h2 id="什么是反弹shell"><a href="#什么是反弹shell" class="headerlink" title="什么是反弹shell"></a>什么是反弹shell</h2><h2 id="为什么要反弹shell"><a href="#为什么要反弹shell" class="headerlink" title="为什么要反弹shell"></a>为什么要反弹shell</h2><h2 id="反弹shell的本质是什么"><a href="#反弹shell的本质是什么" class="headerlink" title="反弹shell的本质是什么"></a>反弹shell的本质是什么</h2><h2 id="常见的反弹shell的语句"><a href="#常见的反弹shell的语句" class="headerlink" title="常见的反弹shell的语句"></a>常见的反弹shell的语句</h2><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2>
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
                 <source type="audio/mpeg" src="https://link.hhtjim.com/163/1815162101.mp3">
