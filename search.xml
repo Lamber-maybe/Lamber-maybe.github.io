@@ -1,43 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Backup and Tips</title>
-    <url>/2021/11/02/Backup-and-Tips/</url>
-    <content><![CDATA[<h2 id="Web必备环境"><a href="#Web必备环境" class="headerlink" title="Web必备环境"></a>Web必备环境</h2><h2 id="搭建Java环境"><a href="#搭建Java环境" class="headerlink" title="搭建Java环境"></a>搭建Java环境</h2><p>下载安装 jdk<br>设置系统变量</p>
-<h3 id="将java项目部署到github"><a href="#将java项目部署到github" class="headerlink" title="将java项目部署到github"></a>将java项目部署到github</h3><p>github方面</p>
-<ol>
-<li>创建一个新的 <code>repository</code>  </li>
-<li>记下仓库地址</li>
-</ol>
-<p>本地方面<br>使用 <code>Git Bash Here</code></p>
-<ol>
-<li>cd 到java项目目录下</li>
-<li><code>git init</code> 初始化在当前项目的目录中生成本地的git管理</li>
-<li><code>git add .</code> 将项目上所有的文件添加到仓库中, 如果要添加特定文件, 只需要把 <code>.</code> 换成特定的文件名即可</li>
-<li><code>git commit -m &quot;first commit&quot;</code> 表示对此次提交的注释, 双引号里面的内容即为注释内容</li>
-<li><code>git remote add origin https://xxxx.git</code> 自己的仓库地址</li>
-<li><code>git push -u origin main</code> 把代码上传到github仓库</li>
-</ol>
-<p>注: 出现错误：fatal:refusing to merge unrelated histories, 意思是拒绝合并不相关的历史，这是因为在Github创建仓库时，我默认创建了README.md文件，而本地是没有的，所以出现冲突了，这时候，我们需要在第六条命令之前，输入 <code>git pull origin main --allow-unrelated-histories</code> , 然后再执行第六条命令</p>
-<p><strong>而IDEA自带有git工具，也可以使用IDEA的git工具进行push.</strong></p>
-<h3 id="基于Java环境的工具"><a href="#基于Java环境的工具" class="headerlink" title="基于Java环境的工具"></a>基于Java环境的工具</h3><p>1.BurpSuit<br>设置证书, 抓取HTTPS</p>
-<h2 id="基于-python-环境的工具"><a href="#基于-python-环境的工具" class="headerlink" title="基于 python 环境的工具"></a>基于 python 环境的工具</h2><p>2.SQLMap </p>
-<h2 id="Hexo-插件"><a href="#Hexo-插件" class="headerlink" title="Hexo 插件"></a>Hexo 插件</h2><p>查看所有安装的插件</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm ls --depth 0</span><br></pre></td></tr></table></figure>
-
-<p>我所安装的插件</p>
-<ul>
-<li>hexo-generator-searchdb</li>
-</ul>
-]]></content>
-      <categories>
-        <category>备份</category>
-      </categories>
-      <tags>
-        <tag>环境搭建</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>58同城面试总结</title>
     <url>/2021/10/03/58%E5%90%8C%E5%9F%8E%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<h2 id="1-你先做个自我介绍吧"><a href="#1-你先做个自我介绍吧" class="headerlink" title="1. 你先做个自我介绍吧"></a>1. 你先做个自我介绍吧</h2><h2 id="2-假如说有个SQL注入如下"><a href="#2-假如说有个SQL注入如下" class="headerlink" title="2. 假如说有个SQL注入如下"></a>2. 假如说有个SQL注入如下</h2><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> userid <span class="operator">=</span> &#123;&#125;;</span><br></pre></td></tr></table></figure>
@@ -90,6 +53,50 @@
       <tags>
         <tag>记录</tag>
         <tag>面试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Backup and Tips</title>
+    <url>/2021/11/02/Backup-and-Tips/</url>
+    <content><![CDATA[<h2 id="将项目部署到github"><a href="#将项目部署到github" class="headerlink" title="将项目部署到github"></a>将项目部署到github</h2><p>github方面</p>
+<ol>
+<li>创建一个新的 <code>repository</code>  </li>
+<li>记下仓库地址</li>
+</ol>
+<p>本地方面<br>使用 <code>Git Bash Here</code></p>
+<ol>
+<li>cd 到java项目目录下</li>
+<li><code>git init</code> 初始化在当前项目的目录中生成本地的git管理</li>
+<li><code>git add .</code> 将项目上所有的文件添加到仓库中, 如果要添加特定文件, 只需要把 <code>.</code> 换成特定的文件名即可</li>
+<li><code>git commit -m &quot;first commit&quot;</code> 表示对此次提交的注释, 双引号里面的内容即为注释内容</li>
+<li><code>git remote add origin https://xxxx.git</code> 自己的仓库地址</li>
+<li><code>git push -u origin main</code> 把代码上传到github仓库</li>
+</ol>
+<p>注: 出现错误：fatal:refusing to merge unrelated histories, 意思是拒绝合并不相关的历史，这是因为在Github创建仓库时，我默认创建了README.md文件，而本地是没有的，所以出现冲突了，这时候，我们需要在第六条命令之前，输入 <code>git pull origin main --allow-unrelated-histories</code> , 然后再执行第六条命令</p>
+<p><strong>而IDEA自带有git工具，也可以使用IDEA的git工具进行push.</strong></p>
+<h2 id="搭建Java环境"><a href="#搭建Java环境" class="headerlink" title="搭建Java环境"></a>搭建Java环境</h2><p>下载安装 jdk<br>设置系统变量</p>
+<h2 id="Java-web环境所需基础"><a href="#Java-web环境所需基础" class="headerlink" title="Java web环境所需基础"></a>Java web环境所需基础</h2><ul>
+<li>maven</li>
+<li>Tomcat</li>
+<li>MySQL</li>
+<li>javax.servlet-api</li>
+<li>mysql-connector-java</li>
+</ul>
+<h3 id="基于Java环境的工具"><a href="#基于Java环境的工具" class="headerlink" title="基于Java环境的工具"></a>基于Java环境的工具</h3><p>1.BurpSuit<br>设置证书, 抓取HTTPS</p>
+<h2 id="基于-python-环境的工具"><a href="#基于-python-环境的工具" class="headerlink" title="基于 python 环境的工具"></a>基于 python 环境的工具</h2><p>2.SQLMap </p>
+<h2 id="Hexo-插件"><a href="#Hexo-插件" class="headerlink" title="Hexo 插件"></a>Hexo 插件</h2><p>查看所有安装的插件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm ls --depth 0</span><br></pre></td></tr></table></figure>
+
+<p>我所安装的插件</p>
+<ul>
+<li>hexo-generator-searchdb</li>
+</ul>
+]]></content>
+      <categories>
+        <category>备份</category>
+      </categories>
+      <tags>
+        <tag>环境搭建</tag>
       </tags>
   </entry>
   <entry>
@@ -496,25 +503,6 @@
       </tags>
   </entry>
   <entry>
-    <title>基础算法题</title>
-    <url>/2021/09/04/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95%E9%A2%98/</url>
-    <content><![CDATA[<p>输入:<br>1,2,2,4</p>
-<p>输出:<br>2,3</p>
-<p>一群人排成一排，找其年龄的最长连续长度<br>输入:<br>21,40,41,22,23,24</p>
-<p>输出:<br>4</p>
-<p>对于给定的 str1 和 str2 识别其最长子序列长度<br>输入:<br>abcde cdefg</p>
-<p>输出:<br>3</p>
-]]></content>
-      <categories>
-        <category>求职</category>
-      </categories>
-      <tags>
-        <tag>记录</tag>
-        <tag>算法</tag>
-        <tag>编程</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>信息安全面试题收集</title>
     <url>/2021/09/13/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E9%9D%A2%E8%AF%95%E9%A2%98%E6%94%B6%E9%9B%86/</url>
     <content><![CDATA[<h2 id="TODO-LIST"><a href="#TODO-LIST" class="headerlink" title="TODO LIST"></a>TODO LIST</h2><ul>
@@ -641,55 +629,6 @@
       </tags>
   </entry>
   <entry>
-    <title>微步在线二面总结</title>
-    <url>/2021/10/19/%E5%BE%AE%E6%AD%A5%E5%9C%A8%E7%BA%BF%E4%BA%8C%E9%9D%A2%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<h2 id="1-我看你参加过很多比赛-你在里面是作为主力成员-还是说是辅助的"><a href="#1-我看你参加过很多比赛-你在里面是作为主力成员-还是说是辅助的" class="headerlink" title="1. 我看你参加过很多比赛, 你在里面是作为主力成员, 还是说是辅助的"></a>1. 我看你参加过很多比赛, 你在里面是作为主力成员, 还是说是辅助的</h2><p>我: 我更多的是辅助的一个位置, 就在web题是辅助, misc题目的话是主力. </p>
-<h2 id="2-好-那我问点基础-HTTP的请求方法有哪些啊"><a href="#2-好-那我问点基础-HTTP的请求方法有哪些啊" class="headerlink" title="2. 好, 那我问点基础, HTTP的请求方法有哪些啊"></a>2. 好, 那我问点基础, HTTP的请求方法有哪些啊</h2><p>我: GET, POST, PUT, 这些, 还有一些不太常用的, 最主要就是GET和POST两种方法</p>
-<h2 id="3-在没回显的情况下的代码执行-我怎么判断他是不是成功呢-有哪些方法"><a href="#3-在没回显的情况下的代码执行-我怎么判断他是不是成功呢-有哪些方法" class="headerlink" title="3. 在没回显的情况下的代码执行, 我怎么判断他是不是成功呢, 有哪些方法"></a>3. 在没回显的情况下的代码执行, 我怎么判断他是不是成功呢, 有哪些方法</h2><p>我: 可以先, 就代码执行先外带到自己服务器上面去, 去执行一段代码比如说像 ping 自己的服务器, 看ping能不能收到, 如果能收到的话, 就说明代码执行成功了. 然后的话就是, 最主要的就是这个方法了吧, 把请求给外带出来<br>面试官: 那如果不能外联呢, 就是那台机器不能外联外部网络, 什么UDP, DNS, ping都不行<br>我: 那代码执行执行一个需要服务器花很多资源的一个操作, 然后去看web网站有没有延迟就有没有类似于mysql的sleep()那种操作<br>面试官: 这种web服务器一般都是异步的, 就是比如说那个响应他直接给你响应了<br>我: 哦…<br>面试官: 而且那个延时, 你可能也看不出来啊, 他并不是TCP一直转的, 都是直接给你响应了, 还有别的方式吗<br>我: 我没有其他方式了</p>
-<h2 id="4-redis未授权漏洞有哪一些利用方式啊"><a href="#4-redis未授权漏洞有哪一些利用方式啊" class="headerlink" title="4. redis未授权漏洞有哪一些利用方式啊"></a>4. redis未授权漏洞有哪一些利用方式啊</h2><p>我: 通过写入 <code>ssh_key</code> 进行一个远程的SSH连接, 还有一个就是… 去更改他的config去修改用户的密码, 可以登录上去, 最主要还是ssh_key的写入, 然后远程的SSH连接. </p>
-<p>面试官: 那如果他里面没有开SSH服务呢, 或者说他, 有几种情况, 第一种是开在比较奇怪的端口, 第二种是他内部不允许ssh_key登录, 怎么解决哦<br>我: 我没有更好的办法, 就我遇到这种情况一般就直接放弃了, 这种情况.</p>
-<h2 id="5-服务端有哪一些缺陷-可能会导致存在文件上传漏洞啊"><a href="#5-服务端有哪一些缺陷-可能会导致存在文件上传漏洞啊" class="headerlink" title="5. 服务端有哪一些缺陷, 可能会导致存在文件上传漏洞啊"></a>5. 服务端有哪一些缺陷, 可能会导致存在文件上传漏洞啊</h2><p>我: 首先是服务端的话, 没有做那个权限的限制, 就上传的目录文件里面, 上传进去的文件有执行权限. 可能会导致文件上传漏洞, 然后没有做文件类型的检测, 也可能会导致文件上传漏洞.</p>
-<p>面试官: 你刚刚说是什么文件有执行权限, 那个是什么来着, 没听清<br>我: 就是文件上传的目录下面, 这个目录的文件有执行权限, 就可能导致文件上传漏洞, 就服务器端的话<br>面试官: 这个为什么算作文件上传漏洞<br>我: 因为如果你文件上传上来, 没有执行权限的话, 他上传上来就是, 就不能算一个漏洞吧, 就只是一个正常的上传功能, 他前提是这个目录有执行权限, 你传上来的文件能够执行, 才能算一个文件上传的漏洞<br>面试官: 目录有执行权限? 那文件没执行权限, 难道就不能执行了吗, 就是你 1.php 你不给他执行权限, 那个apache他就不会解析了吗?<br>我: 你要配置这个目录下面的所有文件不能解析, 不能执行, 就是就限制这个目录下面就所有文件的解析这个功能</p>
-<h2 id="6-SSRF漏洞是什么"><a href="#6-SSRF漏洞是什么" class="headerlink" title="6. SSRF漏洞是什么"></a>6. SSRF漏洞是什么</h2><p>我: 是服务器端的请求伪造, 通常是用来利用SSRF漏洞来访问内网的一些资源<br>面试官: 怎么访问啊, 有哪些方式哦<br>我: 比如说他有一个URL跳转, 有一个302的跳转, 他那个URL上面会有一个链接地址, 把那个链接地址改成内网的地址, 如果存在SSRF漏洞的话就可能会访问到内网的资源</p>
-<p>面试官: 如果有redis的话, 有个redis服务器. 能用SSRF漏洞来进行利用吗?<br>我: 我觉得是可以的, 但是我没有去研究过</p>
-<p>面试官: 那如果有个FTP有弱口令呢, 能用SSRF登录吗<br>我: 可以, 如果有FTP的弱口令的话</p>
-<h2 id="7-同源策略知道是什么吗"><a href="#7-同源策略知道是什么吗" class="headerlink" title="7. 同源策略知道是什么吗"></a>7. 同源策略知道是什么吗</h2><p>我: 知道, 就是限制在相同源下面的资源之间才能互相访问, 而不同源之间不能进行那些资源之间的调用的<br>面试官: 那跨域的话都有哪一些方式, 以及为什么能够实现跨域<br>我: 跨域的话首先是写那个跨域文件的配置, crossdomain.xml 去允许某些域的访问, 这是第一种方式, 第二种方式就是在html里面在json里面好像也可以加那个允许某个域访问的代码. </p>
-<h2 id="8-登录后台的时候经常要输入验证码-服务端有哪些缺陷可以导致这个验证码失效或者被绕过"><a href="#8-登录后台的时候经常要输入验证码-服务端有哪些缺陷可以导致这个验证码失效或者被绕过" class="headerlink" title="8. 登录后台的时候经常要输入验证码, 服务端有哪些缺陷可以导致这个验证码失效或者被绕过"></a>8. 登录后台的时候经常要输入验证码, 服务端有哪些缺陷可以导致这个验证码失效或者被绕过</h2><p>我: 首先是如果验证码没有刷新的话就可被爆破去获取到验证码, 还有一种是… 我就知道这一个, 服务器端没有及时更新验证码的话会导致验证码被爆破. </p>
-<h2 id="9-知道java反序列化漏洞是什么原理吗"><a href="#9-知道java反序列化漏洞是什么原理吗" class="headerlink" title="9. 知道java反序列化漏洞是什么原理吗"></a>9. 知道java反序列化漏洞是什么原理吗</h2><p>我: 没了解过, 最近才开始学这个</p>
-<h2 id="10-linux下有哪些安装软件的方式"><a href="#10-linux下有哪些安装软件的方式" class="headerlink" title="10. linux下有哪些安装软件的方式"></a>10. linux下有哪些安装软件的方式</h2><p>我: <code>apt</code>, <code>apt-get</code>, 还有就是直接把软件源码给拷贝到linux下面直接安装, 然后启docker, 大概就是这些方式</p>
-<h2 id="11-知道文件上传-比如你上传一个webshell的时候里面流量是什么样子的吗-看过吗"><a href="#11-知道文件上传-比如你上传一个webshell的时候里面流量是什么样子的吗-看过吗" class="headerlink" title="11. 知道文件上传, 比如你上传一个webshell的时候里面流量是什么样子的吗, 看过吗?"></a>11. 知道文件上传, 比如你上传一个webshell的时候里面流量是什么样子的吗, 看过吗?</h2><p>我: 我上传一个webshell的话, 他那个请求的头一般是POST请求嘛, POST的主体就是webshell的内容但这个主体是在burpsuit里面抓包看到的, 我不知道是不是跟那个就我们需要的包是不是一样的, burpsuit里面抓到的就是, 你上传的webshell的内容, 然后就是这样…<br>面试官: 有什么文件名吗, 这种东西有吗, 文件大小之类的, 这种东西有吗<br>我: 有文件大小, 文件名的话一般也会有, 有文件名还有文件的大小<br>面试官: 有什么特定应的头吗, 还是都是POST数据里面啊<br>我: 我没有注意过他们有没有特殊的头, 从来没有注意过这个</p>
-<p>面试官: 用过webshell吗<br>我: 用过一些简单的一句话木马<br>面试官: webshell得有什么什么结构才能称作一个webshell, 或者说什么, 有哪些功能才能算webshell<br>我: 首先第一个是你上传的这个webshell, 他一定是一段完整的代码, 就是他一定能够执行, 他一定要能够进行命令操作的功能才能算是一个webshell. 或者说能够反弹一个shell回来, 一个bash反弹shell过来, 也能算一个webshell吧…</p>
-<h2 id="12-有代码审计经验-能够写什么代码吗"><a href="#12-有代码审计经验-能够写什么代码吗" class="headerlink" title="12. 有代码审计经验? 能够写什么代码吗"></a>12. 有代码审计经验? 能够写什么代码吗</h2><p>我: 能写一点python跟php的代码, 写一点简单的. 然后java的代码审计, 还有java的基础也是最近才刚开始学</p>
-<h2 id="13-你说那个misc都是哪些类型啊-隐写术吗"><a href="#13-你说那个misc都是哪些类型啊-隐写术吗" class="headerlink" title="13. 你说那个misc都是哪些类型啊, 隐写术吗?"></a>13. 你说那个misc都是哪些类型啊, 隐写术吗?</h2><p>我: 音频分析, 流量分析之类的<br>面试官: 流量分析? 叫你连接菜刀的一句话, 有看过他的流量吗, 有什么流量特征吗<br>我: 有看过, 菜刀的流量, 我看的那个版本他是直接通过base64加密的流量, 解密之后就是php的代码, 然后通过php的socket协议去连接的吧, 之前那个版本. </p>
-<p>面试官: 如果想去让你检测webshell的话, 在流量里面有什么思路吗, 检测webshell. 或者他的交互, 该怎么去做<br>我: 直接去检测他那个命令执行的函数, 就webshell里面一般会有传入的参数, POST, GET之类的, 去检测这些关键字, 流量里面. 还有就是检测匹配webshell的特征吧, 就一般大概常用的webshell都长得差不多, 就去匹配他的特征<br>面试官: 什么特征哦?<br>我: 比如说像是php一句话木马, 一个 <code>&lt;?php @eval($_POST[&#39;lamber&#39;];?&gt;</code> 的操作, 这种. 直接去匹配这个eval函数, 就去看流量里面有没有出现这个, 或者他各种变形去加解密这种. </p>
-<p>面试官: 像你做隐写术, 图片的隐写都有哪一些类型啊, 以及怎么去把这些隐写给他弄出来啊<br>我: 最常见的就是LSB隐写, 去改图片的标志位, 去把他的数据恢复出来, 然后还有就是几张图片拼接, 然后把那个他拼接的部分提取出来, 也是一种新的一段数据, 常见的就是这两种, 还有就是用binwalk去进行, 去对文件里面的数据有没有特殊的文件头去进行一个分离. 一般就是这些</p>
-<h2 id="14-HTTP响应5开头的知道是什么意思吗"><a href="#14-HTTP响应5开头的知道是什么意思吗" class="headerlink" title="14. HTTP响应5开头的知道是什么意思吗"></a>14. HTTP响应5开头的知道是什么意思吗</h2><p>我: 服务器内部异常<br>面试官: 那404呢<br>我: 未找到页面<br>面试官: 那403呢<br>我: 403也是类似的吧, 就客户端的资源处理异常<br>面试官: 客户端资源处理异常? 客户端是你浏览器吗<br>我: 是浏览器的资源出现异常<br>面试官: 100知道是什么意思吗<br>我: 100没有怎么见过…<br>面试官: 302呢<br>我: 302跳转, 跳转到另一个的url里面</p>
-<h2 id="15-代码审计经验-php执行代码都有哪些函数"><a href="#15-代码审计经验-php执行代码都有哪些函数" class="headerlink" title="15. 代码审计经验? php执行代码都有哪些函数"></a>15. 代码审计经验? php执行代码都有哪些函数</h2><p>我: 像 <code>system(), proc_open(), popen()</code> 这些…</p>
-<h2 id="16-你了解这个安全研究员是做什么的吗"><a href="#16-你了解这个安全研究员是做什么的吗" class="headerlink" title="16. 你了解这个安全研究员是做什么的吗"></a>16. 你了解这个安全研究员是做什么的吗</h2><p>我: 了解过一些, 就主要做威胁情报检测, 去做流量分析之类的<br>面试官: </p>
-<h2 id="17-burpsuit怎么去抓安卓手机的包"><a href="#17-burpsuit怎么去抓安卓手机的包" class="headerlink" title="17. burpsuit怎么去抓安卓手机的包"></a>17. burpsuit怎么去抓安卓手机的包</h2><p>我: 安卓手机上面有一个应用吧, 然后可以生成一个手机的一个证书, 然后在同一个局域下面, 在burpsuit上面导入这个证书, 这之后, 可以去抓到手机端的流量. 但是我没有抓成功过, 我不知道是用的那个软件的问题, 还是什么其他的原因<br>面试官: 你可以抓微信之外的普通的应用看一下<br>我: 能抓到浏览器的包, 正常浏览器的包好像能抓到. 但是应用的包就不太好抓, 很杂乱.</p>
-<h2 id="18-对于溢出那些有了解吗-比如栈溢出"><a href="#18-对于溢出那些有了解吗-比如栈溢出" class="headerlink" title="18. 对于溢出那些有了解吗, 比如栈溢出"></a>18. 对于溢出那些有了解吗, 比如栈溢出</h2><p>我: 没有了解过, 二进制方面没有怎么了解过</p>
-<h2 id="19-linux里面查看SSH登录记录有哪些方式"><a href="#19-linux里面查看SSH登录记录有哪些方式" class="headerlink" title="19. linux里面查看SSH登录记录有哪些方式"></a>19. linux里面查看SSH登录记录有哪些方式</h2><p>我: 直接去查看日志文件吧, 其他方式就不知道了</p>
-<h2 id="20-你平常学习东西的话一般通过什么平台怎么学啊-主要是学web吗-有什么学习计划吗"><a href="#20-你平常学习东西的话一般通过什么平台怎么学啊-主要是学web吗-有什么学习计划吗" class="headerlink" title="20. 你平常学习东西的话一般通过什么平台怎么学啊, 主要是学web吗, 有什么学习计划吗"></a>20. 你平常学习东西的话一般通过什么平台怎么学啊, 主要是学web吗, 有什么学习计划吗</h2><p>我: 我的学习计划是, 目前是先把java层面的代码审计学完, 做一些漏洞分析, 分析漏洞的底层原理. 然后去写流量检测, 去检测这些漏洞的特征, 目前是这样一个学习规划. 然后学习的途径的话, 一般是从各种社区, 以及google上面找文章, 然后就是去问一些前辈们的学习的问题吧, 各种途径就是这样.</p>
-<h2 id="21-再问几个基础啊-比如说XSS-我们在测试XSS漏洞的时候-我们都用了什么来闭合原有的符号啊"><a href="#21-再问几个基础啊-比如说XSS-我们在测试XSS漏洞的时候-我们都用了什么来闭合原有的符号啊" class="headerlink" title="21. 再问几个基础啊, 比如说XSS, 我们在测试XSS漏洞的时候, 我们都用了什么来闭合原有的符号啊"></a>21. 再问几个基础啊, 比如说XSS, 我们在测试XSS漏洞的时候, 我们都用了什么来闭合原有的符号啊</h2><p>我: 要闭合原有的符号的话, 跟前面的XSS语句进行匹配上就可以了, 前面是括号的话就用括号闭合, 前面有双引号的话就用双引号来闭合, 这种<br>面试官: 单纯加双引号, 那有没有别的方式, 有可能你加一个双引号, 闭合不了, 代码就错了. 你正常加一个单引号, 或一个双引号. 这种很大概率报错, 理解我说的吗<br>我: 能理解, 其他闭合方式我就没有怎么了解过.</p>
-<h2 id="22-实践经历怎么样-就是说你在实际渗透的时候-比如说一台机器-就一个网站他用了CDN-我们有哪一些方法去找它真实IP"><a href="#22-实践经历怎么样-就是说你在实际渗透的时候-比如说一台机器-就一个网站他用了CDN-我们有哪一些方法去找它真实IP" class="headerlink" title="22. 实践经历怎么样, 就是说你在实际渗透的时候, 比如说一台机器, 就一个网站他用了CDN, 我们有哪一些方法去找它真实IP"></a>22. 实践经历怎么样, 就是说你在实际渗透的时候, 比如说一台机器, 就一个网站他用了CDN, 我们有哪一些方法去找它真实IP</h2><p>我: 找它真实IP首先是, 去一些网站上面可以直接查一些他的真实IP的一些网站. 然后可以通过像是fofa之类的去查他的历史解析IP地址或者是从网站的子域名查他的IP地址, 可能他主站用了CDN但是他子站没有用, 大概就是这些方法吧</p>
-<h2 id="23-然后你在先知发的两篇文章是什么文章啊"><a href="#23-然后你在先知发的两篇文章是什么文章啊" class="headerlink" title="23. 然后你在先知发的两篇文章是什么文章啊"></a>23. 然后你在先知发的两篇文章是什么文章啊</h2><p>我: 一篇漏洞挖掘的, 一篇CTF的复现. </p>
-<h2 id="24-有了解过linux下什么后门吗-或使用过什么后门-代理啊之类的"><a href="#24-有了解过linux下什么后门吗-或使用过什么后门-代理啊之类的" class="headerlink" title="24. 有了解过linux下什么后门吗, 或使用过什么后门, 代理啊之类的"></a>24. 有了解过linux下什么后门吗, 或使用过什么后门, 代理啊之类的</h2><p>我: 后门这个没有了解过, 我只知道webshell, 然后后面没有了解过. 我见过一种可以写到进程里面的木马, 不是很清楚那个算不算后门, 我觉得更像是webshell一点</p>
-<h2 id="25-你大概说一下你开头说的那篇渗透的文章吧"><a href="#25-你大概说一下你开头说的那篇渗透的文章吧" class="headerlink" title="25. 你大概说一下你开头说的那篇渗透的文章吧"></a>25. 你大概说一下你开头说的那篇渗透的文章吧</h2><p>我: 记录了之前挖edu-src的一个过程, 首先从信息收集上面收集域名的信息, 以及它的子站, 以及它的功能点, 然后进行一个测试, 当时是挖到一个存储型XSS, 在一个发布项目的一个界面, 那个地方打入XSS之后, 把项目提交上去, 审核员可以触发那个存储型的XSS, 还有一个地方在登录的界面, 修改密码的功能, 他的修改密码的数据包是明文传输的数据, 直接将验证码发送的手机号在数据包里面显示出来了, 可以更改这个手机号改为自己手机号, 然后这个验证码就会发到自己的手机上面. 接收到这个验证码之后就可以去更改任意用户的一个用户密码, 当时挖掘就这一个站挖到这两个漏洞</p>
-<p>面试官: 挖掘过程有什么亮点吗, 比如说就是别人都想不到的, 有什么区别点吗<br>我: 亮点的话我觉得就是这个, 逻辑漏洞的挖掘吧. 可能其他人都不会注意到这个地方<br>面试官: 什么逻辑漏洞啊?<br>我: 就是, 更改他发送验证码的手机号. 然后这个验证码就会发到目标手机上面去, 这个地方算他逻辑上面设计的缺陷吧, 他没有做那个发送验证码的手机号的验证, 然后导致了, 这个验证码可以发到随便任意一个手机上面去</p>
-<h2 id="26-那我这边就了解的差不多了-你有什么要了解的吗"><a href="#26-那我这边就了解的差不多了-你有什么要了解的吗" class="headerlink" title="26. 那我这边就了解的差不多了, 你有什么要了解的吗"></a>26. 那我这边就了解的差不多了, 你有什么要了解的吗</h2><p>我: 我想问一下就是, 我搞web方面的话, 我如果要接触二进制, 从哪个方向入手会好一点, 从哪里开始学会好一点</p>
-<p>面试官: 当然你问的是一个问题哈, 那我先从另外一个方面回答一下, 你自己觉得自己想要具备怎样的知识结构, 或者说想要做怎样的工作, 这个有想过吗<br>我: 我最想做的还是, 首先是分析攻击进来的漏洞, 或者说攻击进来的流量, 去分析他们是怎么打进来的, 去学习他们的攻击方式然后再打出去, 然后很多地方可能会涉及到内存马呀二进制方面的东西, 这些地方可能会我自己就看不懂, 我自己的想法是我要去能看懂他们能分析的明白他们, 就这方面, 就我遇到什么漏洞我都想要去把他分析清楚</p>
-<p>面试官: 这个问题你先想想, 你连web都熟悉度其实还不怎么够, 连java反序列化漏洞什么原理都不知道, 那个二进制难度其实是更大的, 就实际的过程中, 简单的比如栈溢出, 但现在一般都是比较复杂的这种, 什么堆, 堆更加复杂, 然后那个二进制的利用过程也很复杂, 这个是十六进制的, 他并不一定是你看得到的web程序, 得对底层一些汇编也有了解. 你得学基本的汇编你才知道他的利用过程. 还有基本的pwn吧, pwn, 你才能知道别人是怎么利用的漏洞. 建议你还是先把web好好学一下<br>我: 先把web先打好嘛, 就是我想有多余的精力的情况下去了解一下二进制这边的东西</p>
-<p>面试官: 了解一下就简单了, 直接搜漏洞类型, 什么原理, 怎么利用, 没多复杂. 主要是你得深入有实践这种才行. 只是大概听过这个, 估计不太行. 如果只是听过的话. 当然前提还是就大概了解就行, 实际上这个工作的时候并不一定用到.<br>我: 工作遇到最多的其实还是各种web层面的漏洞对吧.<br>面试官: 是的, 最主要还是看你的能力, 因为很多是比较复杂的系统, Java相关的有什么Tomcat, JBoss, Weblogic一些企业级应用, 还有一些什么别的应用, 这种的话可能对于漏洞的复现, 一些原理的了解啊<br>我: 因为我最近的话, 我最近的学习的方向就是学java的代码审计. 就是比如说学到一个Java层面的漏洞之后, 环境的搭建是怎么搭可能会比较好一点, 因为可能就本身的文章只会给你一个代码片段, 但不会给你一个完整的环境<br>面试官: 这个肯定是等你多搭了就知道怎么搭了, 如果你连一个Java程序都不知道怎么跑起来, 你还分析什么Java漏洞啊<br>我: 嗯…好的, 那我就先学一些Java开发之类的东西对吧<br>面试官: 也不是说开发, 而是基本的项目部署, 你得知道他是怎么部署的<br>我: 明白了明白了</p>
-]]></content>
-      <categories>
-        <category>求职</category>
-      </categories>
-      <tags>
-        <tag>记录</tag>
-        <tag>面试</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>微步在线一面总结</title>
     <url>/2021/10/18/%E5%BE%AE%E6%AD%A5%E5%9C%A8%E7%BA%BF%E4%B8%80%E9%9D%A2%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<h2 id="1-你先介绍一下你自己吧"><a href="#1-你先介绍一下你自己吧" class="headerlink" title="1. 你先介绍一下你自己吧"></a>1. 你先介绍一下你自己吧</h2><p>我: 我是来自成都信息工程大学目前是大四, 学的专业是信息安全专业. 主要研究方向是web安全, 然后在大一大二的时候参加过一些CTF比赛, 有过一定的实战挖掘经历, 在edu-src产出过两枚漏洞, 然后在先知社区上面发表过一两篇文章, 这是我在校的一些经历. </p>
@@ -734,6 +673,74 @@
 <p>面试官: 那所以导入的这个证书是一个生成的一个证书对吧<br>我: 对, 就是你访问那个burpsuit自己有一个域名地址, 然后就可以下载到一个burpsuit的证书, 然后把这个证书导入到那个浏览器里面, 你就可以去抓取到HTTPS的数据包<br>面试官: 嗯, 那需要浏览器去信任这个证书?<br>我: 对, 需要需要<br>面试官: 那BurpSuit你在导入这个证书的时候他有一个私钥?<br>我: 我记得好像是没有的, 就是你把那个证书直接导入到浏览器里面, 他就已经可以抓包了</p>
 <h2 id="19-那你能不能讲一下像TLS这样-RSA啊这种非对称加密的这种过程-是用什么密钥加密-什么密钥解密"><a href="#19-那你能不能讲一下像TLS这样-RSA啊这种非对称加密的这种过程-是用什么密钥加密-什么密钥解密" class="headerlink" title="19. 那你能不能讲一下像TLS这样, RSA啊这种非对称加密的这种过程, 是用什么密钥加密, 什么密钥解密"></a>19. 那你能不能讲一下像TLS这样, RSA啊这种非对称加密的这种过程, 是用什么密钥加密, 什么密钥解密</h2><p>我: 我大概讲一下吧, 但可能讲的不是很清楚, 因为我对这方面不是很了解. RSA的话是, 首先他用自己的公钥加密, 然后传过去, 然后那边接收方用私钥解密吧, 不是很清楚答的对不对, 因为密码学方面接触的比较少<br>面试官: 是对的<br>我: 平时用到的比较少, 一般都是CTF里面用<br>面试官: 确实很少用, 但是像咱们像流量侧设备, 检测的时候可能会考虑这些问题, 我们做检测方案这些东西</p>
 <h2 id="20-那技术方面先这样-你对微步在线-你对TDP这边-或者对我还有啥问题可以提一下"><a href="#20-那技术方面先这样-你对微步在线-你对TDP这边-或者对我还有啥问题可以提一下" class="headerlink" title="20. 那技术方面先这样, 你对微步在线, 你对TDP这边, 或者对我还有啥问题可以提一下"></a>20. 那技术方面先这样, 你对微步在线, 你对TDP这边, 或者对我还有啥问题可以提一下</h2><p>我: 比如说我入职之前, 我自己想提前做一些入职的准备, 学些什么知识会比较好, 比较契合岗位.<br>面试官: 首先是Web方面的, 肯定要继续加强, 然后是大家都最难解决的问题, 编码和绕过这块儿, 绕WAF. 那么我们作为防守方, 蓝军嘛, 就得让他绕不过对吧. 核心的落脚点还是检测, 检测出来. 还有比如说Java, 内存马. 所有会涉及的攻击手段我们可能都要去研究. 都要去了解, 而且还要去做深入的了解. 原理, 特征, 变体变形都要了解, 最终你要把这个东西分析的很透, 很明白很清楚甚至最后能挖掘出来漏洞. 这是咱们这边TDP这边安全研究员的这么一个工作面貌. 类似IDS, NDR.</p>
+]]></content>
+      <categories>
+        <category>求职</category>
+      </categories>
+      <tags>
+        <tag>记录</tag>
+        <tag>面试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基础算法题</title>
+    <url>/2021/09/04/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95%E9%A2%98/</url>
+    <content><![CDATA[<p>输入:<br>1,2,2,4</p>
+<p>输出:<br>2,3</p>
+<p>一群人排成一排，找其年龄的最长连续长度<br>输入:<br>21,40,41,22,23,24</p>
+<p>输出:<br>4</p>
+<p>对于给定的 str1 和 str2 识别其最长子序列长度<br>输入:<br>abcde cdefg</p>
+<p>输出:<br>3</p>
+]]></content>
+      <categories>
+        <category>求职</category>
+      </categories>
+      <tags>
+        <tag>记录</tag>
+        <tag>算法</tag>
+        <tag>编程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>微步在线二面总结</title>
+    <url>/2021/10/19/%E5%BE%AE%E6%AD%A5%E5%9C%A8%E7%BA%BF%E4%BA%8C%E9%9D%A2%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="1-我看你参加过很多比赛-你在里面是作为主力成员-还是说是辅助的"><a href="#1-我看你参加过很多比赛-你在里面是作为主力成员-还是说是辅助的" class="headerlink" title="1. 我看你参加过很多比赛, 你在里面是作为主力成员, 还是说是辅助的"></a>1. 我看你参加过很多比赛, 你在里面是作为主力成员, 还是说是辅助的</h2><p>我: 我更多的是辅助的一个位置, 就在web题是辅助, misc题目的话是主力. </p>
+<h2 id="2-好-那我问点基础-HTTP的请求方法有哪些啊"><a href="#2-好-那我问点基础-HTTP的请求方法有哪些啊" class="headerlink" title="2. 好, 那我问点基础, HTTP的请求方法有哪些啊"></a>2. 好, 那我问点基础, HTTP的请求方法有哪些啊</h2><p>我: GET, POST, PUT, 这些, 还有一些不太常用的, 最主要就是GET和POST两种方法</p>
+<h2 id="3-在没回显的情况下的代码执行-我怎么判断他是不是成功呢-有哪些方法"><a href="#3-在没回显的情况下的代码执行-我怎么判断他是不是成功呢-有哪些方法" class="headerlink" title="3. 在没回显的情况下的代码执行, 我怎么判断他是不是成功呢, 有哪些方法"></a>3. 在没回显的情况下的代码执行, 我怎么判断他是不是成功呢, 有哪些方法</h2><p>我: 可以先, 就代码执行先外带到自己服务器上面去, 去执行一段代码比如说像 ping 自己的服务器, 看ping能不能收到, 如果能收到的话, 就说明代码执行成功了. 然后的话就是, 最主要的就是这个方法了吧, 把请求给外带出来<br>面试官: 那如果不能外联呢, 就是那台机器不能外联外部网络, 什么UDP, DNS, ping都不行<br>我: 那代码执行执行一个需要服务器花很多资源的一个操作, 然后去看web网站有没有延迟就有没有类似于mysql的sleep()那种操作<br>面试官: 这种web服务器一般都是异步的, 就是比如说那个响应他直接给你响应了<br>我: 哦…<br>面试官: 而且那个延时, 你可能也看不出来啊, 他并不是TCP一直转的, 都是直接给你响应了, 还有别的方式吗<br>我: 我没有其他方式了</p>
+<h2 id="4-redis未授权漏洞有哪一些利用方式啊"><a href="#4-redis未授权漏洞有哪一些利用方式啊" class="headerlink" title="4. redis未授权漏洞有哪一些利用方式啊"></a>4. redis未授权漏洞有哪一些利用方式啊</h2><p>我: 通过写入 <code>ssh_key</code> 进行一个远程的SSH连接, 还有一个就是… 去更改他的config去修改用户的密码, 可以登录上去, 最主要还是ssh_key的写入, 然后远程的SSH连接. </p>
+<p>面试官: 那如果他里面没有开SSH服务呢, 或者说他, 有几种情况, 第一种是开在比较奇怪的端口, 第二种是他内部不允许ssh_key登录, 怎么解决哦<br>我: 我没有更好的办法, 就我遇到这种情况一般就直接放弃了, 这种情况.</p>
+<h2 id="5-服务端有哪一些缺陷-可能会导致存在文件上传漏洞啊"><a href="#5-服务端有哪一些缺陷-可能会导致存在文件上传漏洞啊" class="headerlink" title="5. 服务端有哪一些缺陷, 可能会导致存在文件上传漏洞啊"></a>5. 服务端有哪一些缺陷, 可能会导致存在文件上传漏洞啊</h2><p>我: 首先是服务端的话, 没有做那个权限的限制, 就上传的目录文件里面, 上传进去的文件有执行权限. 可能会导致文件上传漏洞, 然后没有做文件类型的检测, 也可能会导致文件上传漏洞.</p>
+<p>面试官: 你刚刚说是什么文件有执行权限, 那个是什么来着, 没听清<br>我: 就是文件上传的目录下面, 这个目录的文件有执行权限, 就可能导致文件上传漏洞, 就服务器端的话<br>面试官: 这个为什么算作文件上传漏洞<br>我: 因为如果你文件上传上来, 没有执行权限的话, 他上传上来就是, 就不能算一个漏洞吧, 就只是一个正常的上传功能, 他前提是这个目录有执行权限, 你传上来的文件能够执行, 才能算一个文件上传的漏洞<br>面试官: 目录有执行权限? 那文件没执行权限, 难道就不能执行了吗, 就是你 1.php 你不给他执行权限, 那个apache他就不会解析了吗?<br>我: 你要配置这个目录下面的所有文件不能解析, 不能执行, 就是就限制这个目录下面就所有文件的解析这个功能</p>
+<h2 id="6-SSRF漏洞是什么"><a href="#6-SSRF漏洞是什么" class="headerlink" title="6. SSRF漏洞是什么"></a>6. SSRF漏洞是什么</h2><p>我: 是服务器端的请求伪造, 通常是用来利用SSRF漏洞来访问内网的一些资源<br>面试官: 怎么访问啊, 有哪些方式哦<br>我: 比如说他有一个URL跳转, 有一个302的跳转, 他那个URL上面会有一个链接地址, 把那个链接地址改成内网的地址, 如果存在SSRF漏洞的话就可能会访问到内网的资源</p>
+<p>面试官: 如果有redis的话, 有个redis服务器. 能用SSRF漏洞来进行利用吗?<br>我: 我觉得是可以的, 但是我没有去研究过</p>
+<p>面试官: 那如果有个FTP有弱口令呢, 能用SSRF登录吗<br>我: 可以, 如果有FTP的弱口令的话</p>
+<h2 id="7-同源策略知道是什么吗"><a href="#7-同源策略知道是什么吗" class="headerlink" title="7. 同源策略知道是什么吗"></a>7. 同源策略知道是什么吗</h2><p>我: 知道, 就是限制在相同源下面的资源之间才能互相访问, 而不同源之间不能进行那些资源之间的调用的<br>面试官: 那跨域的话都有哪一些方式, 以及为什么能够实现跨域<br>我: 跨域的话首先是写那个跨域文件的配置, crossdomain.xml 去允许某些域的访问, 这是第一种方式, 第二种方式就是在html里面在json里面好像也可以加那个允许某个域访问的代码. </p>
+<h2 id="8-登录后台的时候经常要输入验证码-服务端有哪些缺陷可以导致这个验证码失效或者被绕过"><a href="#8-登录后台的时候经常要输入验证码-服务端有哪些缺陷可以导致这个验证码失效或者被绕过" class="headerlink" title="8. 登录后台的时候经常要输入验证码, 服务端有哪些缺陷可以导致这个验证码失效或者被绕过"></a>8. 登录后台的时候经常要输入验证码, 服务端有哪些缺陷可以导致这个验证码失效或者被绕过</h2><p>我: 首先是如果验证码没有刷新的话就可被爆破去获取到验证码, 还有一种是… 我就知道这一个, 服务器端没有及时更新验证码的话会导致验证码被爆破. </p>
+<h2 id="9-知道java反序列化漏洞是什么原理吗"><a href="#9-知道java反序列化漏洞是什么原理吗" class="headerlink" title="9. 知道java反序列化漏洞是什么原理吗"></a>9. 知道java反序列化漏洞是什么原理吗</h2><p>我: 没了解过, 最近才开始学这个</p>
+<h2 id="10-linux下有哪些安装软件的方式"><a href="#10-linux下有哪些安装软件的方式" class="headerlink" title="10. linux下有哪些安装软件的方式"></a>10. linux下有哪些安装软件的方式</h2><p>我: <code>apt</code>, <code>apt-get</code>, 还有就是直接把软件源码给拷贝到linux下面直接安装, 然后启docker, 大概就是这些方式</p>
+<h2 id="11-知道文件上传-比如你上传一个webshell的时候里面流量是什么样子的吗-看过吗"><a href="#11-知道文件上传-比如你上传一个webshell的时候里面流量是什么样子的吗-看过吗" class="headerlink" title="11. 知道文件上传, 比如你上传一个webshell的时候里面流量是什么样子的吗, 看过吗?"></a>11. 知道文件上传, 比如你上传一个webshell的时候里面流量是什么样子的吗, 看过吗?</h2><p>我: 我上传一个webshell的话, 他那个请求的头一般是POST请求嘛, POST的主体就是webshell的内容但这个主体是在burpsuit里面抓包看到的, 我不知道是不是跟那个就我们需要的包是不是一样的, burpsuit里面抓到的就是, 你上传的webshell的内容, 然后就是这样…<br>面试官: 有什么文件名吗, 这种东西有吗, 文件大小之类的, 这种东西有吗<br>我: 有文件大小, 文件名的话一般也会有, 有文件名还有文件的大小<br>面试官: 有什么特定应的头吗, 还是都是POST数据里面啊<br>我: 我没有注意过他们有没有特殊的头, 从来没有注意过这个</p>
+<p>面试官: 用过webshell吗<br>我: 用过一些简单的一句话木马<br>面试官: webshell得有什么什么结构才能称作一个webshell, 或者说什么, 有哪些功能才能算webshell<br>我: 首先第一个是你上传的这个webshell, 他一定是一段完整的代码, 就是他一定能够执行, 他一定要能够进行命令操作的功能才能算是一个webshell. 或者说能够反弹一个shell回来, 一个bash反弹shell过来, 也能算一个webshell吧…</p>
+<h2 id="12-有代码审计经验-能够写什么代码吗"><a href="#12-有代码审计经验-能够写什么代码吗" class="headerlink" title="12. 有代码审计经验? 能够写什么代码吗"></a>12. 有代码审计经验? 能够写什么代码吗</h2><p>我: 能写一点python跟php的代码, 写一点简单的. 然后java的代码审计, 还有java的基础也是最近才刚开始学</p>
+<h2 id="13-你说那个misc都是哪些类型啊-隐写术吗"><a href="#13-你说那个misc都是哪些类型啊-隐写术吗" class="headerlink" title="13. 你说那个misc都是哪些类型啊, 隐写术吗?"></a>13. 你说那个misc都是哪些类型啊, 隐写术吗?</h2><p>我: 音频分析, 流量分析之类的<br>面试官: 流量分析? 叫你连接菜刀的一句话, 有看过他的流量吗, 有什么流量特征吗<br>我: 有看过, 菜刀的流量, 我看的那个版本他是直接通过base64加密的流量, 解密之后就是php的代码, 然后通过php的socket协议去连接的吧, 之前那个版本. </p>
+<p>面试官: 如果想去让你检测webshell的话, 在流量里面有什么思路吗, 检测webshell. 或者他的交互, 该怎么去做<br>我: 直接去检测他那个命令执行的函数, 就webshell里面一般会有传入的参数, POST, GET之类的, 去检测这些关键字, 流量里面. 还有就是检测匹配webshell的特征吧, 就一般大概常用的webshell都长得差不多, 就去匹配他的特征<br>面试官: 什么特征哦?<br>我: 比如说像是php一句话木马, 一个 <code>&lt;?php @eval($_POST[&#39;lamber&#39;];?&gt;</code> 的操作, 这种. 直接去匹配这个eval函数, 就去看流量里面有没有出现这个, 或者他各种变形去加解密这种. </p>
+<p>面试官: 像你做隐写术, 图片的隐写都有哪一些类型啊, 以及怎么去把这些隐写给他弄出来啊<br>我: 最常见的就是LSB隐写, 去改图片的标志位, 去把他的数据恢复出来, 然后还有就是几张图片拼接, 然后把那个他拼接的部分提取出来, 也是一种新的一段数据, 常见的就是这两种, 还有就是用binwalk去进行, 去对文件里面的数据有没有特殊的文件头去进行一个分离. 一般就是这些</p>
+<h2 id="14-HTTP响应5开头的知道是什么意思吗"><a href="#14-HTTP响应5开头的知道是什么意思吗" class="headerlink" title="14. HTTP响应5开头的知道是什么意思吗"></a>14. HTTP响应5开头的知道是什么意思吗</h2><p>我: 服务器内部异常<br>面试官: 那404呢<br>我: 未找到页面<br>面试官: 那403呢<br>我: 403也是类似的吧, 就客户端的资源处理异常<br>面试官: 客户端资源处理异常? 客户端是你浏览器吗<br>我: 是浏览器的资源出现异常<br>面试官: 100知道是什么意思吗<br>我: 100没有怎么见过…<br>面试官: 302呢<br>我: 302跳转, 跳转到另一个的url里面</p>
+<h2 id="15-代码审计经验-php执行代码都有哪些函数"><a href="#15-代码审计经验-php执行代码都有哪些函数" class="headerlink" title="15. 代码审计经验? php执行代码都有哪些函数"></a>15. 代码审计经验? php执行代码都有哪些函数</h2><p>我: 像 <code>system(), proc_open(), popen()</code> 这些…</p>
+<h2 id="16-你了解这个安全研究员是做什么的吗"><a href="#16-你了解这个安全研究员是做什么的吗" class="headerlink" title="16. 你了解这个安全研究员是做什么的吗"></a>16. 你了解这个安全研究员是做什么的吗</h2><p>我: 了解过一些, 就主要做威胁情报检测, 去做流量分析之类的<br>面试官: </p>
+<h2 id="17-burpsuit怎么去抓安卓手机的包"><a href="#17-burpsuit怎么去抓安卓手机的包" class="headerlink" title="17. burpsuit怎么去抓安卓手机的包"></a>17. burpsuit怎么去抓安卓手机的包</h2><p>我: 安卓手机上面有一个应用吧, 然后可以生成一个手机的一个证书, 然后在同一个局域下面, 在burpsuit上面导入这个证书, 这之后, 可以去抓到手机端的流量. 但是我没有抓成功过, 我不知道是用的那个软件的问题, 还是什么其他的原因<br>面试官: 你可以抓微信之外的普通的应用看一下<br>我: 能抓到浏览器的包, 正常浏览器的包好像能抓到. 但是应用的包就不太好抓, 很杂乱.</p>
+<h2 id="18-对于溢出那些有了解吗-比如栈溢出"><a href="#18-对于溢出那些有了解吗-比如栈溢出" class="headerlink" title="18. 对于溢出那些有了解吗, 比如栈溢出"></a>18. 对于溢出那些有了解吗, 比如栈溢出</h2><p>我: 没有了解过, 二进制方面没有怎么了解过</p>
+<h2 id="19-linux里面查看SSH登录记录有哪些方式"><a href="#19-linux里面查看SSH登录记录有哪些方式" class="headerlink" title="19. linux里面查看SSH登录记录有哪些方式"></a>19. linux里面查看SSH登录记录有哪些方式</h2><p>我: 直接去查看日志文件吧, 其他方式就不知道了</p>
+<h2 id="20-你平常学习东西的话一般通过什么平台怎么学啊-主要是学web吗-有什么学习计划吗"><a href="#20-你平常学习东西的话一般通过什么平台怎么学啊-主要是学web吗-有什么学习计划吗" class="headerlink" title="20. 你平常学习东西的话一般通过什么平台怎么学啊, 主要是学web吗, 有什么学习计划吗"></a>20. 你平常学习东西的话一般通过什么平台怎么学啊, 主要是学web吗, 有什么学习计划吗</h2><p>我: 我的学习计划是, 目前是先把java层面的代码审计学完, 做一些漏洞分析, 分析漏洞的底层原理. 然后去写流量检测, 去检测这些漏洞的特征, 目前是这样一个学习规划. 然后学习的途径的话, 一般是从各种社区, 以及google上面找文章, 然后就是去问一些前辈们的学习的问题吧, 各种途径就是这样.</p>
+<h2 id="21-再问几个基础啊-比如说XSS-我们在测试XSS漏洞的时候-我们都用了什么来闭合原有的符号啊"><a href="#21-再问几个基础啊-比如说XSS-我们在测试XSS漏洞的时候-我们都用了什么来闭合原有的符号啊" class="headerlink" title="21. 再问几个基础啊, 比如说XSS, 我们在测试XSS漏洞的时候, 我们都用了什么来闭合原有的符号啊"></a>21. 再问几个基础啊, 比如说XSS, 我们在测试XSS漏洞的时候, 我们都用了什么来闭合原有的符号啊</h2><p>我: 要闭合原有的符号的话, 跟前面的XSS语句进行匹配上就可以了, 前面是括号的话就用括号闭合, 前面有双引号的话就用双引号来闭合, 这种<br>面试官: 单纯加双引号, 那有没有别的方式, 有可能你加一个双引号, 闭合不了, 代码就错了. 你正常加一个单引号, 或一个双引号. 这种很大概率报错, 理解我说的吗<br>我: 能理解, 其他闭合方式我就没有怎么了解过.</p>
+<h2 id="22-实践经历怎么样-就是说你在实际渗透的时候-比如说一台机器-就一个网站他用了CDN-我们有哪一些方法去找它真实IP"><a href="#22-实践经历怎么样-就是说你在实际渗透的时候-比如说一台机器-就一个网站他用了CDN-我们有哪一些方法去找它真实IP" class="headerlink" title="22. 实践经历怎么样, 就是说你在实际渗透的时候, 比如说一台机器, 就一个网站他用了CDN, 我们有哪一些方法去找它真实IP"></a>22. 实践经历怎么样, 就是说你在实际渗透的时候, 比如说一台机器, 就一个网站他用了CDN, 我们有哪一些方法去找它真实IP</h2><p>我: 找它真实IP首先是, 去一些网站上面可以直接查一些他的真实IP的一些网站. 然后可以通过像是fofa之类的去查他的历史解析IP地址或者是从网站的子域名查他的IP地址, 可能他主站用了CDN但是他子站没有用, 大概就是这些方法吧</p>
+<h2 id="23-然后你在先知发的两篇文章是什么文章啊"><a href="#23-然后你在先知发的两篇文章是什么文章啊" class="headerlink" title="23. 然后你在先知发的两篇文章是什么文章啊"></a>23. 然后你在先知发的两篇文章是什么文章啊</h2><p>我: 一篇漏洞挖掘的, 一篇CTF的复现. </p>
+<h2 id="24-有了解过linux下什么后门吗-或使用过什么后门-代理啊之类的"><a href="#24-有了解过linux下什么后门吗-或使用过什么后门-代理啊之类的" class="headerlink" title="24. 有了解过linux下什么后门吗, 或使用过什么后门, 代理啊之类的"></a>24. 有了解过linux下什么后门吗, 或使用过什么后门, 代理啊之类的</h2><p>我: 后门这个没有了解过, 我只知道webshell, 然后后面没有了解过. 我见过一种可以写到进程里面的木马, 不是很清楚那个算不算后门, 我觉得更像是webshell一点</p>
+<h2 id="25-你大概说一下你开头说的那篇渗透的文章吧"><a href="#25-你大概说一下你开头说的那篇渗透的文章吧" class="headerlink" title="25. 你大概说一下你开头说的那篇渗透的文章吧"></a>25. 你大概说一下你开头说的那篇渗透的文章吧</h2><p>我: 记录了之前挖edu-src的一个过程, 首先从信息收集上面收集域名的信息, 以及它的子站, 以及它的功能点, 然后进行一个测试, 当时是挖到一个存储型XSS, 在一个发布项目的一个界面, 那个地方打入XSS之后, 把项目提交上去, 审核员可以触发那个存储型的XSS, 还有一个地方在登录的界面, 修改密码的功能, 他的修改密码的数据包是明文传输的数据, 直接将验证码发送的手机号在数据包里面显示出来了, 可以更改这个手机号改为自己手机号, 然后这个验证码就会发到自己的手机上面. 接收到这个验证码之后就可以去更改任意用户的一个用户密码, 当时挖掘就这一个站挖到这两个漏洞</p>
+<p>面试官: 挖掘过程有什么亮点吗, 比如说就是别人都想不到的, 有什么区别点吗<br>我: 亮点的话我觉得就是这个, 逻辑漏洞的挖掘吧. 可能其他人都不会注意到这个地方<br>面试官: 什么逻辑漏洞啊?<br>我: 就是, 更改他发送验证码的手机号. 然后这个验证码就会发到目标手机上面去, 这个地方算他逻辑上面设计的缺陷吧, 他没有做那个发送验证码的手机号的验证, 然后导致了, 这个验证码可以发到随便任意一个手机上面去</p>
+<h2 id="26-那我这边就了解的差不多了-你有什么要了解的吗"><a href="#26-那我这边就了解的差不多了-你有什么要了解的吗" class="headerlink" title="26. 那我这边就了解的差不多了, 你有什么要了解的吗"></a>26. 那我这边就了解的差不多了, 你有什么要了解的吗</h2><p>我: 我想问一下就是, 我搞web方面的话, 我如果要接触二进制, 从哪个方向入手会好一点, 从哪里开始学会好一点</p>
+<p>面试官: 当然你问的是一个问题哈, 那我先从另外一个方面回答一下, 你自己觉得自己想要具备怎样的知识结构, 或者说想要做怎样的工作, 这个有想过吗<br>我: 我最想做的还是, 首先是分析攻击进来的漏洞, 或者说攻击进来的流量, 去分析他们是怎么打进来的, 去学习他们的攻击方式然后再打出去, 然后很多地方可能会涉及到内存马呀二进制方面的东西, 这些地方可能会我自己就看不懂, 我自己的想法是我要去能看懂他们能分析的明白他们, 就这方面, 就我遇到什么漏洞我都想要去把他分析清楚</p>
+<p>面试官: 这个问题你先想想, 你连web都熟悉度其实还不怎么够, 连java反序列化漏洞什么原理都不知道, 那个二进制难度其实是更大的, 就实际的过程中, 简单的比如栈溢出, 但现在一般都是比较复杂的这种, 什么堆, 堆更加复杂, 然后那个二进制的利用过程也很复杂, 这个是十六进制的, 他并不一定是你看得到的web程序, 得对底层一些汇编也有了解. 你得学基本的汇编你才知道他的利用过程. 还有基本的pwn吧, pwn, 你才能知道别人是怎么利用的漏洞. 建议你还是先把web好好学一下<br>我: 先把web先打好嘛, 就是我想有多余的精力的情况下去了解一下二进制这边的东西</p>
+<p>面试官: 了解一下就简单了, 直接搜漏洞类型, 什么原理, 怎么利用, 没多复杂. 主要是你得深入有实践这种才行. 只是大概听过这个, 估计不太行. 如果只是听过的话. 当然前提还是就大概了解就行, 实际上这个工作的时候并不一定用到.<br>我: 工作遇到最多的其实还是各种web层面的漏洞对吧.<br>面试官: 是的, 最主要还是看你的能力, 因为很多是比较复杂的系统, Java相关的有什么Tomcat, JBoss, Weblogic一些企业级应用, 还有一些什么别的应用, 这种的话可能对于漏洞的复现, 一些原理的了解啊<br>我: 因为我最近的话, 我最近的学习的方向就是学java的代码审计. 就是比如说学到一个Java层面的漏洞之后, 环境的搭建是怎么搭可能会比较好一点, 因为可能就本身的文章只会给你一个代码片段, 但不会给你一个完整的环境<br>面试官: 这个肯定是等你多搭了就知道怎么搭了, 如果你连一个Java程序都不知道怎么跑起来, 你还分析什么Java漏洞啊<br>我: 嗯…好的, 那我就先学一些Java开发之类的东西对吧<br>面试官: 也不是说开发, 而是基本的项目部署, 你得知道他是怎么部署的<br>我: 明白了明白了</p>
 ]]></content>
       <categories>
         <category>求职</category>
@@ -879,6 +886,171 @@
       </categories>
       <tags>
         <tag>学习资源</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>记一道典型的flask SSTI题目</title>
+    <url>/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/</url>
+    <content><![CDATA[<h2 id="一、概念了解及环境搭建"><a href="#一、概念了解及环境搭建" class="headerlink" title="一、概念了解及环境搭建"></a>一、概念了解及环境搭建</h2><h3 id="1-一些新概念"><a href="#1-一些新概念" class="headerlink" title="1. 一些新概念"></a>1. 一些新概念</h3><ol>
+<li>PyCharm是一种Python IDE，带有一整套可以帮助用户在使用Python语言开发时提高其效率的工具，比如调试、语法高亮、Project管理、代码跳转、智能提示、自动完成、单元测试、版本控制。此外，该IDE提供了一些高级功能，以用于支持Django框架下的专业Web开发。</li>
+<li>IDE: 集成开发环境(Integrated Development Environment)是用于提供程序开发环境的应用程序。简单来说就是提高程序员开发效率的东西。</li>
+<li>web服务器, 应用服务器：处理逻辑的服务器，处理php,python,不能直接通过nginx这种web服务器来处理。eg, uwsgi处理Python;</li>
+<li>常见web应用框架: flask, django</li>
+</ol>
+<h3 id="2-环境搭建"><a href="#2-环境搭建" class="headerlink" title="2. 环境搭建"></a>2. 环境搭建</h3><p>工具准备：python3 &amp; PyCharm</p>
+<p>1.flask搭建过程</p>
+<p>1.安装python3虚拟环境</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">python3 -m venv venv  --&gt; 安装虚拟环境（第二个venv指虚拟环境的名字）</span><br><span class="line">venv\Scripts\activate --&gt; 启动虚拟环境</span><br><span class="line">deactivate            --&gt; 关闭虚拟环境</span><br></pre></td></tr></table></figure>
+
+<p>安装虚拟环境主要是为了不让flask测试框架所安装的一些python模块, 影响自己本机的python环境。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">pip install Flask                   --&gt;  pip版本过低</span><br><span class="line">python -m pip install --upgrade pip --&gt;  更新pip版本</span><br><span class="line">pip install Flask                   --&gt;  成功安装Flask</span><br><span class="line">pip list                            --&gt;  python所安装模块查询版本成功√</span><br></pre></td></tr></table></figure>
+
+<p>2.PyCharm使用:<br>File –&gt; New Project 创建一个新项目<br>File –&gt; Settings –&gt; Project:Project Interpreter 设置python路径, 然后选择pip然后可以安装python相应模块</p>
+<p>参考文章: </p>
+<ol>
+<li>《pycharm使用教程看这篇就足够了》 <a href="https://www.jianshu.com/p/2a4d388b86e9">https://www.jianshu.com/p/2a4d388b86e9</a></li>
+</ol>
+<h2 id="二、flask框架学习"><a href="#二、flask框架学习" class="headerlink" title="二、flask框架学习"></a>二、flask框架学习</h2><p><strong>一、用flask写一个hello world:</strong></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>) </span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span>():</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;Hello World&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>导入<code>Flask</code>类</li>
+<li>创建一个该类的实例</li>
+<li>用<code>route()</code>装饰器来告诉<code>Flask</code>触发函数的<code>URL</code></li>
+<li>函数名称被用来生成相关联的URL</li>
+<li>最后返回需要在用户浏览器中显示的信息</li>
+</ol>
+<p><strong>二、让这个 “hello world” 跑起来的方法</strong></p>
+<ol>
+<li><p>powershell</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">env:FLASK_APP=<span class="string">&quot;flaskr&quot;</span>    --&gt;  flaskr指项目名称</span></span><br><span class="line">flask run</span><br></pre></td></tr></table></figure></li>
+<li><p>cmd</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">set FLASK_APP=flaskr       --&gt;  flaskr指项目名称</span><br><span class="line">set FLASK_ENV=development</span><br><span class="line">flask run</span><br></pre></td></tr></table></figure></li>
+<li><p>linux</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">export</span> FLASK_APP=flaskr  --&gt;  flaskr指项目名称</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> flask run</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><strong>三、如果使用PyCharm:</strong><br>如果是使用PyCharm来运行flask的话, 就会很简单。代码写好之后直接右键选择run, 就可以运行了</p>
+<p>参考文章:</p>
+<ol>
+<li>参考教程w3cschool <a href="https://www.w3cschool.cn/flask/flask_overview.html">https://www.w3cschool.cn/flask/flask_overview.html</a></li>
+<li>flask框架参考flask中文文档 <a href="https://dormousehole.readthedocs.io/en/latest/">https://dormousehole.readthedocs.io/en/latest/</a></li>
+<li><code>if __name__ == &#39;__main__&#39;</code>的理解参考<code>《如何简单地理解python中的if __name__ == &#39;__main__&#39;》</code><a href="https://blog.csdn.net/yjk13703623757/article/details/77918633/">https://blog.csdn.net/yjk13703623757/article/details/77918633/</a></li>
+</ol>
+<h2 id="三、解题过程"><a href="#三、解题过程" class="headerlink" title="三、解题过程"></a>三、解题过程</h2><p>题目源码如下:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, render_template_string, render_template, request</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line">app.config[<span class="string">&#x27;SECRET_KEY&#x27;</span>] = <span class="string">&#x27;evoa@Syclover | https://evoa.me 233333&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">encode</span>(<span class="params">line, key, key2</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(<span class="built_in">chr</span>(x ^ <span class="built_in">ord</span>(line[x]) ^ <span class="built_in">ord</span>(key[::-<span class="number">1</span>][x]) ^ <span class="built_in">ord</span>(key2[x])) <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(line)))</span><br><span class="line"></span><br><span class="line">file = <span class="built_in">open</span>(<span class="string">&quot;/app/flag&quot;</span>, <span class="string">&quot;r&quot;</span>)</span><br><span class="line">flag = file.read()</span><br><span class="line"></span><br><span class="line">app.config[<span class="string">&#x27;flag&#x27;</span>] = encode(flag,<span class="string">&#x27;GQIS5EmzfZA1Ci8NslaoMxPXqrvFB7hYOkbg9y20W3&#x27;</span>,<span class="string">&#x27;xwdFqMck1vA0pl7B8WO3DrG</span></span><br><span class="line"><span class="string">Lma4sZ2Y6ouCPEHSQVT&#x27;</span>)</span><br><span class="line">flag = <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">os.remove(<span class="string">&quot;/app/flag&quot;</span>)</span><br><span class="line">nicknames = [<span class="string">&#x27;˜”*°★☆★_%s_★☆★°°*&#x27;</span>, <span class="string">&#x27;%s ~♡ⓛⓞⓥⓔ♡~&#x27;</span>, <span class="string">&#x27;%s Вêчңø в øĤлâйĤé&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;♪ ♪ ♪ %s ♪ ♪ ♪ &#x27;</span>, <span class="string">&#x27;[♥♥♥%s♥♥♥]&#x27;</span>, <span class="string">&#x27;%s, kOтO®Aя )(оТеЛ@ ©4@$tьЯ&#x27;</span>, <span class="string">&#x27;♔%s♔&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;[♂+♂=♥]%s[♂+♂=♥]&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span>, methods=[<span class="string">&#x27;GET&#x27;</span>, <span class="string">&#x27;POST&#x27;</span>]</span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span>():</span></span><br><span class="line">    <span class="keyword">if</span> request.method == <span class="string">&#x27;POST&#x27;</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            p = request.values.get(<span class="string">&#x27;nickname&#x27;</span>)</span><br><span class="line">            <span class="built_in">id</span> = random.randint(<span class="number">0</span>, <span class="built_in">len</span>(nicknames) - <span class="number">1</span>)</span><br><span class="line">            <span class="keyword">if</span> p != <span class="literal">None</span>:</span><br><span class="line">                <span class="keyword">if</span> <span class="string">&#x27;.&#x27;</span> <span class="keyword">in</span> p <span class="keyword">or</span> <span class="string">&#x27;_&#x27;</span> <span class="keyword">in</span> p <span class="keyword">or</span> <span class="string">&#x27;\&#x27;&#x27;</span> <span class="keyword">in</span> p:</span><br><span class="line">                    <span class="keyword">return</span> <span class="string">&#x27;Your nickname contains restricted characters!&#x27;</span></span><br><span class="line">                <span class="keyword">return</span> render_template_string(nicknames[<span class="built_in">id</span>] % p)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="built_in">print</span>(e)</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;Exception&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> render_template(<span class="string">&#x27;index.html&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/syc&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">syc</span>():</span></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&quot;.&quot;</span> <span class="keyword">in</span> request.args.get(<span class="string">&#x27;name&#x27;</span>) <span class="keyword">or</span> <span class="string">&quot;&#x27;&quot;</span> <span class="keyword">in</span> request.args.get(<span class="string">&#x27;name&#x27;</span>) <span class="keyword">or</span> <span class="string">&#x27;&quot;&#x27;</span> <span class="keyword">in</span> request.args.get(<span class="string">&#x27;name&#x27;</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;nonono&quot;</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> render_template_string(request.args.get(<span class="string">&#x27;name&#x27;</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line"> app.run(host=<span class="string">&#x27;0.0.0.0&#x27;</span>, port=<span class="number">1337</span>)</span><br></pre></td></tr></table></figure>
+
+<p>分析题目源码<br>该题目定义了两个路由</p>
+<ol>
+<li><code>@app.route(&#39;/&#39;, methods=[&#39;GET&#39;, &#39;POST&#39;])</code></li>
+<li><code>@app.route(&#39;/syc&#39;)</code></li>
+</ol>
+<h3 id="1-配置里的flag"><a href="#1-配置里的flag" class="headerlink" title="1. 配置里的flag"></a>1. 配置里的flag</h3><p>路由 <code>@app.route(&#39;/&#39;, methods=[&#39;GET&#39;, &#39;POST&#39;])</code> 作用为:<br>如果是POST请求，则将用户输入(nickname)赋值给参数p。否则直接返回index.html<br>如果参数p中(即nickname中)含有 <code>.</code>, <code>_</code>, <code>\&#39;</code> （点号, 下划线, 单引号）则返回值: <code>Your nickname contains restricted characters!</code><br>如果参数p中不包含非法字符, 则在数组nicknames中随机取出一个元素, 将用户输入(nickname)格式化输出。并且在输出时受到 <code>render_template_string()</code> 函数的影响</p>
+<p>对于 <code>render_template_string()</code> 函数<br>查阅flask官方文档可知, 在Flask中, Jinja2默认配置如下</p>
+<blockquote>
+<ul>
+<li>当使用 render_template() 时，扩展名为 .html 、 .htm 、 .xml 和 .xhtml 的模板中开启自动转义。</li>
+<li>当使用 render_template_string() 时，字符串开启 自动转义。</li>
+<li>在模板中可以使用<code>&#123;% autoescape %&#125;</code>来手动设置是否转义。</li>
+<li>Flask 在 Jinja2 环境中加入一些全局函数和辅助对象，以增强模板的功能。</li>
+</ul>
+</blockquote>
+<p>也就是说, <code>render_template_string()</code> 函数会将字符串以Jinja2模板的渲染规则进行转义。</p>
+<p>查阅Jinja2官方文档可知, 在Jinja2中, 默认定界符(delimiters)有如下几种:</p>
+<blockquote>
+<ul>
+<li><code>&#123;% ... %&#125;</code> for <a href="https://jinja.palletsprojects.com/en/2.10.x/templates/#list-of-control-structures">Statements</a></li>
+<li><code>&#123;&#123; ... &#125;&#125;</code> for <a href="https://jinja.palletsprojects.com/en/2.10.x/templates/#expressions">Expressions</a> to print to the template output</li>
+<li><code>&#123;# ... #&#125;</code> for <a href="https://jinja.palletsprojects.com/en/2.10.x/templates/#comments">Comments</a> not included in the template output</li>
+<li><code>#  ... ##</code> for <a href="https://jinja.palletsprojects.com/en/2.10.x/templates/#line-statements">Line Statements</a></li>
+</ul>
+</blockquote>
+<p>简单来说: </p>
+<ol>
+<li><p><code>&#123;% ... %&#125;</code> 是用来控制程序流程的定界符, 例如条件语句, 循环语句。使用语法与python类似, 但要注意在语法结束时要添加 <code>&#123;% endif %&#125;</code>, <code>&#123;% endfor %&#125;</code>…。一个简单的利用 <code>for</code> 循环, 遍历 <code>username</code> 的示例如下</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;h1&gt;Members&lt;/h1&gt;</span><br><span class="line">&lt;ul&gt;</span><br><span class="line">&#123;% for user in users %&#125;</span><br><span class="line">  &lt;li&gt;&#123;&#123; user.username|e &#125;&#125;&lt;/li&gt;</span><br><span class="line">&#123;% endfor %&#125;</span><br><span class="line">&lt;/ul&gt;</span><br></pre></td></tr></table></figure></li>
+<li><p><code>&#123;&#123; ... &#125;&#125;</code> 是允许使用基本表达式的定界符, 并将结果输出<br>例如: <code>&#123;&#123; 7*7 &#125;&#125;</code> 的返回值就是 <code>49</code></p>
+</li>
+<li><p><code>&#123;# ... #&#125;</code> 用于注释一整块语句, 注释用法如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;# note: commented-out template because we no longer use this</span><br><span class="line">    &#123;% for user in users %&#125;</span><br><span class="line">        ...</span><br><span class="line">    &#123;% endfor %&#125;</span><br><span class="line">#&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p><code>#  ... ##</code> 用于注释一行语句, 注释用法如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># for item in seq:</span><br><span class="line">    &lt;li&gt;&#123;&#123; item &#125;&#125;&lt;/li&gt;     ## this comment is ignored</span><br><span class="line"># endfor</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>参考flask模板 <a href="https://dormousehole.readthedocs.io/en/latest/templating.html?highlight=render_template_string#id2">https://dormousehole.readthedocs.io/en/latest/templating.html?highlight=render_template_string#id2</a></p>
+<blockquote>
+<p>缺省情况下，以下全局变量可以在 Jinja2 模板中使用:<br>config: 当前配置对象<br>request: 当前请求对象, 在没有活动请求环境情况下渲染模板时，这个变量不可用。<br>session: 当前会话对象, 在没有活动请求环境情况下渲染模板时，这个变量不可用。<br>g: 请求绑定的全局变量, 在没有活动请求环境情况下渲染模板时，这个变量不可用。</p>
+</blockquote>
+<p>既然config是全局变量, 而 <code>&#123;&#123; ... &#125;&#125;</code> 可以将基本表达式的结果输出, 并且 <code>render_template_string()</code> 会将字符串以Jinja2的规则转义。那是否可以利用 <code>render_template_string()</code> 先将 <code>&quot;&#123;&#123; ... &#125;&#125;&quot;</code> 字符串转义成Jinja2模板格式, 而转义之后就成了 <code>&#123;&#123; ... &#125;&#125;</code> 定界符, 再利用这个定界符输出 config 这个全局变量呢。<br>于是我搭建了一个测试环境, 代码跟输出结果如下:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, render_template_string</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span>():</span></span><br><span class="line">    <span class="keyword">return</span> render_template_string(<span class="string">&quot;&#123;&#123; config &#125;&#125;&quot;</span>)</span><br><span class="line">    </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
+
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/1.jpg" class="">
+
+
+<p>很好, 可以看到成功读取到了 config 全局变量。<br>感觉到第一个flag就在眼前!<br>访问题目, 输入 <code>&#123;&#123; config &#125;&#125;</code></p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/2.png" class="">
+
+<p>是flag!<br>不过有点遗憾的是, flag是加了密的。回到题目中, 再仔细看看代码。找到加密flag的部分:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">encode</span>(<span class="params">line, key, key2</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(<span class="built_in">chr</span>(x ^ <span class="built_in">ord</span>(line[x]) ^ <span class="built_in">ord</span>(key[::-<span class="number">1</span>][x]) ^ <span class="built_in">ord</span>(key2[x])) <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(line)))</span><br><span class="line">    </span><br><span class="line">file = <span class="built_in">open</span>(<span class="string">&quot;/app/flag&quot;</span>, <span class="string">&quot;r&quot;</span>)</span><br><span class="line">flag = file.read()</span><br><span class="line"></span><br><span class="line">app.config[<span class="string">&#x27;flag&#x27;</span>] = encode(flag,<span class="string">&#x27;GQIS5EmzfZA1Ci8NslaoMxPXqrvFB7hYOkbg9y20W3&#x27;</span>,<span class="string">&#x27;xwdFqMck1vA0pl7B8WO3DrGLma4sZ2Y6ouCPEHSQVT&#x27;</span>)</span><br><span class="line">flag = <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">os.remove(<span class="string">&quot;/app/flag&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>观察 <code>encode()</code> 函数, 发现返回值是由 <code>x</code>, <code>ord(line[x])</code>, <code>ord(key[::-1][x])</code>, <code>ord(key2[x])</code> 四部分亦或得到。<br>亦或参考文章<br>1）：<a href="https://www.cnblogs.com/tmdsleep/p/9933647.html">https://www.cnblogs.com/tmdsleep/p/9933647.html</a><br>2）：<a href="http://www.elecfans.com/d/653831.html">http://www.elecfans.com/d/653831.html</a></p>
+<p>通过学习异或运算可知:</p>
+<blockquote>
+<p>如果a、b两个值不相同，则异或结果为1。 如果a、b两个值相同，异或结果为0。 异或也叫半加运算，其运算法则相当于不带进位的二进制加法：二进制下用1表示真，0表示假，则异或的运算法则为：0⊕0=0，1⊕0=1，0⊕1=1，1⊕1=0（同为0，异为1），这些法则与加法是相同的，只是不带进位，所以异或常被认作不进位加法。</p>
+</blockquote>
+<p>而关于异或运算, 有一个推论<br>e = a ^ b ^ c ^ d 与<br>b = a ^ c ^ d ^ e 相等效</p>
+<p>又查询资料可知<br>ord()是将字符转换成ASCII；<br>chr()是将ASCII转换成字符<br>在加密flag的时候, 是将flag作为参数line传入。也就是说 <code>for x in range(len(line))</code> 的作用是获取flag中每一个字符的坐标, <code>ord(line[x])</code> 就是将flag中每一个字符转换成ASCII。</p>
+<p>即加密flag部分, 可以简单理解为:<br><code>密文 = x ^ flag ^ ord(key[::-1][x]) ^ ord(key2[x])</code></p>
+<p>根据推论解密flag, 即:<br><code>flag = x ^ 密文 ^ ord(key[::-1][x]) ^ ord(key2[x])</code></p>
+<p>解密脚本:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">encode</span>(<span class="params">encrypt_flag, key, key2</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(<span class="built_in">chr</span>(x ^ <span class="built_in">ord</span>(encrypt_flag[x]) ^ <span class="built_in">ord</span>(key[::-<span class="number">1</span>][x]) ^ <span class="built_in">ord</span>(key2[x])) <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(encrypt_flag)))</span><br><span class="line">    </span><br><span class="line">encrypt_flag = <span class="string">&quot;\x18X5\x0cx\x19k&#125;\r\x01a\x0c\x1fT\x16X?hl\x1e\\OLL(n\x17\x0fi]B\x0fh8&quot;</span></span><br><span class="line">key = <span class="string">&quot;GQIS5EmzfZA1Ci8NslaoMxPXqrvFB7hYOkbg9y20W3&quot;</span></span><br><span class="line">key2 = <span class="string">&quot;xwdFqMck1vA0pl7B8WO3DrGLma4sZ2Y6ouCPEHSQVT&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(decode(encrypt_flag, key, key2))</span><br><span class="line"></span><br><span class="line"><span class="comment"># Syc&#123;this_1s_Twice_interv1ew_F14g&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>解码得到第一个flag:<br><code>Syc&#123;this_1s_Twice_interv1ew_F14g&#125;</code></p>
+<p>其实仔细看一下, 构造的解密脚本其实和原加密脚本一样。</p>
+<h3 id="2-根目录下的flag"><a href="#2-根目录下的flag" class="headerlink" title="2. 根目录下的flag"></a>2. 根目录下的flag</h3><p>任务中说, 第二个flag在根目录下面, 于是想到利用模板注入漏洞达到命令执行的效果, 从而读取到根目录的文件。</p>
+<p>查阅跟模板注入的有关文档可知</p>
+<ol>
+<li><a href="https://xz.aliyun.com/t/3679">https://xz.aliyun.com/t/3679</a></li>
+<li><a href="https://www.kingkk.com/2018/06/Flask-Jinja2-SSTI-python-%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/">https://www.kingkk.com/2018/06/Flask-Jinja2-SSTI-python-%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/</a></li>
+</ol>
+<p>想要利用模板注入来达到命令执行的效果, 需要调用python的基类<br>首先利用 <code>__class__</code> 查询全局变量 <code>config</code> 的参数类型, 即 <code>&#123;&#123; config.__class__ &#125;&#125;</code>。执行查询, 结果如下。</p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/3.png" class="">
+
+<p>感到疑惑, 再回到题目源码。看到在 <code>@app.route(&#39;/&#39;, methods=[&#39;GET&#39;, &#39;POST&#39;])</code> 路由里, 过滤了参数 nickname 中的 <code>_</code> 和<code>.</code>。调用python基类所必须的下划线被过滤了, 所以查询全局变量 <code>config</code> 的类失败了。</p>
+<p>既然第一个路由已经把路封上了, 这时候去读第二个路由 <code>@app.route(&#39;/syc&#39;)</code> 的源码。发现过滤了 <code>.</code>, <code>&#39;</code>, <code>&quot;</code>。点号也被过滤了, 感觉题目已经无解了。这时候想到, 虽然调用基类的下划线是必须的, 绕不过去, 但是是否可以绕过点号的使用。百度查询很久, 没有发现任何绕过点号的方法。然后在群里看到师傅说, 把点号的限制删除了。这时候又可以继续做题了! </p>
+<p>分析 <code>@app.route(&#39;/syc&#39;)</code> 这个路由, 利用 <code>request.args.get(&#39;name&#39;)</code> 以GET方式传入了一个name参数, 再通过 <code>render_template_string()</code> 函数将name以Jinja2模板的渲染规则进行转义。</p>
+<p>先尝试读取全局变量: <code>http://114.116.44.23:58470/syc?name=&#123;&#123; config &#125;&#125;</code>, 成功得到config的值。</p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/4.png" class="">
+
+<p>这时候发现, 对于配置里的flag, 不仅可以通过第一个路由读取, 而且第二个路由也可以读取到这个配置里的flag。</p>
+<p>继续读取根目录flag之路:<br>再次尝试读取全局变量 <code>config</code> 的参数类型, <code>http://114.116.44.23:58470/syc?name=&#123;&#123; config.__class__ &#125;&#125;</code> 得到返回结果 <code>&lt;class &#39;flask.config.Config&#39;&gt;</code></p>
+<p>然后利用 <code>__init__</code> 初始化类<br>再加 <code>__globals__</code> 全局查询所有的方法及变量及参数<br><code>http://114.116.44.23:58470/syc?name=&#123;&#123; config.__class__.__init__.__globals__ &#125;&#125;</code></p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/5.png" class="">
+
+
+<p>全局查询之后, 发现有python3的os模块(在题目中也调用了os模块执行系统命令)。<br>查询官方文档之后, 得知 <code>os</code> 模块执行系统命令有两种方式 <code>os.system()</code> 和 <code>os.popen()</code></p>
+<p>其中 <code>os.system()</code> 无法获得输出和返回值, 所以这里采取 <code>os.popen()</code> 方法。使用 <code>read()</code> 方法可以看到输出结果。即 <code>os.popen().read()</code></p>
+<p>这时候一个完整的命令执行payload如下:<br><code>http://114.116.44.23:58470/syc?name=&#123;&#123; config.__class__.__init__.__globals__['os'].popen('whoami').read() &#125;&#125;</code></p>
+<p>这时候想到, 单引号是被过滤了的, 需要绕过单引号的过滤。查询资料得知, request.args是Flask中的一个属性，为返回请求的参数。我把 <code>module</code> 作为调用模块的变量名, 将调用的os模块传入。而<code>shell</code> 作为执行的命令的变量名, 将要执行的命令传入。<br>这时候构造的payload如下:<br><code>http://114.116.44.23:58470/syc?name=&#123;&#123; config.__class__.__init__.__globals__[request.args.module].popen(request.args.shell).read() &#125;&#125;&amp;module=os&amp;shell=whoami</code></p>
+<p>尝试执行, 得到结果如下: </p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/6.png" class="">
+
+<p>命令能够成功执行了, 接下来就是拿flag了</p>
+<p>列下目录:</p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/7.png" class="">
+
+<p>很好, 看到flag了。</p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/8.png" class="">
+
+<p>…居然是假flag, 再看一下题目描述, flag是在服务器根目录。再去根目录下读一下flag。</p>
+<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/9.png" class="">
+
+<p>拿到真flag了<br><code>Syc&#123;this_2s_Twice_interv1ew_F14g&#125;</code></p>
+]]></content>
+      <categories>
+        <category>CTF</category>
+      </categories>
+      <tags>
+        <tag>SSTI</tag>
+        <tag>flask</tag>
       </tags>
   </entry>
   <entry>
@@ -1315,171 +1487,6 @@
       <tags>
         <tag>记录</tag>
         <tag>归档</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>记一道典型的flask SSTI题目</title>
-    <url>/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/</url>
-    <content><![CDATA[<h2 id="一、概念了解及环境搭建"><a href="#一、概念了解及环境搭建" class="headerlink" title="一、概念了解及环境搭建"></a>一、概念了解及环境搭建</h2><h3 id="1-一些新概念"><a href="#1-一些新概念" class="headerlink" title="1. 一些新概念"></a>1. 一些新概念</h3><ol>
-<li>PyCharm是一种Python IDE，带有一整套可以帮助用户在使用Python语言开发时提高其效率的工具，比如调试、语法高亮、Project管理、代码跳转、智能提示、自动完成、单元测试、版本控制。此外，该IDE提供了一些高级功能，以用于支持Django框架下的专业Web开发。</li>
-<li>IDE: 集成开发环境(Integrated Development Environment)是用于提供程序开发环境的应用程序。简单来说就是提高程序员开发效率的东西。</li>
-<li>web服务器, 应用服务器：处理逻辑的服务器，处理php,python,不能直接通过nginx这种web服务器来处理。eg, uwsgi处理Python;</li>
-<li>常见web应用框架: flask, django</li>
-</ol>
-<h3 id="2-环境搭建"><a href="#2-环境搭建" class="headerlink" title="2. 环境搭建"></a>2. 环境搭建</h3><p>工具准备：python3 &amp; PyCharm</p>
-<p>1.flask搭建过程</p>
-<p>1.安装python3虚拟环境</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">python3 -m venv venv  --&gt; 安装虚拟环境（第二个venv指虚拟环境的名字）</span><br><span class="line">venv\Scripts\activate --&gt; 启动虚拟环境</span><br><span class="line">deactivate            --&gt; 关闭虚拟环境</span><br></pre></td></tr></table></figure>
-
-<p>安装虚拟环境主要是为了不让flask测试框架所安装的一些python模块, 影响自己本机的python环境。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">pip install Flask                   --&gt;  pip版本过低</span><br><span class="line">python -m pip install --upgrade pip --&gt;  更新pip版本</span><br><span class="line">pip install Flask                   --&gt;  成功安装Flask</span><br><span class="line">pip list                            --&gt;  python所安装模块查询版本成功√</span><br></pre></td></tr></table></figure>
-
-<p>2.PyCharm使用:<br>File –&gt; New Project 创建一个新项目<br>File –&gt; Settings –&gt; Project:Project Interpreter 设置python路径, 然后选择pip然后可以安装python相应模块</p>
-<p>参考文章: </p>
-<ol>
-<li>《pycharm使用教程看这篇就足够了》 <a href="https://www.jianshu.com/p/2a4d388b86e9">https://www.jianshu.com/p/2a4d388b86e9</a></li>
-</ol>
-<h2 id="二、flask框架学习"><a href="#二、flask框架学习" class="headerlink" title="二、flask框架学习"></a>二、flask框架学习</h2><p><strong>一、用flask写一个hello world:</strong></p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>) </span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span>():</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;Hello World&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<ol>
-<li>导入<code>Flask</code>类</li>
-<li>创建一个该类的实例</li>
-<li>用<code>route()</code>装饰器来告诉<code>Flask</code>触发函数的<code>URL</code></li>
-<li>函数名称被用来生成相关联的URL</li>
-<li>最后返回需要在用户浏览器中显示的信息</li>
-</ol>
-<p><strong>二、让这个 “hello world” 跑起来的方法</strong></p>
-<ol>
-<li><p>powershell</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">env:FLASK_APP=<span class="string">&quot;flaskr&quot;</span>    --&gt;  flaskr指项目名称</span></span><br><span class="line">flask run</span><br></pre></td></tr></table></figure></li>
-<li><p>cmd</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">set FLASK_APP=flaskr       --&gt;  flaskr指项目名称</span><br><span class="line">set FLASK_ENV=development</span><br><span class="line">flask run</span><br></pre></td></tr></table></figure></li>
-<li><p>linux</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">export</span> FLASK_APP=flaskr  --&gt;  flaskr指项目名称</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> flask run</span></span><br></pre></td></tr></table></figure></li>
-</ol>
-<p><strong>三、如果使用PyCharm:</strong><br>如果是使用PyCharm来运行flask的话, 就会很简单。代码写好之后直接右键选择run, 就可以运行了</p>
-<p>参考文章:</p>
-<ol>
-<li>参考教程w3cschool <a href="https://www.w3cschool.cn/flask/flask_overview.html">https://www.w3cschool.cn/flask/flask_overview.html</a></li>
-<li>flask框架参考flask中文文档 <a href="https://dormousehole.readthedocs.io/en/latest/">https://dormousehole.readthedocs.io/en/latest/</a></li>
-<li><code>if __name__ == &#39;__main__&#39;</code>的理解参考<code>《如何简单地理解python中的if __name__ == &#39;__main__&#39;》</code><a href="https://blog.csdn.net/yjk13703623757/article/details/77918633/">https://blog.csdn.net/yjk13703623757/article/details/77918633/</a></li>
-</ol>
-<h2 id="三、解题过程"><a href="#三、解题过程" class="headerlink" title="三、解题过程"></a>三、解题过程</h2><p>题目源码如下:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, render_template_string, render_template, request</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line">app.config[<span class="string">&#x27;SECRET_KEY&#x27;</span>] = <span class="string">&#x27;evoa@Syclover | https://evoa.me 233333&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">encode</span>(<span class="params">line, key, key2</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(<span class="built_in">chr</span>(x ^ <span class="built_in">ord</span>(line[x]) ^ <span class="built_in">ord</span>(key[::-<span class="number">1</span>][x]) ^ <span class="built_in">ord</span>(key2[x])) <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(line)))</span><br><span class="line"></span><br><span class="line">file = <span class="built_in">open</span>(<span class="string">&quot;/app/flag&quot;</span>, <span class="string">&quot;r&quot;</span>)</span><br><span class="line">flag = file.read()</span><br><span class="line"></span><br><span class="line">app.config[<span class="string">&#x27;flag&#x27;</span>] = encode(flag,<span class="string">&#x27;GQIS5EmzfZA1Ci8NslaoMxPXqrvFB7hYOkbg9y20W3&#x27;</span>,<span class="string">&#x27;xwdFqMck1vA0pl7B8WO3DrG</span></span><br><span class="line"><span class="string">Lma4sZ2Y6ouCPEHSQVT&#x27;</span>)</span><br><span class="line">flag = <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">os.remove(<span class="string">&quot;/app/flag&quot;</span>)</span><br><span class="line">nicknames = [<span class="string">&#x27;˜”*°★☆★_%s_★☆★°°*&#x27;</span>, <span class="string">&#x27;%s ~♡ⓛⓞⓥⓔ♡~&#x27;</span>, <span class="string">&#x27;%s Вêчңø в øĤлâйĤé&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;♪ ♪ ♪ %s ♪ ♪ ♪ &#x27;</span>, <span class="string">&#x27;[♥♥♥%s♥♥♥]&#x27;</span>, <span class="string">&#x27;%s, kOтO®Aя )(оТеЛ@ ©4@$tьЯ&#x27;</span>, <span class="string">&#x27;♔%s♔&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;[♂+♂=♥]%s[♂+♂=♥]&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span>, methods=[<span class="string">&#x27;GET&#x27;</span>, <span class="string">&#x27;POST&#x27;</span>]</span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span>():</span></span><br><span class="line">    <span class="keyword">if</span> request.method == <span class="string">&#x27;POST&#x27;</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            p = request.values.get(<span class="string">&#x27;nickname&#x27;</span>)</span><br><span class="line">            <span class="built_in">id</span> = random.randint(<span class="number">0</span>, <span class="built_in">len</span>(nicknames) - <span class="number">1</span>)</span><br><span class="line">            <span class="keyword">if</span> p != <span class="literal">None</span>:</span><br><span class="line">                <span class="keyword">if</span> <span class="string">&#x27;.&#x27;</span> <span class="keyword">in</span> p <span class="keyword">or</span> <span class="string">&#x27;_&#x27;</span> <span class="keyword">in</span> p <span class="keyword">or</span> <span class="string">&#x27;\&#x27;&#x27;</span> <span class="keyword">in</span> p:</span><br><span class="line">                    <span class="keyword">return</span> <span class="string">&#x27;Your nickname contains restricted characters!&#x27;</span></span><br><span class="line">                <span class="keyword">return</span> render_template_string(nicknames[<span class="built_in">id</span>] % p)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="built_in">print</span>(e)</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;Exception&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> render_template(<span class="string">&#x27;index.html&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/syc&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">syc</span>():</span></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&quot;.&quot;</span> <span class="keyword">in</span> request.args.get(<span class="string">&#x27;name&#x27;</span>) <span class="keyword">or</span> <span class="string">&quot;&#x27;&quot;</span> <span class="keyword">in</span> request.args.get(<span class="string">&#x27;name&#x27;</span>) <span class="keyword">or</span> <span class="string">&#x27;&quot;&#x27;</span> <span class="keyword">in</span> request.args.get(<span class="string">&#x27;name&#x27;</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;nonono&quot;</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> render_template_string(request.args.get(<span class="string">&#x27;name&#x27;</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line"> app.run(host=<span class="string">&#x27;0.0.0.0&#x27;</span>, port=<span class="number">1337</span>)</span><br></pre></td></tr></table></figure>
-
-<p>分析题目源码<br>该题目定义了两个路由</p>
-<ol>
-<li><code>@app.route(&#39;/&#39;, methods=[&#39;GET&#39;, &#39;POST&#39;])</code></li>
-<li><code>@app.route(&#39;/syc&#39;)</code></li>
-</ol>
-<h3 id="1-配置里的flag"><a href="#1-配置里的flag" class="headerlink" title="1. 配置里的flag"></a>1. 配置里的flag</h3><p>路由 <code>@app.route(&#39;/&#39;, methods=[&#39;GET&#39;, &#39;POST&#39;])</code> 作用为:<br>如果是POST请求，则将用户输入(nickname)赋值给参数p。否则直接返回index.html<br>如果参数p中(即nickname中)含有 <code>.</code>, <code>_</code>, <code>\&#39;</code> （点号, 下划线, 单引号）则返回值: <code>Your nickname contains restricted characters!</code><br>如果参数p中不包含非法字符, 则在数组nicknames中随机取出一个元素, 将用户输入(nickname)格式化输出。并且在输出时受到 <code>render_template_string()</code> 函数的影响</p>
-<p>对于 <code>render_template_string()</code> 函数<br>查阅flask官方文档可知, 在Flask中, Jinja2默认配置如下</p>
-<blockquote>
-<ul>
-<li>当使用 render_template() 时，扩展名为 .html 、 .htm 、 .xml 和 .xhtml 的模板中开启自动转义。</li>
-<li>当使用 render_template_string() 时，字符串开启 自动转义。</li>
-<li>在模板中可以使用<code>&#123;% autoescape %&#125;</code>来手动设置是否转义。</li>
-<li>Flask 在 Jinja2 环境中加入一些全局函数和辅助对象，以增强模板的功能。</li>
-</ul>
-</blockquote>
-<p>也就是说, <code>render_template_string()</code> 函数会将字符串以Jinja2模板的渲染规则进行转义。</p>
-<p>查阅Jinja2官方文档可知, 在Jinja2中, 默认定界符(delimiters)有如下几种:</p>
-<blockquote>
-<ul>
-<li><code>&#123;% ... %&#125;</code> for <a href="https://jinja.palletsprojects.com/en/2.10.x/templates/#list-of-control-structures">Statements</a></li>
-<li><code>&#123;&#123; ... &#125;&#125;</code> for <a href="https://jinja.palletsprojects.com/en/2.10.x/templates/#expressions">Expressions</a> to print to the template output</li>
-<li><code>&#123;# ... #&#125;</code> for <a href="https://jinja.palletsprojects.com/en/2.10.x/templates/#comments">Comments</a> not included in the template output</li>
-<li><code>#  ... ##</code> for <a href="https://jinja.palletsprojects.com/en/2.10.x/templates/#line-statements">Line Statements</a></li>
-</ul>
-</blockquote>
-<p>简单来说: </p>
-<ol>
-<li><p><code>&#123;% ... %&#125;</code> 是用来控制程序流程的定界符, 例如条件语句, 循环语句。使用语法与python类似, 但要注意在语法结束时要添加 <code>&#123;% endif %&#125;</code>, <code>&#123;% endfor %&#125;</code>…。一个简单的利用 <code>for</code> 循环, 遍历 <code>username</code> 的示例如下</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;h1&gt;Members&lt;/h1&gt;</span><br><span class="line">&lt;ul&gt;</span><br><span class="line">&#123;% for user in users %&#125;</span><br><span class="line">  &lt;li&gt;&#123;&#123; user.username|e &#125;&#125;&lt;/li&gt;</span><br><span class="line">&#123;% endfor %&#125;</span><br><span class="line">&lt;/ul&gt;</span><br></pre></td></tr></table></figure></li>
-<li><p><code>&#123;&#123; ... &#125;&#125;</code> 是允许使用基本表达式的定界符, 并将结果输出<br>例如: <code>&#123;&#123; 7*7 &#125;&#125;</code> 的返回值就是 <code>49</code></p>
-</li>
-<li><p><code>&#123;# ... #&#125;</code> 用于注释一整块语句, 注释用法如下:</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;# note: commented-out template because we no longer use this</span><br><span class="line">    &#123;% for user in users %&#125;</span><br><span class="line">        ...</span><br><span class="line">    &#123;% endfor %&#125;</span><br><span class="line">#&#125;</span><br></pre></td></tr></table></figure></li>
-<li><p><code>#  ... ##</code> 用于注释一行语句, 注释用法如下:</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># for item in seq:</span><br><span class="line">    &lt;li&gt;&#123;&#123; item &#125;&#125;&lt;/li&gt;     ## this comment is ignored</span><br><span class="line"># endfor</span><br></pre></td></tr></table></figure></li>
-</ol>
-<p>参考flask模板 <a href="https://dormousehole.readthedocs.io/en/latest/templating.html?highlight=render_template_string#id2">https://dormousehole.readthedocs.io/en/latest/templating.html?highlight=render_template_string#id2</a></p>
-<blockquote>
-<p>缺省情况下，以下全局变量可以在 Jinja2 模板中使用:<br>config: 当前配置对象<br>request: 当前请求对象, 在没有活动请求环境情况下渲染模板时，这个变量不可用。<br>session: 当前会话对象, 在没有活动请求环境情况下渲染模板时，这个变量不可用。<br>g: 请求绑定的全局变量, 在没有活动请求环境情况下渲染模板时，这个变量不可用。</p>
-</blockquote>
-<p>既然config是全局变量, 而 <code>&#123;&#123; ... &#125;&#125;</code> 可以将基本表达式的结果输出, 并且 <code>render_template_string()</code> 会将字符串以Jinja2的规则转义。那是否可以利用 <code>render_template_string()</code> 先将 <code>&quot;&#123;&#123; ... &#125;&#125;&quot;</code> 字符串转义成Jinja2模板格式, 而转义之后就成了 <code>&#123;&#123; ... &#125;&#125;</code> 定界符, 再利用这个定界符输出 config 这个全局变量呢。<br>于是我搭建了一个测试环境, 代码跟输出结果如下:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, render_template_string</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span>():</span></span><br><span class="line">    <span class="keyword">return</span> render_template_string(<span class="string">&quot;&#123;&#123; config &#125;&#125;&quot;</span>)</span><br><span class="line">    </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
-
-<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/1.jpg" class="">
-
-
-<p>很好, 可以看到成功读取到了 config 全局变量。<br>感觉到第一个flag就在眼前!<br>访问题目, 输入 <code>&#123;&#123; config &#125;&#125;</code></p>
-<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/2.png" class="">
-
-<p>是flag!<br>不过有点遗憾的是, flag是加了密的。回到题目中, 再仔细看看代码。找到加密flag的部分:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">encode</span>(<span class="params">line, key, key2</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(<span class="built_in">chr</span>(x ^ <span class="built_in">ord</span>(line[x]) ^ <span class="built_in">ord</span>(key[::-<span class="number">1</span>][x]) ^ <span class="built_in">ord</span>(key2[x])) <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(line)))</span><br><span class="line">    </span><br><span class="line">file = <span class="built_in">open</span>(<span class="string">&quot;/app/flag&quot;</span>, <span class="string">&quot;r&quot;</span>)</span><br><span class="line">flag = file.read()</span><br><span class="line"></span><br><span class="line">app.config[<span class="string">&#x27;flag&#x27;</span>] = encode(flag,<span class="string">&#x27;GQIS5EmzfZA1Ci8NslaoMxPXqrvFB7hYOkbg9y20W3&#x27;</span>,<span class="string">&#x27;xwdFqMck1vA0pl7B8WO3DrGLma4sZ2Y6ouCPEHSQVT&#x27;</span>)</span><br><span class="line">flag = <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">os.remove(<span class="string">&quot;/app/flag&quot;</span>)</span><br></pre></td></tr></table></figure>
-
-<p>观察 <code>encode()</code> 函数, 发现返回值是由 <code>x</code>, <code>ord(line[x])</code>, <code>ord(key[::-1][x])</code>, <code>ord(key2[x])</code> 四部分亦或得到。<br>亦或参考文章<br>1）：<a href="https://www.cnblogs.com/tmdsleep/p/9933647.html">https://www.cnblogs.com/tmdsleep/p/9933647.html</a><br>2）：<a href="http://www.elecfans.com/d/653831.html">http://www.elecfans.com/d/653831.html</a></p>
-<p>通过学习异或运算可知:</p>
-<blockquote>
-<p>如果a、b两个值不相同，则异或结果为1。 如果a、b两个值相同，异或结果为0。 异或也叫半加运算，其运算法则相当于不带进位的二进制加法：二进制下用1表示真，0表示假，则异或的运算法则为：0⊕0=0，1⊕0=1，0⊕1=1，1⊕1=0（同为0，异为1），这些法则与加法是相同的，只是不带进位，所以异或常被认作不进位加法。</p>
-</blockquote>
-<p>而关于异或运算, 有一个推论<br>e = a ^ b ^ c ^ d 与<br>b = a ^ c ^ d ^ e 相等效</p>
-<p>又查询资料可知<br>ord()是将字符转换成ASCII；<br>chr()是将ASCII转换成字符<br>在加密flag的时候, 是将flag作为参数line传入。也就是说 <code>for x in range(len(line))</code> 的作用是获取flag中每一个字符的坐标, <code>ord(line[x])</code> 就是将flag中每一个字符转换成ASCII。</p>
-<p>即加密flag部分, 可以简单理解为:<br><code>密文 = x ^ flag ^ ord(key[::-1][x]) ^ ord(key2[x])</code></p>
-<p>根据推论解密flag, 即:<br><code>flag = x ^ 密文 ^ ord(key[::-1][x]) ^ ord(key2[x])</code></p>
-<p>解密脚本:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">encode</span>(<span class="params">encrypt_flag, key, key2</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(<span class="built_in">chr</span>(x ^ <span class="built_in">ord</span>(encrypt_flag[x]) ^ <span class="built_in">ord</span>(key[::-<span class="number">1</span>][x]) ^ <span class="built_in">ord</span>(key2[x])) <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(encrypt_flag)))</span><br><span class="line">    </span><br><span class="line">encrypt_flag = <span class="string">&quot;\x18X5\x0cx\x19k&#125;\r\x01a\x0c\x1fT\x16X?hl\x1e\\OLL(n\x17\x0fi]B\x0fh8&quot;</span></span><br><span class="line">key = <span class="string">&quot;GQIS5EmzfZA1Ci8NslaoMxPXqrvFB7hYOkbg9y20W3&quot;</span></span><br><span class="line">key2 = <span class="string">&quot;xwdFqMck1vA0pl7B8WO3DrGLma4sZ2Y6ouCPEHSQVT&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(decode(encrypt_flag, key, key2))</span><br><span class="line"></span><br><span class="line"><span class="comment"># Syc&#123;this_1s_Twice_interv1ew_F14g&#125;</span></span><br></pre></td></tr></table></figure>
-
-<p>解码得到第一个flag:<br><code>Syc&#123;this_1s_Twice_interv1ew_F14g&#125;</code></p>
-<p>其实仔细看一下, 构造的解密脚本其实和原加密脚本一样。</p>
-<h3 id="2-根目录下的flag"><a href="#2-根目录下的flag" class="headerlink" title="2. 根目录下的flag"></a>2. 根目录下的flag</h3><p>任务中说, 第二个flag在根目录下面, 于是想到利用模板注入漏洞达到命令执行的效果, 从而读取到根目录的文件。</p>
-<p>查阅跟模板注入的有关文档可知</p>
-<ol>
-<li><a href="https://xz.aliyun.com/t/3679">https://xz.aliyun.com/t/3679</a></li>
-<li><a href="https://www.kingkk.com/2018/06/Flask-Jinja2-SSTI-python-%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/">https://www.kingkk.com/2018/06/Flask-Jinja2-SSTI-python-%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/</a></li>
-</ol>
-<p>想要利用模板注入来达到命令执行的效果, 需要调用python的基类<br>首先利用 <code>__class__</code> 查询全局变量 <code>config</code> 的参数类型, 即 <code>&#123;&#123; config.__class__ &#125;&#125;</code>。执行查询, 结果如下。</p>
-<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/3.png" class="">
-
-<p>感到疑惑, 再回到题目源码。看到在 <code>@app.route(&#39;/&#39;, methods=[&#39;GET&#39;, &#39;POST&#39;])</code> 路由里, 过滤了参数 nickname 中的 <code>_</code> 和<code>.</code>。调用python基类所必须的下划线被过滤了, 所以查询全局变量 <code>config</code> 的类失败了。</p>
-<p>既然第一个路由已经把路封上了, 这时候去读第二个路由 <code>@app.route(&#39;/syc&#39;)</code> 的源码。发现过滤了 <code>.</code>, <code>&#39;</code>, <code>&quot;</code>。点号也被过滤了, 感觉题目已经无解了。这时候想到, 虽然调用基类的下划线是必须的, 绕不过去, 但是是否可以绕过点号的使用。百度查询很久, 没有发现任何绕过点号的方法。然后在群里看到师傅说, 把点号的限制删除了。这时候又可以继续做题了! </p>
-<p>分析 <code>@app.route(&#39;/syc&#39;)</code> 这个路由, 利用 <code>request.args.get(&#39;name&#39;)</code> 以GET方式传入了一个name参数, 再通过 <code>render_template_string()</code> 函数将name以Jinja2模板的渲染规则进行转义。</p>
-<p>先尝试读取全局变量: <code>http://114.116.44.23:58470/syc?name=&#123;&#123; config &#125;&#125;</code>, 成功得到config的值。</p>
-<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/4.png" class="">
-
-<p>这时候发现, 对于配置里的flag, 不仅可以通过第一个路由读取, 而且第二个路由也可以读取到这个配置里的flag。</p>
-<p>继续读取根目录flag之路:<br>再次尝试读取全局变量 <code>config</code> 的参数类型, <code>http://114.116.44.23:58470/syc?name=&#123;&#123; config.__class__ &#125;&#125;</code> 得到返回结果 <code>&lt;class &#39;flask.config.Config&#39;&gt;</code></p>
-<p>然后利用 <code>__init__</code> 初始化类<br>再加 <code>__globals__</code> 全局查询所有的方法及变量及参数<br><code>http://114.116.44.23:58470/syc?name=&#123;&#123; config.__class__.__init__.__globals__ &#125;&#125;</code></p>
-<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/5.png" class="">
-
-
-<p>全局查询之后, 发现有python3的os模块(在题目中也调用了os模块执行系统命令)。<br>查询官方文档之后, 得知 <code>os</code> 模块执行系统命令有两种方式 <code>os.system()</code> 和 <code>os.popen()</code></p>
-<p>其中 <code>os.system()</code> 无法获得输出和返回值, 所以这里采取 <code>os.popen()</code> 方法。使用 <code>read()</code> 方法可以看到输出结果。即 <code>os.popen().read()</code></p>
-<p>这时候一个完整的命令执行payload如下:<br><code>http://114.116.44.23:58470/syc?name=&#123;&#123; config.__class__.__init__.__globals__['os'].popen('whoami').read() &#125;&#125;</code></p>
-<p>这时候想到, 单引号是被过滤了的, 需要绕过单引号的过滤。查询资料得知, request.args是Flask中的一个属性，为返回请求的参数。我把 <code>module</code> 作为调用模块的变量名, 将调用的os模块传入。而<code>shell</code> 作为执行的命令的变量名, 将要执行的命令传入。<br>这时候构造的payload如下:<br><code>http://114.116.44.23:58470/syc?name=&#123;&#123; config.__class__.__init__.__globals__[request.args.module].popen(request.args.shell).read() &#125;&#125;&amp;module=os&amp;shell=whoami</code></p>
-<p>尝试执行, 得到结果如下: </p>
-<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/6.png" class="">
-
-<p>命令能够成功执行了, 接下来就是拿flag了</p>
-<p>列下目录:</p>
-<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/7.png" class="">
-
-<p>很好, 看到flag了。</p>
-<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/8.png" class="">
-
-<p>…居然是假flag, 再看一下题目描述, flag是在服务器根目录。再去根目录下读一下flag。</p>
-<img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/9.png" class="">
-
-<p>拿到真flag了<br><code>Syc&#123;this_2s_Twice_interv1ew_F14g&#125;</code></p>
-]]></content>
-      <categories>
-        <category>CTF</category>
-      </categories>
-      <tags>
-        <tag>SSTI</tag>
-        <tag>flask</tag>
       </tags>
   </entry>
 </search>

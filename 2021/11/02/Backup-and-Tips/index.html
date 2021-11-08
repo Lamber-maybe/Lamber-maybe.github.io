@@ -10,13 +10,15 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="Lamber,"> 
-    <meta name="description" content="Web必备环境搭建Java环境下载安装 jdk设置系统变量
-将java项目部署到githubgithub方面
+    <meta name="description" content="将项目部署到githubgithub方面
 
 创建一个新的 repository  
 记下仓库地址
 
-本地方面使用 Git Bash,"> 
+本地方面使用 Git Bash Here
+
+cd 到java项目目录下
+git init 初始化在,"> 
     <meta name="author" content="Lamber"> 
     <link rel="alternative" href="atom.xml" title="Lamber&#39;s Blog" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -58,8 +60,7 @@
 
         </div>
         <div class="content markdown">
-            <h2 id="Web必备环境"><a href="#Web必备环境" class="headerlink" title="Web必备环境"></a>Web必备环境</h2><h2 id="搭建Java环境"><a href="#搭建Java环境" class="headerlink" title="搭建Java环境"></a>搭建Java环境</h2><p>下载安装 jdk<br>设置系统变量</p>
-<h3 id="将java项目部署到github"><a href="#将java项目部署到github" class="headerlink" title="将java项目部署到github"></a>将java项目部署到github</h3><p>github方面</p>
+            <h2 id="将项目部署到github"><a href="#将项目部署到github" class="headerlink" title="将项目部署到github"></a>将项目部署到github</h2><p>github方面</p>
 <ol>
 <li>创建一个新的 <code>repository</code>  </li>
 <li>记下仓库地址</li>
@@ -75,6 +76,14 @@
 </ol>
 <p>注: 出现错误：fatal:refusing to merge unrelated histories, 意思是拒绝合并不相关的历史，这是因为在Github创建仓库时，我默认创建了README.md文件，而本地是没有的，所以出现冲突了，这时候，我们需要在第六条命令之前，输入 <code>git pull origin main --allow-unrelated-histories</code> , 然后再执行第六条命令</p>
 <p><strong>而IDEA自带有git工具，也可以使用IDEA的git工具进行push.</strong></p>
+<h2 id="搭建Java环境"><a href="#搭建Java环境" class="headerlink" title="搭建Java环境"></a>搭建Java环境</h2><p>下载安装 jdk<br>设置系统变量</p>
+<h2 id="Java-web环境所需基础"><a href="#Java-web环境所需基础" class="headerlink" title="Java web环境所需基础"></a>Java web环境所需基础</h2><ul>
+<li>maven</li>
+<li>Tomcat</li>
+<li>MySQL</li>
+<li>javax.servlet-api</li>
+<li>mysql-connector-java</li>
+</ul>
 <h3 id="基于Java环境的工具"><a href="#基于Java环境的工具" class="headerlink" title="基于Java环境的工具"></a>基于Java环境的工具</h3><p>1.BurpSuit<br>设置证书, 抓取HTTPS</p>
 <h2 id="基于-python-环境的工具"><a href="#基于-python-环境的工具" class="headerlink" title="基于 python 环境的工具"></a>基于 python 环境的工具</h2><p>2.SQLMap </p>
 <h2 id="Hexo-插件"><a href="#Hexo-插件" class="headerlink" title="Hexo 插件"></a>Hexo 插件</h2><p>查看所有安装的插件</p>

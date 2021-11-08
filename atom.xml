@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2021-11-07T18:28:44.852Z</updated>
+  <updated>2021-11-08T15:58:42.999Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -21,14 +21,16 @@
     <link href="http://example.com/2021/11/02/Backup-and-Tips/"/>
     <id>http://example.com/2021/11/02/Backup-and-Tips/</id>
     <published>2021-11-02T13:42:55.000Z</published>
-    <updated>2021-11-07T18:28:44.852Z</updated>
+    <updated>2021-11-08T15:58:42.999Z</updated>
     
-    <content type="html"><![CDATA[<h2 id="Web必备环境"><a href="#Web必备环境" class="headerlink" title="Web必备环境"></a>Web必备环境</h2><h2 id="搭建Java环境"><a href="#搭建Java环境" class="headerlink" title="搭建Java环境"></a>搭建Java环境</h2><p>下载安装 jdk<br>设置系统变量</p><h3 id="将java项目部署到github"><a href="#将java项目部署到github" class="headerlink" title="将java项目部署到github"></a>将java项目部署到github</h3><p>github方面</p><ol><li>创建一个新的 <code>repository</code>  </li><li>记下仓库地址</li></ol><p>本地方面<br>使用 <code>Git Bash Here</code></p><ol><li>cd 到java项目目录下</li><li><code>git init</code> 初始化在当前项目的目录中生成本地的git管理</li><li><code>git add .</code> 将项目上所有的文件添加到仓库中, 如果要添加特定文件, 只需要把 <code>.</code> 换成特定的文件名即可</li><li><code>git commit -m &quot;first commit&quot;</code> 表示对此次提交的注释, 双引号里面的内容即为注释内容</li><li><code>git remote add origin https://xxxx.git</code> 自己的仓库地址</li><li><code>git push -u origin main</code> 把代码上传到github仓库</li></ol><p>注: 出现错误：fatal:refusing to merge unrelated histories, 意思是拒绝合并不相关的历史，这是因为在Github创建仓库时，我默认创建了README.md文件，而本地是没有的，所以出现冲突了，这时候，我们需要在第六条命令之前，输入 <code>git pull origin main --allow-unrelated-histories</code> , 然后再执行第六条命令</p><p><strong>而IDEA自带有git工具，也可以使用IDEA的git工具进行push.</strong></p><h3 id="基于Java环境的工具"><a href="#基于Java环境的工具" class="headerlink" title="基于Java环境的工具"></a>基于Java环境的工具</h3><p>1.BurpSuit<br>设置证书, 抓取HTTPS</p><h2 id="基于-python-环境的工具"><a href="#基于-python-环境的工具" class="headerlink" title="基于 python 环境的工具"></a>基于 python 环境的工具</h2><p>2.SQLMap </p><h2 id="Hexo-插件"><a href="#Hexo-插件" class="headerlink" title="Hexo 插件"></a>Hexo 插件</h2><p>查看所有安装的插件</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm ls --depth 0</span><br></pre></td></tr></table></figure><p>我所安装的插件</p><ul><li>hexo-generator-searchdb</li></ul>]]></content>
+    <content type="html"><![CDATA[<h2 id="将项目部署到github"><a href="#将项目部署到github" class="headerlink" title="将项目部署到github"></a>将项目部署到github</h2><p>github方面</p><ol><li>创建一个新的 <code>repository</code>  </li><li>记下仓库地址</li></ol><p>本地方面<br>使用 <code>Git Bash Here</code></p><ol><li>cd 到java项目目录下</li><li><code>git init</code> 初始化在当前项目的目录中生成本地的git管理</li><li><code>git add .</code> 将项目上所有的文件添加到仓库中, 如果要添加特定文件, 只需要把 <code>.</code> 换成特定的文件名即可</li><li><code>git commit -m &quot;first commit&quot;</code> 表示对此次提交的注释, 双引号里面的内容即为注释内容</li><li><code>git remote add origin https://xxxx.git</code> 自己的仓库地址</li><li><code>git push -u origin main</code> 把代码上传到github仓库</li></ol><p>注: 出现错误：fatal:refusing to merge unrelated histories, 意思是拒绝合并不相关的历史，这是因为在Github创建仓库时，我默认创建了README.md文件，而本地是没有的，所以出现冲突了，这时候，我们需要在第六条命令之前，输入 <code>git pull origin main --allow-unrelated-histories</code> , 然后再执行第六条命令</p><p><strong>而IDEA自带有git工具，也可以使用IDEA的git工具进行push.</strong></p><h2 id="搭建Java环境"><a href="#搭建Java环境" class="headerlink" title="搭建Java环境"></a>搭建Java环境</h2><p>下载安装 jdk<br>设置系统变量</p><h2 id="Java-web环境所需基础"><a href="#Java-web环境所需基础" class="headerlink" title="Java web环境所需基础"></a>Java web环境所需基础</h2><ul><li>maven</li><li>Tomcat</li><li>MySQL</li><li>javax.servlet-api</li><li>mysql-connector-java</li></ul><h3 id="基于Java环境的工具"><a href="#基于Java环境的工具" class="headerlink" title="基于Java环境的工具"></a>基于Java环境的工具</h3><p>1.BurpSuit<br>设置证书, 抓取HTTPS</p><h2 id="基于-python-环境的工具"><a href="#基于-python-环境的工具" class="headerlink" title="基于 python 环境的工具"></a>基于 python 环境的工具</h2><p>2.SQLMap </p><h2 id="Hexo-插件"><a href="#Hexo-插件" class="headerlink" title="Hexo 插件"></a>Hexo 插件</h2><p>查看所有安装的插件</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm ls --depth 0</span><br></pre></td></tr></table></figure><p>我所安装的插件</p><ul><li>hexo-generator-searchdb</li></ul>]]></content>
     
     
       
       
-    <summary type="html">&lt;h2 id=&quot;Web必备环境&quot;&gt;&lt;a href=&quot;#Web必备环境&quot; class=&quot;headerlink&quot; title=&quot;Web必备环境&quot;&gt;&lt;/a&gt;Web必备环境&lt;/h2&gt;&lt;h2 id=&quot;搭建Java环境&quot;&gt;&lt;a href=&quot;#搭建Java环境&quot; class=&quot;headerli</summary>
+    <summary type="html">&lt;h2 id=&quot;将项目部署到github&quot;&gt;&lt;a href=&quot;#将项目部署到github&quot; class=&quot;headerlink&quot; title=&quot;将项目部署到github&quot;&gt;&lt;/a&gt;将项目部署到github&lt;/h2&gt;&lt;p&gt;github方面&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;创建一个新的 &lt;</summary>
       
     
     
