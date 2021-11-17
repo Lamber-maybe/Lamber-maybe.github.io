@@ -207,6 +207,13 @@
 
   
   <url>
+    <loc>http://example.com/tags/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</loc>
+    <lastmod>2021-11-17</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://example.com/tags/%E8%AE%B0%E5%BD%95/</loc>
     <lastmod>2021-11-17</lastmod>
     <changefreq>daily</changefreq>
@@ -221,7 +228,14 @@
   </url>
   
   <url>
-    <loc>http://example.com/tags/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/</loc>
+    <loc>http://example.com/tags/HTTP/</loc>
+    <lastmod>2021-11-17</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/tags/DNS/</loc>
     <lastmod>2021-11-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -236,20 +250,6 @@
   
   <url>
     <loc>http://example.com/tags/Burp/</loc>
-    <lastmod>2021-11-17</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/tags/HTTP/</loc>
-    <lastmod>2021-11-17</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>http://example.com/tags/DNS/</loc>
     <lastmod>2021-11-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -391,13 +391,6 @@
 
   
   <url>
-    <loc>http://example.com/categories/%E6%B1%82%E8%81%8C/</loc>
-    <lastmod>2021-11-17</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://example.com/categories/%E5%A4%87%E4%BB%BD/</loc>
     <lastmod>2021-11-17</lastmod>
     <changefreq>daily</changefreq>
@@ -405,7 +398,7 @@
   </url>
   
   <url>
-    <loc>http://example.com/categories/%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91/</loc>
+    <loc>http://example.com/categories/%E6%B1%82%E8%81%8C/</loc>
     <lastmod>2021-11-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -413,6 +406,13 @@
   
   <url>
     <loc>http://example.com/categories/%E5%8D%8F%E8%AE%AE%E7%9B%B8%E5%85%B3/</loc>
+    <lastmod>2021-11-17</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://example.com/categories/%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91/</loc>
     <lastmod>2021-11-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
