@@ -5,12 +5,12 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XSS - Lamber&#39;s Blog</title>
+    <title>机器学习入门 - Lamber&#39;s Blog</title>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="Lamber,"> 
-    
+    <meta name="description" content="基础概念基本术语数据集(data set): 所有数据的集合示例(instance) 或 样本(sample): 关于一个事件或对象的描述. (可以把一个示例称为一个“特征向量”(feature v,"> 
     <meta name="author" content="Lamber"> 
     <link rel="alternative" href="atom.xml" title="Lamber&#39;s Blog" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -28,7 +28,7 @@
     <div class="bar" style="width: 0;"></div>
     <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
     <div title="播放/暂停" class="iconfont icon-play"></div>
-    <h3 class="subtitle">XSS</h3>
+    <h3 class="subtitle">机器学习入门</h3>
     <div class="social">
         <div>
             <div class="share">
@@ -43,16 +43,21 @@
     <div class="section">
         <div class="article">
     <div class='main'>
-        <h1 class="title">XSS</h1>
+        <h1 class="title">机器学习入门</h1>
         <div class="stuff">
-            <span>九月 03, 2021</span>
+            <span>十一月 17, 2021</span>
             
-  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E5%9F%BA%E7%A1%80/" rel="tag">基础</a></li><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/" rel="tag">基础漏洞</a></li></ul>
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E5%85%A5%E9%97%A8/" rel="tag">入门</a></li><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E5%9F%BA%E7%A1%80/" rel="tag">基础</a></li></ul>
 
 
         </div>
         <div class="content markdown">
-            
+            <h2 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h2><h3 id="基本术语"><a href="#基本术语" class="headerlink" title="基本术语"></a>基本术语</h3><p>数据集(data set): 所有数据的集合<br>示例(instance) 或 样本(sample): 关于一个事件或对象的描述. (可以把一个示例称为一个“特征向量”(feature vector))<br>属性(attribute) 或 特征(feature): 反映事件或对象在某方面的表现或性质的事项<br>属性值(attribute value): 属性上的取值<br>属性空间(attribute space), 样本空间(sample space) 或 输入空间: 属性张成的空间</p>
+<p>维数(dimensionality): 每个示例的属性数量</p>
+<p>学习(learning) 或 训练(training): 从数据中学得模型的过程</p>
+<p>训练数据(training data): 训练过程中使用的数据<br>训练样本(training sample): 训练过程中的每个样本<br>训练集(training set): 训练样本组成的集合</p>
+<p>监督学习(supervised learning): 分类(ckassification) 和 回归(regression) 属于监督学习<br>无监督学习(unsupervised learning): 聚类(clustering) 属于无监督学习</p>
+<h3 id="假设空间"><a href="#假设空间" class="headerlink" title="假设空间"></a>假设空间</h3><h3 id="归纳偏好"><a href="#归纳偏好" class="headerlink" title="归纳偏好"></a>归纳偏好</h3><h2 id="模型评估与选择"><a href="#模型评估与选择" class="headerlink" title="模型评估与选择"></a>模型评估与选择</h2><h3 id="经验误差与过拟合"><a href="#经验误差与过拟合" class="headerlink" title="经验误差与过拟合"></a>经验误差与过拟合</h3><h3 id="评估方法"><a href="#评估方法" class="headerlink" title="评估方法"></a>评估方法</h3><h3 id="比较检验"><a href="#比较检验" class="headerlink" title="比较检验"></a>比较检验</h3><h3 id="偏差与方差"><a href="#偏差与方差" class="headerlink" title="偏差与方差"></a>偏差与方差</h3>
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
                 <source type="audio/mpeg" src="https://link.hhtjim.com/163/1815162101.mp3">
