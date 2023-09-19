@@ -45,6 +45,59 @@
       </tags>
   </entry>
   <entry>
+    <title>BurpSuit 插件开发（一）</title>
+    <url>/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h2><ol>
+<li>burp官方支持三种语言开发插件：Java、Python、Ruby。但一般情况下推荐使用Java来做插件开发。原因有以下两点：<ol>
+<li>当用python去做插件的时候，如果需要使用到某个库，而这个库又是用C语言实现的。那么插件将无法正常运行。因为burp在执行python写的插件的时候，是通过Jython（Jython是一种完整的语言，而不是一个Java翻译器或仅仅是一个Python编译器，它是一个Python语言在Java中的完全实现。）去解析执行的。而Jython是无法使用C写的模块，所以在这时候插件就不能正常运行。</li>
+<li>burp本身是Java写的，使用Java去开发插件兼容性最高，会少很多莫名其妙的错误。而且当使用Java的时候，可以很方便的和ide进行远程调试。而在使用python写插件进行调试时，只能尽量通过输出去获取信息，没有好的办法进行下断点的动态调试</li>
+</ol>
+</li>
+</ol>
+<p>  所以说Java是写插件的最优选择</p>
+<ol start="2">
+<li>回调的概念<br>我们所写的插件，都是被burp所调用的，实质上就是个回调<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/1.png" class=""></li>
+</ol>
+<h2 id="二、入门准备"><a href="#二、入门准备" class="headerlink" title="二、入门准备"></a>二、入门准备</h2><ol>
+<li>在本文中是使用java来进行开发，所以主要讲一下java中的调试方法。其他语言就多写点print就可以了。</li>
+<li>由于国内大多数是用的破解版burp，所以在调试方法的准备上稍微需要一点改变。一般情况下破解版burp有使用helper的，有使用keygen的。而如果想要进入调试状态，则需要使用kygen。在我的调试环境下，有如下两个文件<ol>
+<li><strong>burp-loader-keygen.jar</strong></li>
+<li><strong>burpsuite_pro_v1.7.31.jar</strong></li>
+</ol>
+</li>
+</ol>
+<p>  用如下命令启动burp并让它处于调试的监听方：<code>java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -Xbootclasspath/p:burp-loader-keygen.jar -jar burpsuite_pro_v1.7.31.jar</code>这个命令和调试正版burp的区别在于，这个命令需要加<code>-Xbootclasspath/p:burp-loader-keygen.jar</code>这一段。<br>  可以将这条指令保存为bat文件，方便一键启动。<br>3. 另一边就是IDE的配置了，以idea为例（注意jdk环境不能太高，否则你打包的jar包burp不能正常加载，推荐使用jdk1.8）</p>
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/2.png" class="">
+<p>如上debug模式的burp和IDEA都配置好后，就可以进行下断点调试了。需要注意的是，需要保持IDEA中的代码和你打包的插件的代码一致。</p>
+<ol start="4">
+<li>顺便在这里再码一篇写的很棒的文章 <a href="https://blog.netspi.com/debugging-burp-extensions/">https://blog.netspi.com/debugging-burp-extensions/</a><br>还有，官方资料都是最好的资料 <a href="https://portswigger.net/burp/extender#SampleExtensions">https://portswigger.net/burp/extender#SampleExtensions</a></li>
+</ol>
+<h2 id="三、Hello-World"><a href="#三、Hello-World" class="headerlink" title="三、Hello World"></a>三、Hello World</h2><ol>
+<li>首先我们创建一个IDEA工程文件，并且创建一个名叫burp的包。然后启动之前准备好的bat文件。并将burp里面的API接口文件导出到IDEA的burp包里面。再之后，新建一个class文件，名字为BurpExtender。然后写入以下代码。<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/3.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/4.png" class=""></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> burp;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BurpExtender</span> <span class="keyword">implements</span> <span class="title">IBurpExtender</span></span>&#123;</span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// implements IBurpExtender</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">registerExtenderCallbacks</span><span class="params">(IBurpExtenderCallbacks callbacks)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// set our extension name</span></span><br><span class="line">        callbacks.setExtensionName(<span class="string">&quot;Hello world extension&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// obtain our output and error streams</span></span><br><span class="line">        PrintWriter stdout = <span class="keyword">new</span> PrintWriter(callbacks.getStdout(), <span class="keyword">true</span>);</span><br><span class="line">        PrintWriter stderr = <span class="keyword">new</span> PrintWriter(callbacks.getStderr(), <span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to our output stream</span></span><br><span class="line">        stdout.println(<span class="string">&quot;This is output&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to our error stream</span></span><br><span class="line">        stderr.println(<span class="string">&quot;This is errors&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to the Burp alerts tab</span></span><br><span class="line">        callbacks.issueAlert(<span class="string">&quot;Hello alerts&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// throw an exception that will appear in our error stream</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;Hello exception&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>将项目打包为jar包然后从burp导入jar包</p>
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/5.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/6.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/7.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/8.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/9.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/10.png" class="">
+
+<p>最后成功输出结果</p>
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/11.png" class="">
+]]></content>
+      <categories>
+        <category>安全开发</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>Burp</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>58同城面试总结</title>
     <url>/2021/10/03/58%E5%90%8C%E5%9F%8E%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<h2 id="1-你先做个自我介绍吧"><a href="#1-你先做个自我介绍吧" class="headerlink" title="1. 你先做个自我介绍吧"></a>1. 你先做个自我介绍吧</h2><h2 id="2-假如说有个SQL注入如下"><a href="#2-假如说有个SQL注入如下" class="headerlink" title="2. 假如说有个SQL注入如下"></a>2. 假如说有个SQL注入如下</h2><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> userid <span class="operator">=</span> &#123;&#125;;</span><br></pre></td></tr></table></figure>
@@ -114,164 +167,6 @@
       </tags>
   </entry>
   <entry>
-    <title>BurpSuit 插件开发（一）</title>
-    <url>/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/</url>
-    <content><![CDATA[<h2 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h2><ol>
-<li>burp官方支持三种语言开发插件：Java、Python、Ruby。但一般情况下推荐使用Java来做插件开发。原因有以下两点：<ol>
-<li>当用python去做插件的时候，如果需要使用到某个库，而这个库又是用C语言实现的。那么插件将无法正常运行。因为burp在执行python写的插件的时候，是通过Jython（Jython是一种完整的语言，而不是一个Java翻译器或仅仅是一个Python编译器，它是一个Python语言在Java中的完全实现。）去解析执行的。而Jython是无法使用C写的模块，所以在这时候插件就不能正常运行。</li>
-<li>burp本身是Java写的，使用Java去开发插件兼容性最高，会少很多莫名其妙的错误。而且当使用Java的时候，可以很方便的和ide进行远程调试。而在使用python写插件进行调试时，只能尽量通过输出去获取信息，没有好的办法进行下断点的动态调试</li>
-</ol>
-</li>
-</ol>
-<p>  所以说Java是写插件的最优选择</p>
-<ol start="2">
-<li>回调的概念<br>我们所写的插件，都是被burp所调用的，实质上就是个回调<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/1.png" class=""></li>
-</ol>
-<h2 id="二、入门准备"><a href="#二、入门准备" class="headerlink" title="二、入门准备"></a>二、入门准备</h2><ol>
-<li>在本文中是使用java来进行开发，所以主要讲一下java中的调试方法。其他语言就多写点print就可以了。</li>
-<li>由于国内大多数是用的破解版burp，所以在调试方法的准备上稍微需要一点改变。一般情况下破解版burp有使用helper的，有使用keygen的。而如果想要进入调试状态，则需要使用kygen。在我的调试环境下，有如下两个文件<ol>
-<li><strong>burp-loader-keygen.jar</strong></li>
-<li><strong>burpsuite_pro_v1.7.31.jar</strong></li>
-</ol>
-</li>
-</ol>
-<p>  用如下命令启动burp并让它处于调试的监听方：<code>java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -Xbootclasspath/p:burp-loader-keygen.jar -jar burpsuite_pro_v1.7.31.jar</code>这个命令和调试正版burp的区别在于，这个命令需要加<code>-Xbootclasspath/p:burp-loader-keygen.jar</code>这一段。<br>  可以将这条指令保存为bat文件，方便一键启动。<br>3. 另一边就是IDE的配置了，以idea为例（注意jdk环境不能太高，否则你打包的jar包burp不能正常加载，推荐使用jdk1.8）</p>
-<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/2.png" class="">
-<p>如上debug模式的burp和IDEA都配置好后，就可以进行下断点调试了。需要注意的是，需要保持IDEA中的代码和你打包的插件的代码一致。</p>
-<ol start="4">
-<li>顺便在这里再码一篇写的很棒的文章 <a href="https://blog.netspi.com/debugging-burp-extensions/">https://blog.netspi.com/debugging-burp-extensions/</a><br>还有，官方资料都是最好的资料 <a href="https://portswigger.net/burp/extender#SampleExtensions">https://portswigger.net/burp/extender#SampleExtensions</a></li>
-</ol>
-<h2 id="三、Hello-World"><a href="#三、Hello-World" class="headerlink" title="三、Hello World"></a>三、Hello World</h2><ol>
-<li>首先我们创建一个IDEA工程文件，并且创建一个名叫burp的包。然后启动之前准备好的bat文件。并将burp里面的API接口文件导出到IDEA的burp包里面。再之后，新建一个class文件，名字为BurpExtender。然后写入以下代码。<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/3.png" class="">
-<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/4.png" class=""></li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> burp;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BurpExtender</span> <span class="keyword">implements</span> <span class="title">IBurpExtender</span></span>&#123;</span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// implements IBurpExtender</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">registerExtenderCallbacks</span><span class="params">(IBurpExtenderCallbacks callbacks)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// set our extension name</span></span><br><span class="line">        callbacks.setExtensionName(<span class="string">&quot;Hello world extension&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// obtain our output and error streams</span></span><br><span class="line">        PrintWriter stdout = <span class="keyword">new</span> PrintWriter(callbacks.getStdout(), <span class="keyword">true</span>);</span><br><span class="line">        PrintWriter stderr = <span class="keyword">new</span> PrintWriter(callbacks.getStderr(), <span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to our output stream</span></span><br><span class="line">        stdout.println(<span class="string">&quot;This is output&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to our error stream</span></span><br><span class="line">        stderr.println(<span class="string">&quot;This is errors&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to the Burp alerts tab</span></span><br><span class="line">        callbacks.issueAlert(<span class="string">&quot;Hello alerts&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// throw an exception that will appear in our error stream</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;Hello exception&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>将项目打包为jar包然后从burp导入jar包</p>
-<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/5.png" class="">
-<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/6.png" class="">
-<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/7.png" class="">
-<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/8.png" class="">
-<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/9.png" class="">
-<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/10.png" class="">
-
-<p>最后成功输出结果</p>
-<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/11.png" class="">
-]]></content>
-      <categories>
-        <category>安全开发</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-        <tag>Burp</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Linux下常见的几种反弹shell</title>
-    <url>/2021/08/31/Linux%E4%B8%8B%E5%B8%B8%E8%A7%81%E7%9A%84%E5%87%A0%E7%A7%8D%E5%8F%8D%E5%BC%B9shell/</url>
-    <content><![CDATA[<h2 id="文件描述符"><a href="#文件描述符" class="headerlink" title="文件描述符"></a>文件描述符</h2><blockquote>
-<p><strong>linux文件描述符</strong>：可以理解为Linux跟踪打开文件时，分配的一个数字，这个数字有点类似于C语言操作文件时候的句柄，通过句柄就可以实现文件的读写操作。</p>
-</blockquote>
-<p>当linux启动的时候会默认打开三个文件描述符，分别是：</p>
-<ol>
-<li>标准输入： <code>standard input 0</code> (默认设备键盘)</li>
-<li>标准输出： <code>standard output 1</code> (默认设备显示器)</li>
-<li>错误输出： <code>error output 2</code> (默认设备显示器)</li>
-</ol>
-<p>stdin 0 –&gt; /dev/tty0<br>stdout 1 –&gt; /dev/tty0<br>stderr 2 –&gt; /dev/tty0</p>
-<p>注意：</p>
-<ol>
-<li>以后再打开文件，描述符可以依次增加</li>
-<li>每一条shell命令，都会继承其父进程的文件描述符，因此所有的shell命令，都会默认有三个文件描述符。</li>
-</ol>
-<p><strong>文件所有输入输出都是由该进程所有打开的文件描述符控制的。（Linux一切皆文件，就连键盘显示器设备都是文件，因此他们的输入输出也是由文件描述符控制）</strong></p>
-<p>一条命令执行以前，先会按照默认的情况进行绑定（也就是上面所说的 0，1，2），如果我们有时候需要让输出不显示在显示器上，而是输出到文件或者其他设备，那我们就需要重定向。</p>
-<h2 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h2><p>重定向主要分为两种（其他复杂的情况都是由这两种情况衍生出来的）</p>
-<ol>
-<li>输入重定向 <code>&lt; &lt;&lt;</code></li>
-<li>输出重定向 <code>&gt; &gt;&gt;</code></li>
-</ol>
-<p>重点：</p>
-<ol>
-<li>bash在执行一条指令的时候，首先会检查命令中存不存在重定向的符号，如果存在，那么首先将文件描述符重定向（之前说过，输入输出操作都是依赖文件描述符实现的，重定向输入输出本质上就是重定向文件描述符），然后再把重定向去掉，执行指令</li>
-<li>如果指令中存在多个重定向，那么不要随便改变顺序，因为重定向是 <strong>从左向右</strong> 解析的，如果改变顺序，可能会带来完全不同的结果（这一点我们后面会展示）</li>
-<li><code>&lt;</code> 是对标准输入 0 重定向，<code>&gt;</code> 是对标准输出 1 重定向</li>
-<li><strong>再强调一下，重定向就是针对文件描述符的操作</strong></li>
-</ol>
-<h3 id="1-输入重定向"><a href="#1-输入重定向" class="headerlink" title="1. 输入重定向"></a>1. 输入重定向</h3><p>格式： <code>[n]&lt; word</code> <strong>(注意 [n] 与 &lt; 之间是没有空格的)</strong></p>
-<p>说明：将文件描述符 n 重定向到 word 指代的文件（以只读方式打开），<strong>如果 n 省略就是0</strong>（标准输入）</p>
-<h2 id="什么是反弹shell"><a href="#什么是反弹shell" class="headerlink" title="什么是反弹shell"></a>什么是反弹shell</h2><h2 id="为什么要反弹shell"><a href="#为什么要反弹shell" class="headerlink" title="为什么要反弹shell"></a>为什么要反弹shell</h2><h2 id="反弹shell的本质是什么"><a href="#反弹shell的本质是什么" class="headerlink" title="反弹shell的本质是什么"></a>反弹shell的本质是什么</h2><h2 id="常见的反弹shell的语句"><a href="#常见的反弹shell的语句" class="headerlink" title="常见的反弹shell的语句"></a>常见的反弹shell的语句</h2><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2>]]></content>
-      <categories>
-        <category>SHELL</category>
-      </categories>
-      <tags>
-        <tag>Linux</tag>
-        <tag>反弹shell</tag>
-        <tag>原理分析</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SQL注入</title>
-    <url>/2021/08/21/SQL%E6%B3%A8%E5%85%A5/</url>
-    <content><![CDATA[<ul>
-<li>什么是SQL注入</li>
-<li>如何寻找SQL注入漏洞</li>
-<li>如何利用SQL注入漏洞</li>
-<li>如何防御SQL注入漏洞</li>
-</ul>
-<img src="/2021/08/21/SQL%E6%B3%A8%E5%85%A5/sql-injection.png" class="" title="SQL注入概要">
-
-<h2 id="什么是SQL注入"><a href="#什么是SQL注入" class="headerlink" title="什么是SQL注入"></a>什么是SQL注入</h2><blockquote>
-<p>A SQL injection attack consists of insertion or “injection” of a SQL query via the input data from the client to the application.</p>
-</blockquote>
-<p>SQL注入(SQL injection)是因为程序未能正确对用户的输入进行检查，将用户的输入以拼接的方式带入SQL语句中，</p>
-<h2 id="SQL注入的主要危害"><a href="#SQL注入的主要危害" class="headerlink" title="SQL注入的主要危害"></a>SQL注入的主要危害</h2><ul>
-<li>由于SQL数据库通常保存有敏感数据，因此丢失机密性是SQL注入常见的问题</li>
-<li>如果用危险的SQL命令来查询用户名和密码，可能会以其他用户的身份登录到系统，尽管攻击者不知道密码。</li>
-<li>如果授权信息保存在SQL数据库中，则有可能通过利用SQL注入漏洞来更改此信息</li>
-<li>正如可以读取敏感信息一样，也可以通过SQL注入来更改甚至删除这些信息。</li>
-</ul>
-<h2 id="SQL注入的种类"><a href="#SQL注入的种类" class="headerlink" title="SQL注入的种类"></a>SQL注入的种类</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.</span><br><span class="line">├─内联型SQL注入</span><br><span class="line">│  ├─基于ERROR的SQL注入（报错型）</span><br><span class="line">│  └─基于UNION的SQL注入（联合型）</span><br><span class="line">├─SQL盲注</span><br><span class="line">│  ├─基于布尔值的SQL注入（布尔盲注）</span><br><span class="line">│  └─基于时间的SQL注入（时间盲注）</span><br><span class="line">├─带外SQL（Out-Of-Band）</span><br><span class="line">└─基于语音的SQL注入</span><br></pre></td></tr></table></figure>
-
-<ol>
-<li>内联型SQL注入，是最常见和最容易利用的SQL注入。当攻击者能够使用相同的通信通道发起攻击并收集结果的时候，就会发生内联SQL注入。并且向查询注入一些SQL代码之后，原来的查询仍然会<strong>全部执行</strong>。两种最常见的内联SQL注入是，报错型SQL注入和联合型SQL注入</li>
-<li>报错型SQL注入，通过数据库服务器抛出的错误信息来获取有关数据库结构的信息。在某些情况下，仅基于错误的SQL注入就足以让攻击者枚举整个数据库。</li>
-<li>联合型SQL注入，利用 UNION SQL语句将两个或多个 SELECT 语句的结果组合成 单个结果，然后作为HTTP响应的一部分返回。</li>
-<li>SQL盲注，SQL盲注与内联SQL注入不同，攻击者需要更长的时间来利用它。在SQL盲注中，实际上没有数据通过Web应用程序传输，攻击者将无法看到内联攻击的结果（这就是为什么要叫SQL盲注）。然而，攻击者能够通过发送 payload，观察Web应用程序的响应以及数据库服务器的结果来重建数据库结构。SQL盲注的两个种类是，布尔型SQL盲注和基于时间的SQL盲注</li>
-<li>布尔型SQL盲注（也叫基于内容的盲注），向数据库发送SQL查询后强制应用程序返回不同的结果，具体取决于查询结果为 True 或者 False。根据返回的结果，HTTP响应中的内容将发生变化或保持不变。这允许攻击者推断所使用的有效负载是否返回 True 或者 False，即使没有返回数据库中的数据</li>
-<li>时间盲注，向数据库发送SQL查询后，强制数据库在响应之前等待指定的时间。响应时间将向攻击者表明查询的结果是 True 还是 False。根据结果，HTTP响应 将延迟返回或者立即返回。这允许攻击者推断所使用的有效负载是否返回 True 或者 False，即使没有返回数据库中的数据</li>
-<li>带外SQL不是特别常见，它需要依赖于Web应用程序使用的数据库服务器上启用的功能。当攻击者无法使用同一通道发起攻击并收集结果时，会使用到带外SQL注入。带外技术为攻击者提供了一种替代时间盲注的方法，尤其是在服务器响应不是很稳定的情况下（使基于时间的推理攻击不可靠）</li>
-<li>基于语音的SQL注入。可应用于 通过语音命令提供对数据库的访问 的应用程序。攻击者可以通过发送带有声音的SQL查询来从数据库中提取信息。</li>
-</ol>
-<h2 id="SQL注入常用工具"><a href="#SQL注入常用工具" class="headerlink" title="SQL注入常用工具"></a>SQL注入常用工具</h2><ul>
-<li>SQLMap</li>
-</ul>
-<h2 id="SQL注入清单"><a href="#SQL注入清单" class="headerlink" title="SQL注入清单"></a>SQL注入清单</h2><ul>
-<li><a href="https://github.com/payloadbox/sql-injection-payload-list">SQL Injection Payload List</a></li>
-<li><a href="https://github.com/swisskyrepo/PayloadsAllTheThings">Payloads All The Things</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>SQL注入</category>
-      </categories>
-      <tags>
-        <tag>基础漏洞</tag>
-        <tag>基础</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>XSS</title>
-    <url>/2021/09/03/XSS/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>XSS</category>
-      </categories>
-      <tags>
-        <tag>基础漏洞</tag>
-        <tag>基础</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>InCTF 2019 - （PHP + 1, PHP + 1.5 and PHP + 2.5）三道题的复现</title>
     <url>/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/</url>
     <content><![CDATA[<h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h2><p>这篇writeup是关于这次比赛 <code>PHP+1</code>, <code>PHP+1.5</code>和<code>PHP+2.5</code>这三道代码审计题目的。我们可以用同一个payload来解决这三道题目。这三道题的考点是全部相同的: <strong>Bypass the WAF and get a shell</strong></p>
@@ -338,6 +233,111 @@
       </tags>
   </entry>
   <entry>
+    <title>SQL注入</title>
+    <url>/2021/08/21/SQL%E6%B3%A8%E5%85%A5/</url>
+    <content><![CDATA[<ul>
+<li>什么是SQL注入</li>
+<li>如何寻找SQL注入漏洞</li>
+<li>如何利用SQL注入漏洞</li>
+<li>如何防御SQL注入漏洞</li>
+</ul>
+<img src="/2021/08/21/SQL%E6%B3%A8%E5%85%A5/sql-injection.png" class="" title="SQL注入概要">
+
+<h2 id="什么是SQL注入"><a href="#什么是SQL注入" class="headerlink" title="什么是SQL注入"></a>什么是SQL注入</h2><blockquote>
+<p>A SQL injection attack consists of insertion or “injection” of a SQL query via the input data from the client to the application.</p>
+</blockquote>
+<p>SQL注入(SQL injection)是因为程序未能正确对用户的输入进行检查，将用户的输入以拼接的方式带入SQL语句中，</p>
+<h2 id="SQL注入的主要危害"><a href="#SQL注入的主要危害" class="headerlink" title="SQL注入的主要危害"></a>SQL注入的主要危害</h2><ul>
+<li>由于SQL数据库通常保存有敏感数据，因此丢失机密性是SQL注入常见的问题</li>
+<li>如果用危险的SQL命令来查询用户名和密码，可能会以其他用户的身份登录到系统，尽管攻击者不知道密码。</li>
+<li>如果授权信息保存在SQL数据库中，则有可能通过利用SQL注入漏洞来更改此信息</li>
+<li>正如可以读取敏感信息一样，也可以通过SQL注入来更改甚至删除这些信息。</li>
+</ul>
+<h2 id="SQL注入的种类"><a href="#SQL注入的种类" class="headerlink" title="SQL注入的种类"></a>SQL注入的种类</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">.</span><br><span class="line">├─内联型SQL注入</span><br><span class="line">│  ├─基于ERROR的SQL注入（报错型）</span><br><span class="line">│  └─基于UNION的SQL注入（联合型）</span><br><span class="line">├─SQL盲注</span><br><span class="line">│  ├─基于布尔值的SQL注入（布尔盲注）</span><br><span class="line">│  └─基于时间的SQL注入（时间盲注）</span><br><span class="line">├─带外SQL（Out-Of-Band）</span><br><span class="line">└─基于语音的SQL注入</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>内联型SQL注入，是最常见和最容易利用的SQL注入。当攻击者能够使用相同的通信通道发起攻击并收集结果的时候，就会发生内联SQL注入。并且向查询注入一些SQL代码之后，原来的查询仍然会<strong>全部执行</strong>。两种最常见的内联SQL注入是，报错型SQL注入和联合型SQL注入</li>
+<li>报错型SQL注入，通过数据库服务器抛出的错误信息来获取有关数据库结构的信息。在某些情况下，仅基于错误的SQL注入就足以让攻击者枚举整个数据库。</li>
+<li>联合型SQL注入，利用 UNION SQL语句将两个或多个 SELECT 语句的结果组合成 单个结果，然后作为HTTP响应的一部分返回。</li>
+<li>SQL盲注，SQL盲注与内联SQL注入不同，攻击者需要更长的时间来利用它。在SQL盲注中，实际上没有数据通过Web应用程序传输，攻击者将无法看到内联攻击的结果（这就是为什么要叫SQL盲注）。然而，攻击者能够通过发送 payload，观察Web应用程序的响应以及数据库服务器的结果来重建数据库结构。SQL盲注的两个种类是，布尔型SQL盲注和基于时间的SQL盲注</li>
+<li>布尔型SQL盲注（也叫基于内容的盲注），向数据库发送SQL查询后强制应用程序返回不同的结果，具体取决于查询结果为 True 或者 False。根据返回的结果，HTTP响应中的内容将发生变化或保持不变。这允许攻击者推断所使用的有效负载是否返回 True 或者 False，即使没有返回数据库中的数据</li>
+<li>时间盲注，向数据库发送SQL查询后，强制数据库在响应之前等待指定的时间。响应时间将向攻击者表明查询的结果是 True 还是 False。根据结果，HTTP响应 将延迟返回或者立即返回。这允许攻击者推断所使用的有效负载是否返回 True 或者 False，即使没有返回数据库中的数据</li>
+<li>带外SQL不是特别常见，它需要依赖于Web应用程序使用的数据库服务器上启用的功能。当攻击者无法使用同一通道发起攻击并收集结果时，会使用到带外SQL注入。带外技术为攻击者提供了一种替代时间盲注的方法，尤其是在服务器响应不是很稳定的情况下（使基于时间的推理攻击不可靠）</li>
+<li>基于语音的SQL注入。可应用于 通过语音命令提供对数据库的访问 的应用程序。攻击者可以通过发送带有声音的SQL查询来从数据库中提取信息。</li>
+</ol>
+<h2 id="SQL注入常用工具"><a href="#SQL注入常用工具" class="headerlink" title="SQL注入常用工具"></a>SQL注入常用工具</h2><ul>
+<li>SQLMap</li>
+</ul>
+<h2 id="SQL注入清单"><a href="#SQL注入清单" class="headerlink" title="SQL注入清单"></a>SQL注入清单</h2><ul>
+<li><a href="https://github.com/payloadbox/sql-injection-payload-list">SQL Injection Payload List</a></li>
+<li><a href="https://github.com/swisskyrepo/PayloadsAllTheThings">Payloads All The Things</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>SQL注入</category>
+      </categories>
+      <tags>
+        <tag>基础漏洞</tag>
+        <tag>基础</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux下常见的几种反弹shell</title>
+    <url>/2021/08/31/Linux%E4%B8%8B%E5%B8%B8%E8%A7%81%E7%9A%84%E5%87%A0%E7%A7%8D%E5%8F%8D%E5%BC%B9shell/</url>
+    <content><![CDATA[<h2 id="文件描述符"><a href="#文件描述符" class="headerlink" title="文件描述符"></a>文件描述符</h2><blockquote>
+<p><strong>linux文件描述符</strong>：可以理解为Linux跟踪打开文件时，分配的一个数字，这个数字有点类似于C语言操作文件时候的句柄，通过句柄就可以实现文件的读写操作。</p>
+</blockquote>
+<p>当linux启动的时候会默认打开三个文件描述符，分别是：</p>
+<ol>
+<li>标准输入： <code>standard input 0</code> (默认设备键盘)</li>
+<li>标准输出： <code>standard output 1</code> (默认设备显示器)</li>
+<li>错误输出： <code>error output 2</code> (默认设备显示器)</li>
+</ol>
+<p>stdin 0 –&gt; /dev/tty0<br>stdout 1 –&gt; /dev/tty0<br>stderr 2 –&gt; /dev/tty0</p>
+<p>注意：</p>
+<ol>
+<li>以后再打开文件，描述符可以依次增加</li>
+<li>每一条shell命令，都会继承其父进程的文件描述符，因此所有的shell命令，都会默认有三个文件描述符。</li>
+</ol>
+<p><strong>文件所有输入输出都是由该进程所有打开的文件描述符控制的。（Linux一切皆文件，就连键盘显示器设备都是文件，因此他们的输入输出也是由文件描述符控制）</strong></p>
+<p>一条命令执行以前，先会按照默认的情况进行绑定（也就是上面所说的 0，1，2），如果我们有时候需要让输出不显示在显示器上，而是输出到文件或者其他设备，那我们就需要重定向。</p>
+<h2 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h2><p>重定向主要分为两种（其他复杂的情况都是由这两种情况衍生出来的）</p>
+<ol>
+<li>输入重定向 <code>&lt; &lt;&lt;</code></li>
+<li>输出重定向 <code>&gt; &gt;&gt;</code></li>
+</ol>
+<p>重点：</p>
+<ol>
+<li>bash在执行一条指令的时候，首先会检查命令中存不存在重定向的符号，如果存在，那么首先将文件描述符重定向（之前说过，输入输出操作都是依赖文件描述符实现的，重定向输入输出本质上就是重定向文件描述符），然后再把重定向去掉，执行指令</li>
+<li>如果指令中存在多个重定向，那么不要随便改变顺序，因为重定向是 <strong>从左向右</strong> 解析的，如果改变顺序，可能会带来完全不同的结果（这一点我们后面会展示）</li>
+<li><code>&lt;</code> 是对标准输入 0 重定向，<code>&gt;</code> 是对标准输出 1 重定向</li>
+<li><strong>再强调一下，重定向就是针对文件描述符的操作</strong></li>
+</ol>
+<h3 id="1-输入重定向"><a href="#1-输入重定向" class="headerlink" title="1. 输入重定向"></a>1. 输入重定向</h3><p>格式： <code>[n]&lt; word</code> <strong>(注意 [n] 与 &lt; 之间是没有空格的)</strong></p>
+<p>说明：将文件描述符 n 重定向到 word 指代的文件（以只读方式打开），<strong>如果 n 省略就是0</strong>（标准输入）</p>
+<h2 id="什么是反弹shell"><a href="#什么是反弹shell" class="headerlink" title="什么是反弹shell"></a>什么是反弹shell</h2><h2 id="为什么要反弹shell"><a href="#为什么要反弹shell" class="headerlink" title="为什么要反弹shell"></a>为什么要反弹shell</h2><h2 id="反弹shell的本质是什么"><a href="#反弹shell的本质是什么" class="headerlink" title="反弹shell的本质是什么"></a>反弹shell的本质是什么</h2><h2 id="常见的反弹shell的语句"><a href="#常见的反弹shell的语句" class="headerlink" title="常见的反弹shell的语句"></a>常见的反弹shell的语句</h2><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2>]]></content>
+      <categories>
+        <category>SHELL</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+        <tag>反弹shell</tag>
+        <tag>原理分析</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>XSS</title>
+    <url>/2021/09/03/XSS/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>XSS</category>
+      </categories>
+      <tags>
+        <tag>基础漏洞</tag>
+        <tag>基础</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hello World</title>
     <url>/2023/09/19/hello-world/</url>
     <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
@@ -389,6 +389,18 @@
 ]]></content>
   </entry>
   <entry>
+    <title>redis未授权</title>
+    <url>/2021/09/12/redis%E6%9C%AA%E6%8E%88%E6%9D%83/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>redis</category>
+      </categories>
+      <tags>
+        <tag>反弹shell</tag>
+        <tag>原理分析</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>keep面试总结</title>
     <url>/2021/10/16/keep%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<h2 id="1-您先简单的做一下自我介绍好了"><a href="#1-您先简单的做一下自我介绍好了" class="headerlink" title="1. 您先简单的做一下自我介绍好了"></a>1. 您先简单的做一下自我介绍好了</h2><p>我: 我是来自成都信息工程大学的信息安全专业, 曾经打过一些CTF比赛, 做过一些简单的漏洞挖掘.<br>面试官: 你可以介绍一下你的一些在校的一些比赛参加过的一些比赛还有一些擅长的挖掘漏洞吗<br>我: 我在学校CTF比赛主要负责web方向, 主要的研究方向也是web层面的漏洞, 然后在edu-src上面提交过一个存储型的xss还有一个逻辑漏洞, 获得过一些奖项的话就是一些公司的比赛, 还有一个国家级的CTF比赛. </p>
@@ -430,18 +442,6 @@
       <tags>
         <tag>记录</tag>
         <tag>面试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>redis未授权</title>
-    <url>/2021/09/12/redis%E6%9C%AA%E6%8E%88%E6%9D%83/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>redis</category>
-      </categories>
-      <tags>
-        <tag>反弹shell</tag>
-        <tag>原理分析</tag>
       </tags>
   </entry>
   <entry>
@@ -704,6 +704,23 @@
       </tags>
   </entry>
   <entry>
+    <title>机器学习入门</title>
+    <url>/2021/11/17/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8/</url>
+    <content><![CDATA[<h2 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h2><h3 id="基本术语"><a href="#基本术语" class="headerlink" title="基本术语"></a>基本术语</h3><p>数据集(data set): 所有数据的集合<br>示例(instance) 或 样本(sample): 关于一个事件或对象的描述. (可以把一个示例称为一个“特征向量”(feature vector))<br>属性(attribute) 或 特征(feature): 反映事件或对象在某方面的表现或性质的事项<br>属性值(attribute value): 属性上的取值<br>属性空间(attribute space), 样本空间(sample space) 或 输入空间: 属性张成的空间</p>
+<p>维数(dimensionality): 每个示例的属性数量</p>
+<p>学习(learning) 或 训练(training): 从数据中学得模型的过程</p>
+<p>训练数据(training data): 训练过程中使用的数据<br>训练样本(training sample): 训练过程中的每个样本<br>训练集(training set): 训练样本组成的集合</p>
+<p>监督学习(supervised learning): 分类(ckassification) 和 回归(regression) 属于监督学习<br>无监督学习(unsupervised learning): 聚类(clustering) 属于无监督学习</p>
+<h3 id="假设空间"><a href="#假设空间" class="headerlink" title="假设空间"></a>假设空间</h3><h3 id="归纳偏好"><a href="#归纳偏好" class="headerlink" title="归纳偏好"></a>归纳偏好</h3><h2 id="模型评估与选择"><a href="#模型评估与选择" class="headerlink" title="模型评估与选择"></a>模型评估与选择</h2><h3 id="经验误差与过拟合"><a href="#经验误差与过拟合" class="headerlink" title="经验误差与过拟合"></a>经验误差与过拟合</h3><h3 id="评估方法"><a href="#评估方法" class="headerlink" title="评估方法"></a>评估方法</h3><h3 id="比较检验"><a href="#比较检验" class="headerlink" title="比较检验"></a>比较检验</h3><h3 id="偏差与方差"><a href="#偏差与方差" class="headerlink" title="偏差与方差"></a>偏差与方差</h3>]]></content>
+      <categories>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>基础</tag>
+        <tag>入门</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>盛趣游戏面试总结</title>
     <url>/2021/10/16/%E7%9B%9B%E8%B6%A3%E6%B8%B8%E6%88%8F%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/</url>
     <content><![CDATA[<h2 id="1-先请你简单介绍一下你相关的实习经历或者项目经历"><a href="#1-先请你简单介绍一下你相关的实习经历或者项目经历" class="headerlink" title="1. 先请你简单介绍一下你相关的实习经历或者项目经历"></a>1. 先请你简单介绍一下你相关的实习经历或者项目经历</h2><p>我: 我在学校做得比较多的是参加CTF比赛, 大三的时候去挖过一些edu-src, 就是做一些实战挖掘. 然后在CTF比赛方面的话也参加过一些线下赛, 线下赛就是AWD形式的模拟实战环境的一种, 很多个小队互相攻击的那种形式, 还跟着老师去外面给一些政务部门做一些渗透测试, 内网的一些安全评估, 这是一些我在学校的主要经历. 然后还给先知社区发过两篇文章, 一篇是记录CTF方面的相关知识点, 还有一篇是在挖掘edu-src的时候, 所记录下的一些比较有趣的漏洞</p>
@@ -739,163 +756,6 @@
       <tags>
         <tag>记录</tag>
         <tag>面试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>微步在线二面总结</title>
-    <url>/2021/10/19/%E5%BE%AE%E6%AD%A5%E5%9C%A8%E7%BA%BF%E4%BA%8C%E9%9D%A2%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<h2 id="1-我看你参加过很多比赛-你在里面是作为主力成员-还是说是辅助的"><a href="#1-我看你参加过很多比赛-你在里面是作为主力成员-还是说是辅助的" class="headerlink" title="1. 我看你参加过很多比赛, 你在里面是作为主力成员, 还是说是辅助的"></a>1. 我看你参加过很多比赛, 你在里面是作为主力成员, 还是说是辅助的</h2><p>我: 我更多的是辅助的一个位置, 就在web题是辅助, misc题目的话是主力. </p>
-<h2 id="2-好-那我问点基础-HTTP的请求方法有哪些啊"><a href="#2-好-那我问点基础-HTTP的请求方法有哪些啊" class="headerlink" title="2. 好, 那我问点基础, HTTP的请求方法有哪些啊"></a>2. 好, 那我问点基础, HTTP的请求方法有哪些啊</h2><p>我: GET, POST, PUT, 这些, 还有一些不太常用的, 最主要就是GET和POST两种方法</p>
-<h2 id="3-在没回显的情况下的代码执行-我怎么判断他是不是成功呢-有哪些方法"><a href="#3-在没回显的情况下的代码执行-我怎么判断他是不是成功呢-有哪些方法" class="headerlink" title="3. 在没回显的情况下的代码执行, 我怎么判断他是不是成功呢, 有哪些方法"></a>3. 在没回显的情况下的代码执行, 我怎么判断他是不是成功呢, 有哪些方法</h2><p>我: 可以先, 就代码执行先外带到自己服务器上面去, 去执行一段代码比如说像 ping 自己的服务器, 看ping能不能收到, 如果能收到的话, 就说明代码执行成功了. 然后的话就是, 最主要的就是这个方法了吧, 把请求给外带出来<br>面试官: 那如果不能外联呢, 就是那台机器不能外联外部网络, 什么UDP, DNS, ping都不行<br>我: 那代码执行执行一个需要服务器花很多资源的一个操作, 然后去看web网站有没有延迟就有没有类似于mysql的sleep()那种操作<br>面试官: 这种web服务器一般都是异步的, 就是比如说那个响应他直接给你响应了<br>我: 哦…<br>面试官: 而且那个延时, 你可能也看不出来啊, 他并不是TCP一直转的, 都是直接给你响应了, 还有别的方式吗<br>我: 我没有其他方式了</p>
-<h2 id="4-redis未授权漏洞有哪一些利用方式啊"><a href="#4-redis未授权漏洞有哪一些利用方式啊" class="headerlink" title="4. redis未授权漏洞有哪一些利用方式啊"></a>4. redis未授权漏洞有哪一些利用方式啊</h2><p>我: 通过写入 <code>ssh_key</code> 进行一个远程的SSH连接, 还有一个就是… 去更改他的config去修改用户的密码, 可以登录上去, 最主要还是ssh_key的写入, 然后远程的SSH连接. </p>
-<p>面试官: 那如果他里面没有开SSH服务呢, 或者说他, 有几种情况, 第一种是开在比较奇怪的端口, 第二种是他内部不允许ssh_key登录, 怎么解决哦<br>我: 我没有更好的办法, 就我遇到这种情况一般就直接放弃了, 这种情况.</p>
-<h2 id="5-服务端有哪一些缺陷-可能会导致存在文件上传漏洞啊"><a href="#5-服务端有哪一些缺陷-可能会导致存在文件上传漏洞啊" class="headerlink" title="5. 服务端有哪一些缺陷, 可能会导致存在文件上传漏洞啊"></a>5. 服务端有哪一些缺陷, 可能会导致存在文件上传漏洞啊</h2><p>我: 首先是服务端的话, 没有做那个权限的限制, 就上传的目录文件里面, 上传进去的文件有执行权限. 可能会导致文件上传漏洞, 然后没有做文件类型的检测, 也可能会导致文件上传漏洞.</p>
-<p>面试官: 你刚刚说是什么文件有执行权限, 那个是什么来着, 没听清<br>我: 就是文件上传的目录下面, 这个目录的文件有执行权限, 就可能导致文件上传漏洞, 就服务器端的话<br>面试官: 这个为什么算作文件上传漏洞<br>我: 因为如果你文件上传上来, 没有执行权限的话, 他上传上来就是, 就不能算一个漏洞吧, 就只是一个正常的上传功能, 他前提是这个目录有执行权限, 你传上来的文件能够执行, 才能算一个文件上传的漏洞<br>面试官: 目录有执行权限? 那文件没执行权限, 难道就不能执行了吗, 就是你 1.php 你不给他执行权限, 那个apache他就不会解析了吗?<br>我: 你要配置这个目录下面的所有文件不能解析, 不能执行, 就是就限制这个目录下面就所有文件的解析这个功能</p>
-<h2 id="6-SSRF漏洞是什么"><a href="#6-SSRF漏洞是什么" class="headerlink" title="6. SSRF漏洞是什么"></a>6. SSRF漏洞是什么</h2><p>我: 是服务器端的请求伪造, 通常是用来利用SSRF漏洞来访问内网的一些资源<br>面试官: 怎么访问啊, 有哪些方式哦<br>我: 比如说他有一个URL跳转, 有一个302的跳转, 他那个URL上面会有一个链接地址, 把那个链接地址改成内网的地址, 如果存在SSRF漏洞的话就可能会访问到内网的资源</p>
-<p>面试官: 如果有redis的话, 有个redis服务器. 能用SSRF漏洞来进行利用吗?<br>我: 我觉得是可以的, 但是我没有去研究过</p>
-<p>面试官: 那如果有个FTP有弱口令呢, 能用SSRF登录吗<br>我: 可以, 如果有FTP的弱口令的话</p>
-<h2 id="7-同源策略知道是什么吗"><a href="#7-同源策略知道是什么吗" class="headerlink" title="7. 同源策略知道是什么吗"></a>7. 同源策略知道是什么吗</h2><p>我: 知道, 就是限制在相同源下面的资源之间才能互相访问, 而不同源之间不能进行那些资源之间的调用的<br>面试官: 那跨域的话都有哪一些方式, 以及为什么能够实现跨域<br>我: 跨域的话首先是写那个跨域文件的配置, crossdomain.xml 去允许某些域的访问, 这是第一种方式, 第二种方式就是在html里面在json里面好像也可以加那个允许某个域访问的代码. </p>
-<h2 id="8-登录后台的时候经常要输入验证码-服务端有哪些缺陷可以导致这个验证码失效或者被绕过"><a href="#8-登录后台的时候经常要输入验证码-服务端有哪些缺陷可以导致这个验证码失效或者被绕过" class="headerlink" title="8. 登录后台的时候经常要输入验证码, 服务端有哪些缺陷可以导致这个验证码失效或者被绕过"></a>8. 登录后台的时候经常要输入验证码, 服务端有哪些缺陷可以导致这个验证码失效或者被绕过</h2><p>我: 首先是如果验证码没有刷新的话就可被爆破去获取到验证码, 还有一种是… 我就知道这一个, 服务器端没有及时更新验证码的话会导致验证码被爆破. </p>
-<h2 id="9-知道java反序列化漏洞是什么原理吗"><a href="#9-知道java反序列化漏洞是什么原理吗" class="headerlink" title="9. 知道java反序列化漏洞是什么原理吗"></a>9. 知道java反序列化漏洞是什么原理吗</h2><p>我: 没了解过, 最近才开始学这个</p>
-<h2 id="10-linux下有哪些安装软件的方式"><a href="#10-linux下有哪些安装软件的方式" class="headerlink" title="10. linux下有哪些安装软件的方式"></a>10. linux下有哪些安装软件的方式</h2><p>我: <code>apt</code>, <code>apt-get</code>, 还有就是直接把软件源码给拷贝到linux下面直接安装, 然后启docker, 大概就是这些方式</p>
-<h2 id="11-知道文件上传-比如你上传一个webshell的时候里面流量是什么样子的吗-看过吗"><a href="#11-知道文件上传-比如你上传一个webshell的时候里面流量是什么样子的吗-看过吗" class="headerlink" title="11. 知道文件上传, 比如你上传一个webshell的时候里面流量是什么样子的吗, 看过吗?"></a>11. 知道文件上传, 比如你上传一个webshell的时候里面流量是什么样子的吗, 看过吗?</h2><p>我: 我上传一个webshell的话, 他那个请求的头一般是POST请求嘛, POST的主体就是webshell的内容但这个主体是在burpsuit里面抓包看到的, 我不知道是不是跟那个就我们需要的包是不是一样的, burpsuit里面抓到的就是, 你上传的webshell的内容, 然后就是这样…<br>面试官: 有什么文件名吗, 这种东西有吗, 文件大小之类的, 这种东西有吗<br>我: 有文件大小, 文件名的话一般也会有, 有文件名还有文件的大小<br>面试官: 有什么特定应的头吗, 还是都是POST数据里面啊<br>我: 我没有注意过他们有没有特殊的头, 从来没有注意过这个</p>
-<p>面试官: 用过webshell吗<br>我: 用过一些简单的一句话木马<br>面试官: webshell得有什么什么结构才能称作一个webshell, 或者说什么, 有哪些功能才能算webshell<br>我: 首先第一个是你上传的这个webshell, 他一定是一段完整的代码, 就是他一定能够执行, 他一定要能够进行命令操作的功能才能算是一个webshell. 或者说能够反弹一个shell回来, 一个bash反弹shell过来, 也能算一个webshell吧…</p>
-<h2 id="12-有代码审计经验-能够写什么代码吗"><a href="#12-有代码审计经验-能够写什么代码吗" class="headerlink" title="12. 有代码审计经验? 能够写什么代码吗"></a>12. 有代码审计经验? 能够写什么代码吗</h2><p>我: 能写一点python跟php的代码, 写一点简单的. 然后java的代码审计, 还有java的基础也是最近才刚开始学</p>
-<h2 id="13-你说那个misc都是哪些类型啊-隐写术吗"><a href="#13-你说那个misc都是哪些类型啊-隐写术吗" class="headerlink" title="13. 你说那个misc都是哪些类型啊, 隐写术吗?"></a>13. 你说那个misc都是哪些类型啊, 隐写术吗?</h2><p>我: 音频分析, 流量分析之类的<br>面试官: 流量分析? 叫你连接菜刀的一句话, 有看过他的流量吗, 有什么流量特征吗<br>我: 有看过, 菜刀的流量, 我看的那个版本他是直接通过base64加密的流量, 解密之后就是php的代码, 然后通过php的socket协议去连接的吧, 之前那个版本. </p>
-<p>面试官: 如果想去让你检测webshell的话, 在流量里面有什么思路吗, 检测webshell. 或者他的交互, 该怎么去做<br>我: 直接去检测他那个命令执行的函数, 就webshell里面一般会有传入的参数, POST, GET之类的, 去检测这些关键字, 流量里面. 还有就是检测匹配webshell的特征吧, 就一般大概常用的webshell都长得差不多, 就去匹配他的特征<br>面试官: 什么特征哦?<br>我: 比如说像是php一句话木马, 一个 <code>&lt;?php @eval($_POST[&#39;lamber&#39;];?&gt;</code> 的操作, 这种. 直接去匹配这个eval函数, 就去看流量里面有没有出现这个, 或者他各种变形去加解密这种. </p>
-<p>面试官: 像你做隐写术, 图片的隐写都有哪一些类型啊, 以及怎么去把这些隐写给他弄出来啊<br>我: 最常见的就是LSB隐写, 去改图片的标志位, 去把他的数据恢复出来, 然后还有就是几张图片拼接, 然后把那个他拼接的部分提取出来, 也是一种新的一段数据, 常见的就是这两种, 还有就是用binwalk去进行, 去对文件里面的数据有没有特殊的文件头去进行一个分离. 一般就是这些</p>
-<h2 id="14-HTTP响应5开头的知道是什么意思吗"><a href="#14-HTTP响应5开头的知道是什么意思吗" class="headerlink" title="14. HTTP响应5开头的知道是什么意思吗"></a>14. HTTP响应5开头的知道是什么意思吗</h2><p>我: 服务器内部异常<br>面试官: 那404呢<br>我: 未找到页面<br>面试官: 那403呢<br>我: 403也是类似的吧, 就客户端的资源处理异常<br>面试官: 客户端资源处理异常? 客户端是你浏览器吗<br>我: 是浏览器的资源出现异常<br>面试官: 100知道是什么意思吗<br>我: 100没有怎么见过…<br>面试官: 302呢<br>我: 302跳转, 跳转到另一个的url里面</p>
-<h2 id="15-代码审计经验-php执行代码都有哪些函数"><a href="#15-代码审计经验-php执行代码都有哪些函数" class="headerlink" title="15. 代码审计经验? php执行代码都有哪些函数"></a>15. 代码审计经验? php执行代码都有哪些函数</h2><p>我: 像 <code>system(), proc_open(), popen()</code> 这些…</p>
-<h2 id="16-你了解这个安全研究员是做什么的吗"><a href="#16-你了解这个安全研究员是做什么的吗" class="headerlink" title="16. 你了解这个安全研究员是做什么的吗"></a>16. 你了解这个安全研究员是做什么的吗</h2><p>我: 了解过一些, 就主要做威胁情报检测, 去做流量分析之类的<br>面试官: </p>
-<h2 id="17-burpsuit怎么去抓安卓手机的包"><a href="#17-burpsuit怎么去抓安卓手机的包" class="headerlink" title="17. burpsuit怎么去抓安卓手机的包"></a>17. burpsuit怎么去抓安卓手机的包</h2><p>我: 安卓手机上面有一个应用吧, 然后可以生成一个手机的一个证书, 然后在同一个局域下面, 在burpsuit上面导入这个证书, 这之后, 可以去抓到手机端的流量. 但是我没有抓成功过, 我不知道是用的那个软件的问题, 还是什么其他的原因<br>面试官: 你可以抓微信之外的普通的应用看一下<br>我: 能抓到浏览器的包, 正常浏览器的包好像能抓到. 但是应用的包就不太好抓, 很杂乱.</p>
-<h2 id="18-对于溢出那些有了解吗-比如栈溢出"><a href="#18-对于溢出那些有了解吗-比如栈溢出" class="headerlink" title="18. 对于溢出那些有了解吗, 比如栈溢出"></a>18. 对于溢出那些有了解吗, 比如栈溢出</h2><p>我: 没有了解过, 二进制方面没有怎么了解过</p>
-<h2 id="19-linux里面查看SSH登录记录有哪些方式"><a href="#19-linux里面查看SSH登录记录有哪些方式" class="headerlink" title="19. linux里面查看SSH登录记录有哪些方式"></a>19. linux里面查看SSH登录记录有哪些方式</h2><p>我: 直接去查看日志文件吧, 其他方式就不知道了</p>
-<h2 id="20-你平常学习东西的话一般通过什么平台怎么学啊-主要是学web吗-有什么学习计划吗"><a href="#20-你平常学习东西的话一般通过什么平台怎么学啊-主要是学web吗-有什么学习计划吗" class="headerlink" title="20. 你平常学习东西的话一般通过什么平台怎么学啊, 主要是学web吗, 有什么学习计划吗"></a>20. 你平常学习东西的话一般通过什么平台怎么学啊, 主要是学web吗, 有什么学习计划吗</h2><p>我: 我的学习计划是, 目前是先把java层面的代码审计学完, 做一些漏洞分析, 分析漏洞的底层原理. 然后去写流量检测, 去检测这些漏洞的特征, 目前是这样一个学习规划. 然后学习的途径的话, 一般是从各种社区, 以及google上面找文章, 然后就是去问一些前辈们的学习的问题吧, 各种途径就是这样.</p>
-<h2 id="21-再问几个基础啊-比如说XSS-我们在测试XSS漏洞的时候-我们都用了什么来闭合原有的符号啊"><a href="#21-再问几个基础啊-比如说XSS-我们在测试XSS漏洞的时候-我们都用了什么来闭合原有的符号啊" class="headerlink" title="21. 再问几个基础啊, 比如说XSS, 我们在测试XSS漏洞的时候, 我们都用了什么来闭合原有的符号啊"></a>21. 再问几个基础啊, 比如说XSS, 我们在测试XSS漏洞的时候, 我们都用了什么来闭合原有的符号啊</h2><p>我: 要闭合原有的符号的话, 跟前面的XSS语句进行匹配上就可以了, 前面是括号的话就用括号闭合, 前面有双引号的话就用双引号来闭合, 这种<br>面试官: 单纯加双引号, 那有没有别的方式, 有可能你加一个双引号, 闭合不了, 代码就错了. 你正常加一个单引号, 或一个双引号. 这种很大概率报错, 理解我说的吗<br>我: 能理解, 其他闭合方式我就没有怎么了解过.</p>
-<h2 id="22-实践经历怎么样-就是说你在实际渗透的时候-比如说一台机器-就一个网站他用了CDN-我们有哪一些方法去找它真实IP"><a href="#22-实践经历怎么样-就是说你在实际渗透的时候-比如说一台机器-就一个网站他用了CDN-我们有哪一些方法去找它真实IP" class="headerlink" title="22. 实践经历怎么样, 就是说你在实际渗透的时候, 比如说一台机器, 就一个网站他用了CDN, 我们有哪一些方法去找它真实IP"></a>22. 实践经历怎么样, 就是说你在实际渗透的时候, 比如说一台机器, 就一个网站他用了CDN, 我们有哪一些方法去找它真实IP</h2><p>我: 找它真实IP首先是, 去一些网站上面可以直接查一些他的真实IP的一些网站. 然后可以通过像是fofa之类的去查他的历史解析IP地址或者是从网站的子域名查他的IP地址, 可能他主站用了CDN但是他子站没有用, 大概就是这些方法吧</p>
-<h2 id="23-然后你在先知发的两篇文章是什么文章啊"><a href="#23-然后你在先知发的两篇文章是什么文章啊" class="headerlink" title="23. 然后你在先知发的两篇文章是什么文章啊"></a>23. 然后你在先知发的两篇文章是什么文章啊</h2><p>我: 一篇漏洞挖掘的, 一篇CTF的复现. </p>
-<h2 id="24-有了解过linux下什么后门吗-或使用过什么后门-代理啊之类的"><a href="#24-有了解过linux下什么后门吗-或使用过什么后门-代理啊之类的" class="headerlink" title="24. 有了解过linux下什么后门吗, 或使用过什么后门, 代理啊之类的"></a>24. 有了解过linux下什么后门吗, 或使用过什么后门, 代理啊之类的</h2><p>我: 后门这个没有了解过, 我只知道webshell, 然后后面没有了解过. 我见过一种可以写到进程里面的木马, 不是很清楚那个算不算后门, 我觉得更像是webshell一点</p>
-<h2 id="25-你大概说一下你开头说的那篇渗透的文章吧"><a href="#25-你大概说一下你开头说的那篇渗透的文章吧" class="headerlink" title="25. 你大概说一下你开头说的那篇渗透的文章吧"></a>25. 你大概说一下你开头说的那篇渗透的文章吧</h2><p>我: 记录了之前挖edu-src的一个过程, 首先从信息收集上面收集域名的信息, 以及它的子站, 以及它的功能点, 然后进行一个测试, 当时是挖到一个存储型XSS, 在一个发布项目的一个界面, 那个地方打入XSS之后, 把项目提交上去, 审核员可以触发那个存储型的XSS, 还有一个地方在登录的界面, 修改密码的功能, 他的修改密码的数据包是明文传输的数据, 直接将验证码发送的手机号在数据包里面显示出来了, 可以更改这个手机号改为自己手机号, 然后这个验证码就会发到自己的手机上面. 接收到这个验证码之后就可以去更改任意用户的一个用户密码, 当时挖掘就这一个站挖到这两个漏洞</p>
-<p>面试官: 挖掘过程有什么亮点吗, 比如说就是别人都想不到的, 有什么区别点吗<br>我: 亮点的话我觉得就是这个, 逻辑漏洞的挖掘吧. 可能其他人都不会注意到这个地方<br>面试官: 什么逻辑漏洞啊?<br>我: 就是, 更改他发送验证码的手机号. 然后这个验证码就会发到目标手机上面去, 这个地方算他逻辑上面设计的缺陷吧, 他没有做那个发送验证码的手机号的验证, 然后导致了, 这个验证码可以发到随便任意一个手机上面去</p>
-<h2 id="26-那我这边就了解的差不多了-你有什么要了解的吗"><a href="#26-那我这边就了解的差不多了-你有什么要了解的吗" class="headerlink" title="26. 那我这边就了解的差不多了, 你有什么要了解的吗"></a>26. 那我这边就了解的差不多了, 你有什么要了解的吗</h2><p>我: 我想问一下就是, 我搞web方面的话, 我如果要接触二进制, 从哪个方向入手会好一点, 从哪里开始学会好一点</p>
-<p>面试官: 当然你问的是一个问题哈, 那我先从另外一个方面回答一下, 你自己觉得自己想要具备怎样的知识结构, 或者说想要做怎样的工作, 这个有想过吗<br>我: 我最想做的还是, 首先是分析攻击进来的漏洞, 或者说攻击进来的流量, 去分析他们是怎么打进来的, 去学习他们的攻击方式然后再打出去, 然后很多地方可能会涉及到内存马呀二进制方面的东西, 这些地方可能会我自己就看不懂, 我自己的想法是我要去能看懂他们能分析的明白他们, 就这方面, 就我遇到什么漏洞我都想要去把他分析清楚</p>
-<p>面试官: 这个问题你先想想, 你连web都熟悉度其实还不怎么够, 连java反序列化漏洞什么原理都不知道, 那个二进制难度其实是更大的, 就实际的过程中, 简单的比如栈溢出, 但现在一般都是比较复杂的这种, 什么堆, 堆更加复杂, 然后那个二进制的利用过程也很复杂, 这个是十六进制的, 他并不一定是你看得到的web程序, 得对底层一些汇编也有了解. 你得学基本的汇编你才知道他的利用过程. 还有基本的pwn吧, pwn, 你才能知道别人是怎么利用的漏洞. 建议你还是先把web好好学一下<br>我: 先把web先打好嘛, 就是我想有多余的精力的情况下去了解一下二进制这边的东西</p>
-<p>面试官: 了解一下就简单了, 直接搜漏洞类型, 什么原理, 怎么利用, 没多复杂. 主要是你得深入有实践这种才行. 只是大概听过这个, 估计不太行. 如果只是听过的话. 当然前提还是就大概了解就行, 实际上这个工作的时候并不一定用到.<br>我: 工作遇到最多的其实还是各种web层面的漏洞对吧.<br>面试官: 是的, 最主要还是看你的能力, 因为很多是比较复杂的系统, Java相关的有什么Tomcat, JBoss, Weblogic一些企业级应用, 还有一些什么别的应用, 这种的话可能对于漏洞的复现, 一些原理的了解啊<br>我: 因为我最近的话, 我最近的学习的方向就是学java的代码审计. 就是比如说学到一个Java层面的漏洞之后, 环境的搭建是怎么搭可能会比较好一点, 因为可能就本身的文章只会给你一个代码片段, 但不会给你一个完整的环境<br>面试官: 这个肯定是等你多搭了就知道怎么搭了, 如果你连一个Java程序都不知道怎么跑起来, 你还分析什么Java漏洞啊<br>我: 嗯…好的, 那我就先学一些Java开发之类的东西对吧<br>面试官: 也不是说开发, 而是基本的项目部署, 你得知道他是怎么部署的<br>我: 明白了明白了</p>
-]]></content>
-      <categories>
-        <category>求职</category>
-      </categories>
-      <tags>
-        <tag>记录</tag>
-        <tag>面试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>机器学习入门</title>
-    <url>/2021/11/17/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8/</url>
-    <content><![CDATA[<h2 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h2><h3 id="基本术语"><a href="#基本术语" class="headerlink" title="基本术语"></a>基本术语</h3><p>数据集(data set): 所有数据的集合<br>示例(instance) 或 样本(sample): 关于一个事件或对象的描述. (可以把一个示例称为一个“特征向量”(feature vector))<br>属性(attribute) 或 特征(feature): 反映事件或对象在某方面的表现或性质的事项<br>属性值(attribute value): 属性上的取值<br>属性空间(attribute space), 样本空间(sample space) 或 输入空间: 属性张成的空间</p>
-<p>维数(dimensionality): 每个示例的属性数量</p>
-<p>学习(learning) 或 训练(training): 从数据中学得模型的过程</p>
-<p>训练数据(training data): 训练过程中使用的数据<br>训练样本(training sample): 训练过程中的每个样本<br>训练集(training set): 训练样本组成的集合</p>
-<p>监督学习(supervised learning): 分类(ckassification) 和 回归(regression) 属于监督学习<br>无监督学习(unsupervised learning): 聚类(clustering) 属于无监督学习</p>
-<h3 id="假设空间"><a href="#假设空间" class="headerlink" title="假设空间"></a>假设空间</h3><h3 id="归纳偏好"><a href="#归纳偏好" class="headerlink" title="归纳偏好"></a>归纳偏好</h3><h2 id="模型评估与选择"><a href="#模型评估与选择" class="headerlink" title="模型评估与选择"></a>模型评估与选择</h2><h3 id="经验误差与过拟合"><a href="#经验误差与过拟合" class="headerlink" title="经验误差与过拟合"></a>经验误差与过拟合</h3><h3 id="评估方法"><a href="#评估方法" class="headerlink" title="评估方法"></a>评估方法</h3><h3 id="比较检验"><a href="#比较检验" class="headerlink" title="比较检验"></a>比较检验</h3><h3 id="偏差与方差"><a href="#偏差与方差" class="headerlink" title="偏差与方差"></a>偏差与方差</h3>]]></content>
-      <categories>
-        <category>机器学习</category>
-      </categories>
-      <tags>
-        <tag>基础</tag>
-        <tag>入门</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>绕过CDN寻找网站真实IP</title>
-    <url>/2021/09/17/%E7%BB%95%E8%BF%87CDN%E5%AF%BB%E6%89%BE%E7%BD%91%E7%AB%99%E7%9C%9F%E5%AE%9EIP/</url>
-    <content><![CDATA[<h2 id="一-什么是CDN-为什么要绕过CDN"><a href="#一-什么是CDN-为什么要绕过CDN" class="headerlink" title="一. 什么是CDN, 为什么要绕过CDN"></a>一. 什么是CDN, 为什么要绕过CDN</h2><h3 id="什么是CDN以及CDN加速"><a href="#什么是CDN以及CDN加速" class="headerlink" title="什么是CDN以及CDN加速?"></a>什么是CDN以及CDN加速?</h3><p>CDN全称是(Content Delivery Network), 即内容分发网络. CDN是构建在现有网络基础之上的智能虚拟网络，依靠部署在各地的边缘服务器，通过中心平台的负载均衡、内容分发、调度等功能模块，使用户就近获取所需内容，降低网络拥塞，提高用户访问响应速度和命中率。CDN的关键技术主要有内容存储和分发技术。</p>
-<h3 id="CDN对网站有什么好处"><a href="#CDN对网站有什么好处" class="headerlink" title="CDN对网站有什么好处?"></a>CDN对网站有什么好处?</h3><p>首先，开启CDN后的网站，会根据用户所在地的不同访问CDN的节点服务器，并不直接访问源服务器，这样可以减少网站服务器宽带资源,降低服务器压力。这也就是大家都在ping百度,但是不同地区得到的反馈ip不一样的原因。</p>
-<p>其次，由于CDN节点的阻挡防护，可以更好的保护员服务器的安全。具体来说，CDN其实是充当了一个替身的角色，无论服务器是渗透还是DD0S攻击，攻击的目标都将是CDN节点，这样一来便间接的保护了网站本身。</p>
-<h3 id="为什么我们需要绕过CDN"><a href="#为什么我们需要绕过CDN" class="headerlink" title="为什么我们需要绕过CDN?"></a>为什么我们需要绕过CDN?</h3><p>对于我们渗透测试者来说，我们在信息收集中重要的一步就是要得到目标服务器主机的<strong>真实IP地址</strong>，但如果目标服务器部署了CDN服务，那么往往我们直接访问得到的IP只是CDN节点服务器的IP，而不是真实的源服务器的IP地址，这是就需要我们想办法绕过CDN获取源服务器IP。</p>
-<h2 id="二-验证是否存在CDN"><a href="#二-验证是否存在CDN" class="headerlink" title="二. 验证是否存在CDN"></a>二. 验证是否存在CDN</h2><h3 id="1-多地Ping查询"><a href="#1-多地Ping查询" class="headerlink" title="1. 多地Ping查询"></a>1. 多地Ping查询</h3><p>使用不同区域ping，查看ping的ip结果是否唯一。若不唯一，则目标网站可能存在CDN。</p>
-<p>多地ping网站: </p>
-<ul>
-<li><a href="http://ping.aizhan.com/">http://ping.aizhan.com/</a></li>
-<li><a href="http://ping.chinaz.com/">http://ping.chinaz.com/</a></li>
-<li><a href="http://ce.cloud.360.cn/">http://ce.cloud.360.cn/</a></li>
-</ul>
-<h3 id="2-nslookup"><a href="#2-nslookup" class="headerlink" title="2. nslookup"></a>2. nslookup</h3><p>原理同上, 如果返回域名解析对应多个IP地址多半是使用了CDN. </p>
-<p>有CDN的示例 </p>
-<img src="/2021/09/17/%E7%BB%95%E8%BF%87CDN%E5%AF%BB%E6%89%BE%E7%BD%91%E7%AB%99%E7%9C%9F%E5%AE%9EIP/qun9EBu.png" class="">
-
-<p>无CDN的示例:</p>
-<img src="/2021/09/17/%E7%BB%95%E8%BF%87CDN%E5%AF%BB%E6%89%BE%E7%BD%91%E7%AB%99%E7%9C%9F%E5%AE%9EIP/mm6XPZb.png" class="">
-
-
-<h3 id="3-使用工具直接查询"><a href="#3-使用工具直接查询" class="headerlink" title="3. 使用工具直接查询"></a>3. 使用工具直接查询</h3><p>参考如下网站</p>
-<ul>
-<li><a href="http://www.cdnplanet.com/tools/cdnfinder/">http://www.cdnplanet.com/tools/cdnfinder/</a></li>
-<li><a href="https://www.ipip.net/ip.html">https://www.ipip.net/ip.html</a></li>
-</ul>
-<h2 id="三-绕过CDN查找真实IP"><a href="#三-绕过CDN查找真实IP" class="headerlink" title="三. 绕过CDN查找真实IP"></a>三. 绕过CDN查找真实IP</h2><h3 id="1-查询子域名"><a href="#1-查询子域名" class="headerlink" title="1. 查询子域名"></a>1. 查询子域名</h3><p>由于CDN本身也不便宜, 再加上某些企业业务线众多, 所以很多站长可能只会对主站或者流量大的子站点做了 CDN, 而很多小站子站点又跟主站在同一台服务器或者同一个C段内, 此时就可以通过查询子域名对应的 IP 来辅助查找网站的真实IP.<br>查询子域名的方法就很多了：</p>
-<ol>
-<li>各种子域名扫描器: subDomainsBrute、Sublist3r等</li>
-<li>Google hack</li>
-<li>还有某些网站可以进行查询。例如:<br><a href="https://dnsdb.io/zh-cn/">https://dnsdb.io/zh-cn/</a><br><a href="https://x.threatbook.cn/">https://x.threatbook.cn/</a></li>
-</ol>
-<h3 id="2-利用网站漏洞查询"><a href="#2-利用网站漏洞查询" class="headerlink" title="2. 利用网站漏洞查询"></a>2. 利用网站漏洞查询</h3><ol>
-<li>敏感文件泄漏, 比如: phpinfo之类的探针, Github信息泄漏, Apache status和Jboss status敏感信息泄露, 网页源代码泄露, svn信息泄露信、github信息泄露等。</li>
-<li>若存在web漏洞，服务器主动与我们发起请求连接，我们也能获取目标站点真实ip。例如: XSS盲打、SSRF、命令执行反弹shell等。</li>
-<li>无论是用社工还是其他手段, 拿到了目标网站管理员在CDN的帐号, 从CDN的配置中找到网站的真实IP</li>
-</ol>
-<h3 id="3-查询历史DNS记录"><a href="#3-查询历史DNS记录" class="headerlink" title="3. 查询历史DNS记录"></a>3. 查询历史DNS记录</h3><p>查询ip与域名绑定的历史记录，可能会发现使用CDN之前的记录。相关查询网站有：</p>
-<ul>
-<li><a href="https://dnsdb.io/zh-cn/">https://dnsdb.io/zh-cn/</a>  DNS查询</li>
-<li><a href="https://x.threatbook.cn/">https://x.threatbook.cn/</a>  微步在线</li>
-<li><a href="http://toolbar.netcraft.com/site_report?url=">http://toolbar.netcraft.com/site_report?url=</a>  在线域名信息查询</li>
-<li><a href="http://viewdns.info/">http://viewdns.info/</a>  DNS、IP等查询</li>
-<li><a href="https://tools.ipip.net/cdn.php">https://tools.ipip.net/cdn.php</a> CDN查询IP</li>
-<li><a href="http://www.17ce.com/">http://www.17ce.com/</a></li>
-<li><a href="https://community.riskiq.com/">https://community.riskiq.com/</a></li>
-<li><a href="http://www.crimeflare.com/cfssl.html">http://www.crimeflare.com/cfssl.html</a></li>
-</ul>
-<h3 id="4-利用网站返回的内容寻找真实原始IP"><a href="#4-利用网站返回的内容寻找真实原始IP" class="headerlink" title="4. 利用网站返回的内容寻找真实原始IP"></a>4. 利用网站返回的内容寻找真实原始IP</h3><p>如果原始服务器IP也返回了网站的内容，那么可以在网上搜索大量的相关数据。</p>
-<p>浏览网站源代码，寻找独特的代码片段。在JavaScript中使用具有访问或标识符参数的第三方服务（例如Google Analytics，reCAPTCHA）是攻击者经常使用的方法。</p>
-<p>以下是从HackTheBox网站获取的Google Analytics跟踪代码示例：</p>
-<p>ga（’create’，’UA-93577176-1’，’auto’）;<br>可以使用80.http.get.body：参数通过body/source过滤Censys数据，不幸的是，正常的搜索字段有局限性，但你可以在Censys请求研究访问权限，该权限允许你通过Google BigQuery进行更强大的查询。</p>
-<p>Shodan是一种类似于Censys的服务，也提供了http.html搜索参数。<br>搜索示例：<a href="https://www.shodan.io/search?query=http.html:UA-32023260-1">https://www.shodan.io/search?query=http.html%3AUA-32023260-1</a></p>
-<h3 id="5-Mx记录或邮件"><a href="#5-Mx记录或邮件" class="headerlink" title="5. Mx记录或邮件"></a>5. Mx记录或邮件</h3><p>很多站点都有发送邮件sendmail的功能, 如RSS邮件订阅等. 而且一般的邮件系统很多都是在内部, 没有经过CDN的解析. 查看邮件源码里面就会包含服务器的真实IP.</p>
-<h3 id="6-使用国外主机解析域名"><a href="#6-使用国外主机解析域名" class="headerlink" title="6. 使用国外主机解析域名"></a>6. 使用国外主机解析域名</h3><p>国内很多 CDN 厂商因为各种原因只做了国内的线路, 而针对国外的线路可能几乎没有, 通过国外的一些冷门的DNS或IP去请求目标, 通过国外代理访问就能查看真实IP了, 或者通过国外的DNS解析，可能就能得到真实的IP查询网站：</p>
-<ul>
-<li><a href="https://asm.ca.com/en/ping.php">https://asm.ca.com/en/ping.php</a></li>
-</ul>
-<h3 id="7-利用Zgrab绕CDN找真实IP"><a href="#7-利用Zgrab绕CDN找真实IP" class="headerlink" title="7. 利用Zgrab绕CDN找真实IP"></a>7. 利用Zgrab绕CDN找真实IP</h3><p>通过信息收集，缩小扫描范围，确定一个相对小的IP和端口范围（中国？AS号？B段？等）<br>通过http指纹特征和keyword等做综合判断。可使用工具如下：</p>
-<ul>
-<li><a href="https://github.com/zmap/zgrab/">https://github.com/zmap/zgrab/</a></li>
-<li><a href="http://www.ipdeny.com/ipblocks/">http://www.ipdeny.com/ipblocks/</a></li>
-</ul>
-<p>zgrab是基于zmap无状态扫描的应用层扫描器,可以自定义数据包，以及ip、domain之间的关联。可用于快速指纹识别爆破等场景。<br>可参考这篇文章：<a href="https://link.zhihu.com/?target=https://levyhsu.com/2017/05/%25e5%2588%25a9%25e7%2594%25a8zgrab%25e7%25bb%2595cdn%25e6%2589%25be%25e7%259c%259f%25e5%25ae%259eip/">利用Zgrab绕CDN找真实IP - Levy Hsu</a></p>
-<h3 id="8-用-Zmap-扫全网"><a href="#8-用-Zmap-扫全网" class="headerlink" title="8. 用 Zmap 扫全网"></a>8. 用 Zmap 扫全网</h3><p>直接Zmap硬扫<br>可参考这篇文章：<a href="https://link.zhihu.com/?target=http://bobao.360.cn/learning/detail/211.html">简单获取CDN背后网站的真实IP - 安全客 - 有思想的安全新媒体</a><br>假如需要找 xiaix.me 网站的真实 IP, 我们首先从 apnic 获取 IP 段, 然后使用 Zmap 的 banner-grab 扫描出来 80 端口开放的主机进行 banner 抓取, 最后在 http-req 中的 Host 写 xiaix.me。</p>
-<h3 id="9-网络空间引擎搜索法"><a href="#9-网络空间引擎搜索法" class="headerlink" title="9. 网络空间引擎搜索法"></a>9. 网络空间引擎搜索法</h3><p>比如 zoomeye、fofa、shodan<br>通过这些公开的安全搜索引擎爬取得历史快照，主要得一些特征总结如下：</p>
-<ul>
-<li>特有的http头部（如server类型、版本、cookie等信息)、</li>
-<li>特定keyword（如title、css、js、url等）、</li>
-<li>特定的IP段搜索（如fofa支持C段搜索），</li>
-</ul>
-<p>有些时候爬取的时候不一定含有上面那些特征，但是我们仍然需要仔细排查。<br>以fofa为例，只需输入：<code>title:&quot;网站的title关键字&quot;</code> 或者 <code>body：&quot;网站的body特征&quot;</code> 就可以找出fofa收录的有这些关键字的ip域名，很多时候能获取网站的真实ip</p>
-<h3 id="10-利用SSL证书寻找真实原始IP"><a href="#10-利用SSL证书寻找真实原始IP" class="headerlink" title="10. 利用SSL证书寻找真实原始IP"></a>10. 利用SSL证书寻找真实原始IP</h3><p>此方法来自于去年CplusHua表哥在Freebuf公开课《HTTP盲攻击的几种思路》中分享的：<br>查询网站：</p>
-<ul>
-<li><a href="https://censys.io/">https://censys.io/</a><br>这个网址会将互联网所有的ip进行扫面和连接，以及证书探测。若目标站点有https证书，并且默认虚拟主机配了https证书，我们就可以找所有目标站点是该https证书的站点。<br><code>443.https.tls.certificate.parsed.extensions.subject_alt_name.dns_names:www.xxx.com</code></li>
-</ul>
-<h3 id="11-F5-LTM-负载均衡解码获取真实内网ip"><a href="#11-F5-LTM-负载均衡解码获取真实内网ip" class="headerlink" title="11. F5 LTM 负载均衡解码获取真实内网ip"></a>11. F5 LTM 负载均衡解码获取真实内网ip</h3><p>参考文章: <a href="https://link.zhihu.com/?target=https://threathunter.org/topic/5940c85d9c58e020408a79fe">透过F5获取服务器真实内网IP - ThreatHunter</a><br>当服务器使用F5 LTM做负载均衡时, 通过对set-cookie关键字的解码真实ip也可被获取, 例如：Set-Cookie: BIGipServerpool_8.29_8030=487098378.24095.0000, 先把第一小节的十进制数即487098378取出来, 然后将其转为十六进制数1d08880a, 接着从后至前，以此取四位数出来, 也就是0a.88.08.1d, 最后依次把他们转为十进制数10.136.8.29, 也就是最后的真实ip。</p>
-<h3 id="12-利用HTTP标头寻找真实原始IP"><a href="#12-利用HTTP标头寻找真实原始IP" class="headerlink" title="12. 利用HTTP标头寻找真实原始IP"></a>12. 利用HTTP标头寻找真实原始IP</h3><p>借助SecurityTrails这样的平台，任何人都可以在茫茫的大数据搜索到自己的目标，甚至可以通过比较HTTP标头来查找到原始服务器。</p>
-<p>特别是当用户拥有一个非常特别的服务器名称与软件名称时，攻击者找到你就变得更容易。</p>
-<p>如果要搜索的数据相当多，如上所述，攻击者可以在Censys上组合搜索参数。假设你正在与1500个Web服务器共享你的服务器HTTP标头，这些服务器都发送的是相同的标头参数和值的组合。而且你还使用新的PHP框架发送唯一的HTTP标头（例如：X-Generated-Via：XYZ框架），目前约有400名网站管理员使用了该框架。而最终由三个服务器组成的交集，只需手动操作就可以找到了IP，整个过程只需要几秒钟。</p>
-<p>例如，Censys上用于匹配服务器标头的搜索参数是80.http.get.headers.server :，查找由CloudFlare提供服务的网站的参数如下：<br>80.http.get.headers.server:cloudflare</p>
-]]></content>
-      <categories>
-        <category>信息收集</category>
-      </categories>
-      <tags>
-        <tag>CDN</tag>
-        <tag>IP</tag>
       </tags>
   </entry>
   <entry>
@@ -996,6 +856,146 @@
       </categories>
       <tags>
         <tag>学习资源</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>微步在线二面总结</title>
+    <url>/2021/10/19/%E5%BE%AE%E6%AD%A5%E5%9C%A8%E7%BA%BF%E4%BA%8C%E9%9D%A2%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h2 id="1-我看你参加过很多比赛-你在里面是作为主力成员-还是说是辅助的"><a href="#1-我看你参加过很多比赛-你在里面是作为主力成员-还是说是辅助的" class="headerlink" title="1. 我看你参加过很多比赛, 你在里面是作为主力成员, 还是说是辅助的"></a>1. 我看你参加过很多比赛, 你在里面是作为主力成员, 还是说是辅助的</h2><p>我: 我更多的是辅助的一个位置, 就在web题是辅助, misc题目的话是主力. </p>
+<h2 id="2-好-那我问点基础-HTTP的请求方法有哪些啊"><a href="#2-好-那我问点基础-HTTP的请求方法有哪些啊" class="headerlink" title="2. 好, 那我问点基础, HTTP的请求方法有哪些啊"></a>2. 好, 那我问点基础, HTTP的请求方法有哪些啊</h2><p>我: GET, POST, PUT, 这些, 还有一些不太常用的, 最主要就是GET和POST两种方法</p>
+<h2 id="3-在没回显的情况下的代码执行-我怎么判断他是不是成功呢-有哪些方法"><a href="#3-在没回显的情况下的代码执行-我怎么判断他是不是成功呢-有哪些方法" class="headerlink" title="3. 在没回显的情况下的代码执行, 我怎么判断他是不是成功呢, 有哪些方法"></a>3. 在没回显的情况下的代码执行, 我怎么判断他是不是成功呢, 有哪些方法</h2><p>我: 可以先, 就代码执行先外带到自己服务器上面去, 去执行一段代码比如说像 ping 自己的服务器, 看ping能不能收到, 如果能收到的话, 就说明代码执行成功了. 然后的话就是, 最主要的就是这个方法了吧, 把请求给外带出来<br>面试官: 那如果不能外联呢, 就是那台机器不能外联外部网络, 什么UDP, DNS, ping都不行<br>我: 那代码执行执行一个需要服务器花很多资源的一个操作, 然后去看web网站有没有延迟就有没有类似于mysql的sleep()那种操作<br>面试官: 这种web服务器一般都是异步的, 就是比如说那个响应他直接给你响应了<br>我: 哦…<br>面试官: 而且那个延时, 你可能也看不出来啊, 他并不是TCP一直转的, 都是直接给你响应了, 还有别的方式吗<br>我: 我没有其他方式了</p>
+<h2 id="4-redis未授权漏洞有哪一些利用方式啊"><a href="#4-redis未授权漏洞有哪一些利用方式啊" class="headerlink" title="4. redis未授权漏洞有哪一些利用方式啊"></a>4. redis未授权漏洞有哪一些利用方式啊</h2><p>我: 通过写入 <code>ssh_key</code> 进行一个远程的SSH连接, 还有一个就是… 去更改他的config去修改用户的密码, 可以登录上去, 最主要还是ssh_key的写入, 然后远程的SSH连接. </p>
+<p>面试官: 那如果他里面没有开SSH服务呢, 或者说他, 有几种情况, 第一种是开在比较奇怪的端口, 第二种是他内部不允许ssh_key登录, 怎么解决哦<br>我: 我没有更好的办法, 就我遇到这种情况一般就直接放弃了, 这种情况.</p>
+<h2 id="5-服务端有哪一些缺陷-可能会导致存在文件上传漏洞啊"><a href="#5-服务端有哪一些缺陷-可能会导致存在文件上传漏洞啊" class="headerlink" title="5. 服务端有哪一些缺陷, 可能会导致存在文件上传漏洞啊"></a>5. 服务端有哪一些缺陷, 可能会导致存在文件上传漏洞啊</h2><p>我: 首先是服务端的话, 没有做那个权限的限制, 就上传的目录文件里面, 上传进去的文件有执行权限. 可能会导致文件上传漏洞, 然后没有做文件类型的检测, 也可能会导致文件上传漏洞.</p>
+<p>面试官: 你刚刚说是什么文件有执行权限, 那个是什么来着, 没听清<br>我: 就是文件上传的目录下面, 这个目录的文件有执行权限, 就可能导致文件上传漏洞, 就服务器端的话<br>面试官: 这个为什么算作文件上传漏洞<br>我: 因为如果你文件上传上来, 没有执行权限的话, 他上传上来就是, 就不能算一个漏洞吧, 就只是一个正常的上传功能, 他前提是这个目录有执行权限, 你传上来的文件能够执行, 才能算一个文件上传的漏洞<br>面试官: 目录有执行权限? 那文件没执行权限, 难道就不能执行了吗, 就是你 1.php 你不给他执行权限, 那个apache他就不会解析了吗?<br>我: 你要配置这个目录下面的所有文件不能解析, 不能执行, 就是就限制这个目录下面就所有文件的解析这个功能</p>
+<h2 id="6-SSRF漏洞是什么"><a href="#6-SSRF漏洞是什么" class="headerlink" title="6. SSRF漏洞是什么"></a>6. SSRF漏洞是什么</h2><p>我: 是服务器端的请求伪造, 通常是用来利用SSRF漏洞来访问内网的一些资源<br>面试官: 怎么访问啊, 有哪些方式哦<br>我: 比如说他有一个URL跳转, 有一个302的跳转, 他那个URL上面会有一个链接地址, 把那个链接地址改成内网的地址, 如果存在SSRF漏洞的话就可能会访问到内网的资源</p>
+<p>面试官: 如果有redis的话, 有个redis服务器. 能用SSRF漏洞来进行利用吗?<br>我: 我觉得是可以的, 但是我没有去研究过</p>
+<p>面试官: 那如果有个FTP有弱口令呢, 能用SSRF登录吗<br>我: 可以, 如果有FTP的弱口令的话</p>
+<h2 id="7-同源策略知道是什么吗"><a href="#7-同源策略知道是什么吗" class="headerlink" title="7. 同源策略知道是什么吗"></a>7. 同源策略知道是什么吗</h2><p>我: 知道, 就是限制在相同源下面的资源之间才能互相访问, 而不同源之间不能进行那些资源之间的调用的<br>面试官: 那跨域的话都有哪一些方式, 以及为什么能够实现跨域<br>我: 跨域的话首先是写那个跨域文件的配置, crossdomain.xml 去允许某些域的访问, 这是第一种方式, 第二种方式就是在html里面在json里面好像也可以加那个允许某个域访问的代码. </p>
+<h2 id="8-登录后台的时候经常要输入验证码-服务端有哪些缺陷可以导致这个验证码失效或者被绕过"><a href="#8-登录后台的时候经常要输入验证码-服务端有哪些缺陷可以导致这个验证码失效或者被绕过" class="headerlink" title="8. 登录后台的时候经常要输入验证码, 服务端有哪些缺陷可以导致这个验证码失效或者被绕过"></a>8. 登录后台的时候经常要输入验证码, 服务端有哪些缺陷可以导致这个验证码失效或者被绕过</h2><p>我: 首先是如果验证码没有刷新的话就可被爆破去获取到验证码, 还有一种是… 我就知道这一个, 服务器端没有及时更新验证码的话会导致验证码被爆破. </p>
+<h2 id="9-知道java反序列化漏洞是什么原理吗"><a href="#9-知道java反序列化漏洞是什么原理吗" class="headerlink" title="9. 知道java反序列化漏洞是什么原理吗"></a>9. 知道java反序列化漏洞是什么原理吗</h2><p>我: 没了解过, 最近才开始学这个</p>
+<h2 id="10-linux下有哪些安装软件的方式"><a href="#10-linux下有哪些安装软件的方式" class="headerlink" title="10. linux下有哪些安装软件的方式"></a>10. linux下有哪些安装软件的方式</h2><p>我: <code>apt</code>, <code>apt-get</code>, 还有就是直接把软件源码给拷贝到linux下面直接安装, 然后启docker, 大概就是这些方式</p>
+<h2 id="11-知道文件上传-比如你上传一个webshell的时候里面流量是什么样子的吗-看过吗"><a href="#11-知道文件上传-比如你上传一个webshell的时候里面流量是什么样子的吗-看过吗" class="headerlink" title="11. 知道文件上传, 比如你上传一个webshell的时候里面流量是什么样子的吗, 看过吗?"></a>11. 知道文件上传, 比如你上传一个webshell的时候里面流量是什么样子的吗, 看过吗?</h2><p>我: 我上传一个webshell的话, 他那个请求的头一般是POST请求嘛, POST的主体就是webshell的内容但这个主体是在burpsuit里面抓包看到的, 我不知道是不是跟那个就我们需要的包是不是一样的, burpsuit里面抓到的就是, 你上传的webshell的内容, 然后就是这样…<br>面试官: 有什么文件名吗, 这种东西有吗, 文件大小之类的, 这种东西有吗<br>我: 有文件大小, 文件名的话一般也会有, 有文件名还有文件的大小<br>面试官: 有什么特定应的头吗, 还是都是POST数据里面啊<br>我: 我没有注意过他们有没有特殊的头, 从来没有注意过这个</p>
+<p>面试官: 用过webshell吗<br>我: 用过一些简单的一句话木马<br>面试官: webshell得有什么什么结构才能称作一个webshell, 或者说什么, 有哪些功能才能算webshell<br>我: 首先第一个是你上传的这个webshell, 他一定是一段完整的代码, 就是他一定能够执行, 他一定要能够进行命令操作的功能才能算是一个webshell. 或者说能够反弹一个shell回来, 一个bash反弹shell过来, 也能算一个webshell吧…</p>
+<h2 id="12-有代码审计经验-能够写什么代码吗"><a href="#12-有代码审计经验-能够写什么代码吗" class="headerlink" title="12. 有代码审计经验? 能够写什么代码吗"></a>12. 有代码审计经验? 能够写什么代码吗</h2><p>我: 能写一点python跟php的代码, 写一点简单的. 然后java的代码审计, 还有java的基础也是最近才刚开始学</p>
+<h2 id="13-你说那个misc都是哪些类型啊-隐写术吗"><a href="#13-你说那个misc都是哪些类型啊-隐写术吗" class="headerlink" title="13. 你说那个misc都是哪些类型啊, 隐写术吗?"></a>13. 你说那个misc都是哪些类型啊, 隐写术吗?</h2><p>我: 音频分析, 流量分析之类的<br>面试官: 流量分析? 叫你连接菜刀的一句话, 有看过他的流量吗, 有什么流量特征吗<br>我: 有看过, 菜刀的流量, 我看的那个版本他是直接通过base64加密的流量, 解密之后就是php的代码, 然后通过php的socket协议去连接的吧, 之前那个版本. </p>
+<p>面试官: 如果想去让你检测webshell的话, 在流量里面有什么思路吗, 检测webshell. 或者他的交互, 该怎么去做<br>我: 直接去检测他那个命令执行的函数, 就webshell里面一般会有传入的参数, POST, GET之类的, 去检测这些关键字, 流量里面. 还有就是检测匹配webshell的特征吧, 就一般大概常用的webshell都长得差不多, 就去匹配他的特征<br>面试官: 什么特征哦?<br>我: 比如说像是php一句话木马, 一个 <code>&lt;?php @eval($_POST[&#39;lamber&#39;];?&gt;</code> 的操作, 这种. 直接去匹配这个eval函数, 就去看流量里面有没有出现这个, 或者他各种变形去加解密这种. </p>
+<p>面试官: 像你做隐写术, 图片的隐写都有哪一些类型啊, 以及怎么去把这些隐写给他弄出来啊<br>我: 最常见的就是LSB隐写, 去改图片的标志位, 去把他的数据恢复出来, 然后还有就是几张图片拼接, 然后把那个他拼接的部分提取出来, 也是一种新的一段数据, 常见的就是这两种, 还有就是用binwalk去进行, 去对文件里面的数据有没有特殊的文件头去进行一个分离. 一般就是这些</p>
+<h2 id="14-HTTP响应5开头的知道是什么意思吗"><a href="#14-HTTP响应5开头的知道是什么意思吗" class="headerlink" title="14. HTTP响应5开头的知道是什么意思吗"></a>14. HTTP响应5开头的知道是什么意思吗</h2><p>我: 服务器内部异常<br>面试官: 那404呢<br>我: 未找到页面<br>面试官: 那403呢<br>我: 403也是类似的吧, 就客户端的资源处理异常<br>面试官: 客户端资源处理异常? 客户端是你浏览器吗<br>我: 是浏览器的资源出现异常<br>面试官: 100知道是什么意思吗<br>我: 100没有怎么见过…<br>面试官: 302呢<br>我: 302跳转, 跳转到另一个的url里面</p>
+<h2 id="15-代码审计经验-php执行代码都有哪些函数"><a href="#15-代码审计经验-php执行代码都有哪些函数" class="headerlink" title="15. 代码审计经验? php执行代码都有哪些函数"></a>15. 代码审计经验? php执行代码都有哪些函数</h2><p>我: 像 <code>system(), proc_open(), popen()</code> 这些…</p>
+<h2 id="16-你了解这个安全研究员是做什么的吗"><a href="#16-你了解这个安全研究员是做什么的吗" class="headerlink" title="16. 你了解这个安全研究员是做什么的吗"></a>16. 你了解这个安全研究员是做什么的吗</h2><p>我: 了解过一些, 就主要做威胁情报检测, 去做流量分析之类的<br>面试官: </p>
+<h2 id="17-burpsuit怎么去抓安卓手机的包"><a href="#17-burpsuit怎么去抓安卓手机的包" class="headerlink" title="17. burpsuit怎么去抓安卓手机的包"></a>17. burpsuit怎么去抓安卓手机的包</h2><p>我: 安卓手机上面有一个应用吧, 然后可以生成一个手机的一个证书, 然后在同一个局域下面, 在burpsuit上面导入这个证书, 这之后, 可以去抓到手机端的流量. 但是我没有抓成功过, 我不知道是用的那个软件的问题, 还是什么其他的原因<br>面试官: 你可以抓微信之外的普通的应用看一下<br>我: 能抓到浏览器的包, 正常浏览器的包好像能抓到. 但是应用的包就不太好抓, 很杂乱.</p>
+<h2 id="18-对于溢出那些有了解吗-比如栈溢出"><a href="#18-对于溢出那些有了解吗-比如栈溢出" class="headerlink" title="18. 对于溢出那些有了解吗, 比如栈溢出"></a>18. 对于溢出那些有了解吗, 比如栈溢出</h2><p>我: 没有了解过, 二进制方面没有怎么了解过</p>
+<h2 id="19-linux里面查看SSH登录记录有哪些方式"><a href="#19-linux里面查看SSH登录记录有哪些方式" class="headerlink" title="19. linux里面查看SSH登录记录有哪些方式"></a>19. linux里面查看SSH登录记录有哪些方式</h2><p>我: 直接去查看日志文件吧, 其他方式就不知道了</p>
+<h2 id="20-你平常学习东西的话一般通过什么平台怎么学啊-主要是学web吗-有什么学习计划吗"><a href="#20-你平常学习东西的话一般通过什么平台怎么学啊-主要是学web吗-有什么学习计划吗" class="headerlink" title="20. 你平常学习东西的话一般通过什么平台怎么学啊, 主要是学web吗, 有什么学习计划吗"></a>20. 你平常学习东西的话一般通过什么平台怎么学啊, 主要是学web吗, 有什么学习计划吗</h2><p>我: 我的学习计划是, 目前是先把java层面的代码审计学完, 做一些漏洞分析, 分析漏洞的底层原理. 然后去写流量检测, 去检测这些漏洞的特征, 目前是这样一个学习规划. 然后学习的途径的话, 一般是从各种社区, 以及google上面找文章, 然后就是去问一些前辈们的学习的问题吧, 各种途径就是这样.</p>
+<h2 id="21-再问几个基础啊-比如说XSS-我们在测试XSS漏洞的时候-我们都用了什么来闭合原有的符号啊"><a href="#21-再问几个基础啊-比如说XSS-我们在测试XSS漏洞的时候-我们都用了什么来闭合原有的符号啊" class="headerlink" title="21. 再问几个基础啊, 比如说XSS, 我们在测试XSS漏洞的时候, 我们都用了什么来闭合原有的符号啊"></a>21. 再问几个基础啊, 比如说XSS, 我们在测试XSS漏洞的时候, 我们都用了什么来闭合原有的符号啊</h2><p>我: 要闭合原有的符号的话, 跟前面的XSS语句进行匹配上就可以了, 前面是括号的话就用括号闭合, 前面有双引号的话就用双引号来闭合, 这种<br>面试官: 单纯加双引号, 那有没有别的方式, 有可能你加一个双引号, 闭合不了, 代码就错了. 你正常加一个单引号, 或一个双引号. 这种很大概率报错, 理解我说的吗<br>我: 能理解, 其他闭合方式我就没有怎么了解过.</p>
+<h2 id="22-实践经历怎么样-就是说你在实际渗透的时候-比如说一台机器-就一个网站他用了CDN-我们有哪一些方法去找它真实IP"><a href="#22-实践经历怎么样-就是说你在实际渗透的时候-比如说一台机器-就一个网站他用了CDN-我们有哪一些方法去找它真实IP" class="headerlink" title="22. 实践经历怎么样, 就是说你在实际渗透的时候, 比如说一台机器, 就一个网站他用了CDN, 我们有哪一些方法去找它真实IP"></a>22. 实践经历怎么样, 就是说你在实际渗透的时候, 比如说一台机器, 就一个网站他用了CDN, 我们有哪一些方法去找它真实IP</h2><p>我: 找它真实IP首先是, 去一些网站上面可以直接查一些他的真实IP的一些网站. 然后可以通过像是fofa之类的去查他的历史解析IP地址或者是从网站的子域名查他的IP地址, 可能他主站用了CDN但是他子站没有用, 大概就是这些方法吧</p>
+<h2 id="23-然后你在先知发的两篇文章是什么文章啊"><a href="#23-然后你在先知发的两篇文章是什么文章啊" class="headerlink" title="23. 然后你在先知发的两篇文章是什么文章啊"></a>23. 然后你在先知发的两篇文章是什么文章啊</h2><p>我: 一篇漏洞挖掘的, 一篇CTF的复现. </p>
+<h2 id="24-有了解过linux下什么后门吗-或使用过什么后门-代理啊之类的"><a href="#24-有了解过linux下什么后门吗-或使用过什么后门-代理啊之类的" class="headerlink" title="24. 有了解过linux下什么后门吗, 或使用过什么后门, 代理啊之类的"></a>24. 有了解过linux下什么后门吗, 或使用过什么后门, 代理啊之类的</h2><p>我: 后门这个没有了解过, 我只知道webshell, 然后后面没有了解过. 我见过一种可以写到进程里面的木马, 不是很清楚那个算不算后门, 我觉得更像是webshell一点</p>
+<h2 id="25-你大概说一下你开头说的那篇渗透的文章吧"><a href="#25-你大概说一下你开头说的那篇渗透的文章吧" class="headerlink" title="25. 你大概说一下你开头说的那篇渗透的文章吧"></a>25. 你大概说一下你开头说的那篇渗透的文章吧</h2><p>我: 记录了之前挖edu-src的一个过程, 首先从信息收集上面收集域名的信息, 以及它的子站, 以及它的功能点, 然后进行一个测试, 当时是挖到一个存储型XSS, 在一个发布项目的一个界面, 那个地方打入XSS之后, 把项目提交上去, 审核员可以触发那个存储型的XSS, 还有一个地方在登录的界面, 修改密码的功能, 他的修改密码的数据包是明文传输的数据, 直接将验证码发送的手机号在数据包里面显示出来了, 可以更改这个手机号改为自己手机号, 然后这个验证码就会发到自己的手机上面. 接收到这个验证码之后就可以去更改任意用户的一个用户密码, 当时挖掘就这一个站挖到这两个漏洞</p>
+<p>面试官: 挖掘过程有什么亮点吗, 比如说就是别人都想不到的, 有什么区别点吗<br>我: 亮点的话我觉得就是这个, 逻辑漏洞的挖掘吧. 可能其他人都不会注意到这个地方<br>面试官: 什么逻辑漏洞啊?<br>我: 就是, 更改他发送验证码的手机号. 然后这个验证码就会发到目标手机上面去, 这个地方算他逻辑上面设计的缺陷吧, 他没有做那个发送验证码的手机号的验证, 然后导致了, 这个验证码可以发到随便任意一个手机上面去</p>
+<h2 id="26-那我这边就了解的差不多了-你有什么要了解的吗"><a href="#26-那我这边就了解的差不多了-你有什么要了解的吗" class="headerlink" title="26. 那我这边就了解的差不多了, 你有什么要了解的吗"></a>26. 那我这边就了解的差不多了, 你有什么要了解的吗</h2><p>我: 我想问一下就是, 我搞web方面的话, 我如果要接触二进制, 从哪个方向入手会好一点, 从哪里开始学会好一点</p>
+<p>面试官: 当然你问的是一个问题哈, 那我先从另外一个方面回答一下, 你自己觉得自己想要具备怎样的知识结构, 或者说想要做怎样的工作, 这个有想过吗<br>我: 我最想做的还是, 首先是分析攻击进来的漏洞, 或者说攻击进来的流量, 去分析他们是怎么打进来的, 去学习他们的攻击方式然后再打出去, 然后很多地方可能会涉及到内存马呀二进制方面的东西, 这些地方可能会我自己就看不懂, 我自己的想法是我要去能看懂他们能分析的明白他们, 就这方面, 就我遇到什么漏洞我都想要去把他分析清楚</p>
+<p>面试官: 这个问题你先想想, 你连web都熟悉度其实还不怎么够, 连java反序列化漏洞什么原理都不知道, 那个二进制难度其实是更大的, 就实际的过程中, 简单的比如栈溢出, 但现在一般都是比较复杂的这种, 什么堆, 堆更加复杂, 然后那个二进制的利用过程也很复杂, 这个是十六进制的, 他并不一定是你看得到的web程序, 得对底层一些汇编也有了解. 你得学基本的汇编你才知道他的利用过程. 还有基本的pwn吧, pwn, 你才能知道别人是怎么利用的漏洞. 建议你还是先把web好好学一下<br>我: 先把web先打好嘛, 就是我想有多余的精力的情况下去了解一下二进制这边的东西</p>
+<p>面试官: 了解一下就简单了, 直接搜漏洞类型, 什么原理, 怎么利用, 没多复杂. 主要是你得深入有实践这种才行. 只是大概听过这个, 估计不太行. 如果只是听过的话. 当然前提还是就大概了解就行, 实际上这个工作的时候并不一定用到.<br>我: 工作遇到最多的其实还是各种web层面的漏洞对吧.<br>面试官: 是的, 最主要还是看你的能力, 因为很多是比较复杂的系统, Java相关的有什么Tomcat, JBoss, Weblogic一些企业级应用, 还有一些什么别的应用, 这种的话可能对于漏洞的复现, 一些原理的了解啊<br>我: 因为我最近的话, 我最近的学习的方向就是学java的代码审计. 就是比如说学到一个Java层面的漏洞之后, 环境的搭建是怎么搭可能会比较好一点, 因为可能就本身的文章只会给你一个代码片段, 但不会给你一个完整的环境<br>面试官: 这个肯定是等你多搭了就知道怎么搭了, 如果你连一个Java程序都不知道怎么跑起来, 你还分析什么Java漏洞啊<br>我: 嗯…好的, 那我就先学一些Java开发之类的东西对吧<br>面试官: 也不是说开发, 而是基本的项目部署, 你得知道他是怎么部署的<br>我: 明白了明白了</p>
+]]></content>
+      <categories>
+        <category>求职</category>
+      </categories>
+      <tags>
+        <tag>记录</tag>
+        <tag>面试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>绕过CDN寻找网站真实IP</title>
+    <url>/2021/09/17/%E7%BB%95%E8%BF%87CDN%E5%AF%BB%E6%89%BE%E7%BD%91%E7%AB%99%E7%9C%9F%E5%AE%9EIP/</url>
+    <content><![CDATA[<h2 id="一-什么是CDN-为什么要绕过CDN"><a href="#一-什么是CDN-为什么要绕过CDN" class="headerlink" title="一. 什么是CDN, 为什么要绕过CDN"></a>一. 什么是CDN, 为什么要绕过CDN</h2><h3 id="什么是CDN以及CDN加速"><a href="#什么是CDN以及CDN加速" class="headerlink" title="什么是CDN以及CDN加速?"></a>什么是CDN以及CDN加速?</h3><p>CDN全称是(Content Delivery Network), 即内容分发网络. CDN是构建在现有网络基础之上的智能虚拟网络，依靠部署在各地的边缘服务器，通过中心平台的负载均衡、内容分发、调度等功能模块，使用户就近获取所需内容，降低网络拥塞，提高用户访问响应速度和命中率。CDN的关键技术主要有内容存储和分发技术。</p>
+<h3 id="CDN对网站有什么好处"><a href="#CDN对网站有什么好处" class="headerlink" title="CDN对网站有什么好处?"></a>CDN对网站有什么好处?</h3><p>首先，开启CDN后的网站，会根据用户所在地的不同访问CDN的节点服务器，并不直接访问源服务器，这样可以减少网站服务器宽带资源,降低服务器压力。这也就是大家都在ping百度,但是不同地区得到的反馈ip不一样的原因。</p>
+<p>其次，由于CDN节点的阻挡防护，可以更好的保护员服务器的安全。具体来说，CDN其实是充当了一个替身的角色，无论服务器是渗透还是DD0S攻击，攻击的目标都将是CDN节点，这样一来便间接的保护了网站本身。</p>
+<h3 id="为什么我们需要绕过CDN"><a href="#为什么我们需要绕过CDN" class="headerlink" title="为什么我们需要绕过CDN?"></a>为什么我们需要绕过CDN?</h3><p>对于我们渗透测试者来说，我们在信息收集中重要的一步就是要得到目标服务器主机的<strong>真实IP地址</strong>，但如果目标服务器部署了CDN服务，那么往往我们直接访问得到的IP只是CDN节点服务器的IP，而不是真实的源服务器的IP地址，这是就需要我们想办法绕过CDN获取源服务器IP。</p>
+<h2 id="二-验证是否存在CDN"><a href="#二-验证是否存在CDN" class="headerlink" title="二. 验证是否存在CDN"></a>二. 验证是否存在CDN</h2><h3 id="1-多地Ping查询"><a href="#1-多地Ping查询" class="headerlink" title="1. 多地Ping查询"></a>1. 多地Ping查询</h3><p>使用不同区域ping，查看ping的ip结果是否唯一。若不唯一，则目标网站可能存在CDN。</p>
+<p>多地ping网站: </p>
+<ul>
+<li><a href="http://ping.aizhan.com/">http://ping.aizhan.com/</a></li>
+<li><a href="http://ping.chinaz.com/">http://ping.chinaz.com/</a></li>
+<li><a href="http://ce.cloud.360.cn/">http://ce.cloud.360.cn/</a></li>
+</ul>
+<h3 id="2-nslookup"><a href="#2-nslookup" class="headerlink" title="2. nslookup"></a>2. nslookup</h3><p>原理同上, 如果返回域名解析对应多个IP地址多半是使用了CDN. </p>
+<p>有CDN的示例 </p>
+<img src="/2021/09/17/%E7%BB%95%E8%BF%87CDN%E5%AF%BB%E6%89%BE%E7%BD%91%E7%AB%99%E7%9C%9F%E5%AE%9EIP/qun9EBu.png" class="">
+
+<p>无CDN的示例:</p>
+<img src="/2021/09/17/%E7%BB%95%E8%BF%87CDN%E5%AF%BB%E6%89%BE%E7%BD%91%E7%AB%99%E7%9C%9F%E5%AE%9EIP/mm6XPZb.png" class="">
+
+
+<h3 id="3-使用工具直接查询"><a href="#3-使用工具直接查询" class="headerlink" title="3. 使用工具直接查询"></a>3. 使用工具直接查询</h3><p>参考如下网站</p>
+<ul>
+<li><a href="http://www.cdnplanet.com/tools/cdnfinder/">http://www.cdnplanet.com/tools/cdnfinder/</a></li>
+<li><a href="https://www.ipip.net/ip.html">https://www.ipip.net/ip.html</a></li>
+</ul>
+<h2 id="三-绕过CDN查找真实IP"><a href="#三-绕过CDN查找真实IP" class="headerlink" title="三. 绕过CDN查找真实IP"></a>三. 绕过CDN查找真实IP</h2><h3 id="1-查询子域名"><a href="#1-查询子域名" class="headerlink" title="1. 查询子域名"></a>1. 查询子域名</h3><p>由于CDN本身也不便宜, 再加上某些企业业务线众多, 所以很多站长可能只会对主站或者流量大的子站点做了 CDN, 而很多小站子站点又跟主站在同一台服务器或者同一个C段内, 此时就可以通过查询子域名对应的 IP 来辅助查找网站的真实IP.<br>查询子域名的方法就很多了：</p>
+<ol>
+<li>各种子域名扫描器: subDomainsBrute、Sublist3r等</li>
+<li>Google hack</li>
+<li>还有某些网站可以进行查询。例如:<br><a href="https://dnsdb.io/zh-cn/">https://dnsdb.io/zh-cn/</a><br><a href="https://x.threatbook.cn/">https://x.threatbook.cn/</a></li>
+</ol>
+<h3 id="2-利用网站漏洞查询"><a href="#2-利用网站漏洞查询" class="headerlink" title="2. 利用网站漏洞查询"></a>2. 利用网站漏洞查询</h3><ol>
+<li>敏感文件泄漏, 比如: phpinfo之类的探针, Github信息泄漏, Apache status和Jboss status敏感信息泄露, 网页源代码泄露, svn信息泄露信、github信息泄露等。</li>
+<li>若存在web漏洞，服务器主动与我们发起请求连接，我们也能获取目标站点真实ip。例如: XSS盲打、SSRF、命令执行反弹shell等。</li>
+<li>无论是用社工还是其他手段, 拿到了目标网站管理员在CDN的帐号, 从CDN的配置中找到网站的真实IP</li>
+</ol>
+<h3 id="3-查询历史DNS记录"><a href="#3-查询历史DNS记录" class="headerlink" title="3. 查询历史DNS记录"></a>3. 查询历史DNS记录</h3><p>查询ip与域名绑定的历史记录，可能会发现使用CDN之前的记录。相关查询网站有：</p>
+<ul>
+<li><a href="https://dnsdb.io/zh-cn/">https://dnsdb.io/zh-cn/</a>  DNS查询</li>
+<li><a href="https://x.threatbook.cn/">https://x.threatbook.cn/</a>  微步在线</li>
+<li><a href="http://toolbar.netcraft.com/site_report?url=">http://toolbar.netcraft.com/site_report?url=</a>  在线域名信息查询</li>
+<li><a href="http://viewdns.info/">http://viewdns.info/</a>  DNS、IP等查询</li>
+<li><a href="https://tools.ipip.net/cdn.php">https://tools.ipip.net/cdn.php</a> CDN查询IP</li>
+<li><a href="http://www.17ce.com/">http://www.17ce.com/</a></li>
+<li><a href="https://community.riskiq.com/">https://community.riskiq.com/</a></li>
+<li><a href="http://www.crimeflare.com/cfssl.html">http://www.crimeflare.com/cfssl.html</a></li>
+</ul>
+<h3 id="4-利用网站返回的内容寻找真实原始IP"><a href="#4-利用网站返回的内容寻找真实原始IP" class="headerlink" title="4. 利用网站返回的内容寻找真实原始IP"></a>4. 利用网站返回的内容寻找真实原始IP</h3><p>如果原始服务器IP也返回了网站的内容，那么可以在网上搜索大量的相关数据。</p>
+<p>浏览网站源代码，寻找独特的代码片段。在JavaScript中使用具有访问或标识符参数的第三方服务（例如Google Analytics，reCAPTCHA）是攻击者经常使用的方法。</p>
+<p>以下是从HackTheBox网站获取的Google Analytics跟踪代码示例：</p>
+<p>ga（’create’，’UA-93577176-1’，’auto’）;<br>可以使用80.http.get.body：参数通过body/source过滤Censys数据，不幸的是，正常的搜索字段有局限性，但你可以在Censys请求研究访问权限，该权限允许你通过Google BigQuery进行更强大的查询。</p>
+<p>Shodan是一种类似于Censys的服务，也提供了http.html搜索参数。<br>搜索示例：<a href="https://www.shodan.io/search?query=http.html:UA-32023260-1">https://www.shodan.io/search?query=http.html%3AUA-32023260-1</a></p>
+<h3 id="5-Mx记录或邮件"><a href="#5-Mx记录或邮件" class="headerlink" title="5. Mx记录或邮件"></a>5. Mx记录或邮件</h3><p>很多站点都有发送邮件sendmail的功能, 如RSS邮件订阅等. 而且一般的邮件系统很多都是在内部, 没有经过CDN的解析. 查看邮件源码里面就会包含服务器的真实IP.</p>
+<h3 id="6-使用国外主机解析域名"><a href="#6-使用国外主机解析域名" class="headerlink" title="6. 使用国外主机解析域名"></a>6. 使用国外主机解析域名</h3><p>国内很多 CDN 厂商因为各种原因只做了国内的线路, 而针对国外的线路可能几乎没有, 通过国外的一些冷门的DNS或IP去请求目标, 通过国外代理访问就能查看真实IP了, 或者通过国外的DNS解析，可能就能得到真实的IP查询网站：</p>
+<ul>
+<li><a href="https://asm.ca.com/en/ping.php">https://asm.ca.com/en/ping.php</a></li>
+</ul>
+<h3 id="7-利用Zgrab绕CDN找真实IP"><a href="#7-利用Zgrab绕CDN找真实IP" class="headerlink" title="7. 利用Zgrab绕CDN找真实IP"></a>7. 利用Zgrab绕CDN找真实IP</h3><p>通过信息收集，缩小扫描范围，确定一个相对小的IP和端口范围（中国？AS号？B段？等）<br>通过http指纹特征和keyword等做综合判断。可使用工具如下：</p>
+<ul>
+<li><a href="https://github.com/zmap/zgrab/">https://github.com/zmap/zgrab/</a></li>
+<li><a href="http://www.ipdeny.com/ipblocks/">http://www.ipdeny.com/ipblocks/</a></li>
+</ul>
+<p>zgrab是基于zmap无状态扫描的应用层扫描器,可以自定义数据包，以及ip、domain之间的关联。可用于快速指纹识别爆破等场景。<br>可参考这篇文章：<a href="https://link.zhihu.com/?target=https://levyhsu.com/2017/05/%25e5%2588%25a9%25e7%2594%25a8zgrab%25e7%25bb%2595cdn%25e6%2589%25be%25e7%259c%259f%25e5%25ae%259eip/">利用Zgrab绕CDN找真实IP - Levy Hsu</a></p>
+<h3 id="8-用-Zmap-扫全网"><a href="#8-用-Zmap-扫全网" class="headerlink" title="8. 用 Zmap 扫全网"></a>8. 用 Zmap 扫全网</h3><p>直接Zmap硬扫<br>可参考这篇文章：<a href="https://link.zhihu.com/?target=http://bobao.360.cn/learning/detail/211.html">简单获取CDN背后网站的真实IP - 安全客 - 有思想的安全新媒体</a><br>假如需要找 xiaix.me 网站的真实 IP, 我们首先从 apnic 获取 IP 段, 然后使用 Zmap 的 banner-grab 扫描出来 80 端口开放的主机进行 banner 抓取, 最后在 http-req 中的 Host 写 xiaix.me。</p>
+<h3 id="9-网络空间引擎搜索法"><a href="#9-网络空间引擎搜索法" class="headerlink" title="9. 网络空间引擎搜索法"></a>9. 网络空间引擎搜索法</h3><p>比如 zoomeye、fofa、shodan<br>通过这些公开的安全搜索引擎爬取得历史快照，主要得一些特征总结如下：</p>
+<ul>
+<li>特有的http头部（如server类型、版本、cookie等信息)、</li>
+<li>特定keyword（如title、css、js、url等）、</li>
+<li>特定的IP段搜索（如fofa支持C段搜索），</li>
+</ul>
+<p>有些时候爬取的时候不一定含有上面那些特征，但是我们仍然需要仔细排查。<br>以fofa为例，只需输入：<code>title:&quot;网站的title关键字&quot;</code> 或者 <code>body：&quot;网站的body特征&quot;</code> 就可以找出fofa收录的有这些关键字的ip域名，很多时候能获取网站的真实ip</p>
+<h3 id="10-利用SSL证书寻找真实原始IP"><a href="#10-利用SSL证书寻找真实原始IP" class="headerlink" title="10. 利用SSL证书寻找真实原始IP"></a>10. 利用SSL证书寻找真实原始IP</h3><p>此方法来自于去年CplusHua表哥在Freebuf公开课《HTTP盲攻击的几种思路》中分享的：<br>查询网站：</p>
+<ul>
+<li><a href="https://censys.io/">https://censys.io/</a><br>这个网址会将互联网所有的ip进行扫面和连接，以及证书探测。若目标站点有https证书，并且默认虚拟主机配了https证书，我们就可以找所有目标站点是该https证书的站点。<br><code>443.https.tls.certificate.parsed.extensions.subject_alt_name.dns_names:www.xxx.com</code></li>
+</ul>
+<h3 id="11-F5-LTM-负载均衡解码获取真实内网ip"><a href="#11-F5-LTM-负载均衡解码获取真实内网ip" class="headerlink" title="11. F5 LTM 负载均衡解码获取真实内网ip"></a>11. F5 LTM 负载均衡解码获取真实内网ip</h3><p>参考文章: <a href="https://link.zhihu.com/?target=https://threathunter.org/topic/5940c85d9c58e020408a79fe">透过F5获取服务器真实内网IP - ThreatHunter</a><br>当服务器使用F5 LTM做负载均衡时, 通过对set-cookie关键字的解码真实ip也可被获取, 例如：Set-Cookie: BIGipServerpool_8.29_8030=487098378.24095.0000, 先把第一小节的十进制数即487098378取出来, 然后将其转为十六进制数1d08880a, 接着从后至前，以此取四位数出来, 也就是0a.88.08.1d, 最后依次把他们转为十进制数10.136.8.29, 也就是最后的真实ip。</p>
+<h3 id="12-利用HTTP标头寻找真实原始IP"><a href="#12-利用HTTP标头寻找真实原始IP" class="headerlink" title="12. 利用HTTP标头寻找真实原始IP"></a>12. 利用HTTP标头寻找真实原始IP</h3><p>借助SecurityTrails这样的平台，任何人都可以在茫茫的大数据搜索到自己的目标，甚至可以通过比较HTTP标头来查找到原始服务器。</p>
+<p>特别是当用户拥有一个非常特别的服务器名称与软件名称时，攻击者找到你就变得更容易。</p>
+<p>如果要搜索的数据相当多，如上所述，攻击者可以在Censys上组合搜索参数。假设你正在与1500个Web服务器共享你的服务器HTTP标头，这些服务器都发送的是相同的标头参数和值的组合。而且你还使用新的PHP框架发送唯一的HTTP标头（例如：X-Generated-Via：XYZ框架），目前约有400名网站管理员使用了该框架。而最终由三个服务器组成的交集，只需手动操作就可以找到了IP，整个过程只需要几秒钟。</p>
+<p>例如，Censys上用于匹配服务器标头的搜索参数是80.http.get.headers.server :，查找由CloudFlare提供服务的网站的参数如下：<br>80.http.get.headers.server:cloudflare</p>
+]]></content>
+      <categories>
+        <category>信息收集</category>
+      </categories>
+      <tags>
+        <tag>CDN</tag>
+        <tag>IP</tag>
       </tags>
   </entry>
   <entry>
