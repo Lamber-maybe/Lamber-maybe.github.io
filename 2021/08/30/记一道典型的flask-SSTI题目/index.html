@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
     <!-- title -->
 
 
@@ -25,7 +25,7 @@
 <meta property="og:url" content="https://lamber-maybe.github.io/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/index.html">
 <meta property="og:site_name" content="Lamber&#39;s Blog">
 <meta property="og:description" content="一、概念了解及环境搭建1. 一些新概念 PyCharm是一种Python IDE，带有一整套可以帮助用户在使用Python语言开发时提高其效率的工具，比如调试、语法高亮、Project管理、代码跳转、智能提示、自动完成、单元测试、版本控制。此外，该IDE提供了一些高级功能，以用于支持Django框架下的专业Web开发。 IDE: 集成开发环境(Integrated Development Envi">
-<meta property="og:locale" content="en_US">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://lamber-maybe.github.io/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/1.jpg">
 <meta property="og:image" content="https://lamber-maybe.github.io/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/2.png">
 <meta property="og:image" content="https://lamber-maybe.github.io/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/3.png">
@@ -219,12 +219,25 @@
     <link rel="preload" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" as="font" crossorigin>
     <!-- algolia -->
     
+        <script>
+            var hits = JSON.parse('{"per_page":10}')
+            var labels = JSON.parse('{"input_placeholder":"Search for Posts","hits_empty":"We did not find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}')
+
+            var algolia = {
+                applicationID: 'IB5HJ10YQM',
+                apiKey: '',
+                indexName: 'blog',
+                hits: hits,
+                labels: labels
+            }
+        </script>
+    
     <!-- 百度统计  -->
     
     <!-- Google tag (gtag.js) -->
     
 
-<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Lamber's Blog" type="application/atom+xml">
+<meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="Lamber's Blog" type="application/atom+xml">
 </head>
 
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
@@ -349,7 +362,7 @@
                 <!-- 文章字数统计 -->
                 
                     <div class="post-intro-read">
-                        <span>Word count: <span class="post-count word-count">3.3k</span>Reading time: <span class="post-count reading-time">14 min</span></span>
+                        <span>字数统计: <span class="post-count word-count">3.3k</span>阅读时长: <span class="post-count reading-time">14 min</span></span>
                     </div>
                 
                 <div class="post-intro-meta">
@@ -530,7 +543,7 @@
 <li>《pycharm使用教程看这篇就足够了》 <a target="_blank" rel="noopener" href="https://www.jianshu.com/p/2a4d388b86e9">https://www.jianshu.com/p/2a4d388b86e9</a></li>
 </ol>
 <h2 id="二、flask框架学习"><a href="#二、flask框架学习" class="headerlink" title="二、flask框架学习"></a>二、flask框架学习</h2><p><strong>一、用flask写一个hello world:</strong></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>) </span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span>():</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;Hello World&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>) </span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">hello_world</span>():</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;Hello World&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <ol>
 <li>导入<code>Flask</code>类</li>
@@ -542,11 +555,11 @@
 <p><strong>二、让这个 “hello world” 跑起来的方法</strong></p>
 <ol>
 <li><p>powershell</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash">env:FLASK_APP=<span class="string">&quot;flaskr&quot;</span>    --&gt;  flaskr指项目名称</span></span><br><span class="line">flask run</span><br></pre></td></tr></table></figure></li>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$</span><span class="language-bash"><span class="built_in">env</span>:FLASK_APP=<span class="string">&quot;flaskr&quot;</span>    --&gt;  flaskr指项目名称</span></span><br><span class="line">flask run</span><br></pre></td></tr></table></figure></li>
 <li><p>cmd</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">set FLASK_APP=flaskr       --&gt;  flaskr指项目名称</span><br><span class="line">set FLASK_ENV=development</span><br><span class="line">flask run</span><br></pre></td></tr></table></figure></li>
 <li><p>linux</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">export</span> FLASK_APP=flaskr  --&gt;  flaskr指项目名称</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> flask run</span></span><br></pre></td></tr></table></figure></li>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">export</span> FLASK_APP=flaskr  --&gt;  flaskr指项目名称</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">flask run</span></span><br></pre></td></tr></table></figure></li>
 </ol>
 <p><strong>三、如果使用PyCharm:</strong><br>如果是使用PyCharm来运行flask的话, 就会很简单。代码写好之后直接右键选择run, 就可以运行了</p>
 <p>参考文章:</p>
@@ -556,7 +569,7 @@
 <li><code>if __name__ == &#39;__main__&#39;</code>的理解参考<code>《如何简单地理解python中的if __name__ == &#39;__main__&#39;》</code><a target="_blank" rel="noopener" href="https://blog.csdn.net/yjk13703623757/article/details/77918633/">https://blog.csdn.net/yjk13703623757/article/details/77918633/</a></li>
 </ol>
 <h2 id="三、解题过程"><a href="#三、解题过程" class="headerlink" title="三、解题过程"></a>三、解题过程</h2><p>题目源码如下:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, render_template_string, render_template, request</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line">app.config[<span class="string">&#x27;SECRET_KEY&#x27;</span>] = <span class="string">&#x27;evoa@Syclover | https://evoa.me 233333&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">encode</span>(<span class="params">line, key, key2</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(<span class="built_in">chr</span>(x ^ <span class="built_in">ord</span>(line[x]) ^ <span class="built_in">ord</span>(key[::-<span class="number">1</span>][x]) ^ <span class="built_in">ord</span>(key2[x])) <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(line)))</span><br><span class="line"></span><br><span class="line">file = <span class="built_in">open</span>(<span class="string">&quot;/app/flag&quot;</span>, <span class="string">&quot;r&quot;</span>)</span><br><span class="line">flag = file.read()</span><br><span class="line"></span><br><span class="line">app.config[<span class="string">&#x27;flag&#x27;</span>] = encode(flag,<span class="string">&#x27;GQIS5EmzfZA1Ci8NslaoMxPXqrvFB7hYOkbg9y20W3&#x27;</span>,<span class="string">&#x27;xwdFqMck1vA0pl7B8WO3DrG</span></span><br><span class="line"><span class="string">Lma4sZ2Y6ouCPEHSQVT&#x27;</span>)</span><br><span class="line">flag = <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">os.remove(<span class="string">&quot;/app/flag&quot;</span>)</span><br><span class="line">nicknames = [<span class="string">&#x27;˜”*°★☆★_%s_★☆★°°*&#x27;</span>, <span class="string">&#x27;%s ~♡ⓛⓞⓥⓔ♡~&#x27;</span>, <span class="string">&#x27;%s Вêчңø в øĤлâйĤé&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;♪ ♪ ♪ %s ♪ ♪ ♪ &#x27;</span>, <span class="string">&#x27;[♥♥♥%s♥♥♥]&#x27;</span>, <span class="string">&#x27;%s, kOтO®Aя )(оТеЛ@ ©4@$tьЯ&#x27;</span>, <span class="string">&#x27;♔%s♔&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;[♂+♂=♥]%s[♂+♂=♥]&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span>, methods=[<span class="string">&#x27;GET&#x27;</span>, <span class="string">&#x27;POST&#x27;</span>]</span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span>():</span></span><br><span class="line">    <span class="keyword">if</span> request.method == <span class="string">&#x27;POST&#x27;</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            p = request.values.get(<span class="string">&#x27;nickname&#x27;</span>)</span><br><span class="line">            <span class="built_in">id</span> = random.randint(<span class="number">0</span>, <span class="built_in">len</span>(nicknames) - <span class="number">1</span>)</span><br><span class="line">            <span class="keyword">if</span> p != <span class="literal">None</span>:</span><br><span class="line">                <span class="keyword">if</span> <span class="string">&#x27;.&#x27;</span> <span class="keyword">in</span> p <span class="keyword">or</span> <span class="string">&#x27;_&#x27;</span> <span class="keyword">in</span> p <span class="keyword">or</span> <span class="string">&#x27;\&#x27;&#x27;</span> <span class="keyword">in</span> p:</span><br><span class="line">                    <span class="keyword">return</span> <span class="string">&#x27;Your nickname contains restricted characters!&#x27;</span></span><br><span class="line">                <span class="keyword">return</span> render_template_string(nicknames[<span class="built_in">id</span>] % p)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="built_in">print</span>(e)</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;Exception&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> render_template(<span class="string">&#x27;index.html&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/syc&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">syc</span>():</span></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&quot;.&quot;</span> <span class="keyword">in</span> request.args.get(<span class="string">&#x27;name&#x27;</span>) <span class="keyword">or</span> <span class="string">&quot;&#x27;&quot;</span> <span class="keyword">in</span> request.args.get(<span class="string">&#x27;name&#x27;</span>) <span class="keyword">or</span> <span class="string">&#x27;&quot;&#x27;</span> <span class="keyword">in</span> request.args.get(<span class="string">&#x27;name&#x27;</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;nonono&quot;</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> render_template_string(request.args.get(<span class="string">&#x27;name&#x27;</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line"> app.run(host=<span class="string">&#x27;0.0.0.0&#x27;</span>, port=<span class="number">1337</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, render_template_string, render_template, request</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line">app.config[<span class="string">&#x27;SECRET_KEY&#x27;</span>] = <span class="string">&#x27;evoa@Syclover | https://evoa.me 233333&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">encode</span>(<span class="params">line, key, key2</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(<span class="built_in">chr</span>(x ^ <span class="built_in">ord</span>(line[x]) ^ <span class="built_in">ord</span>(key[::-<span class="number">1</span>][x]) ^ <span class="built_in">ord</span>(key2[x])) <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(line)))</span><br><span class="line"></span><br><span class="line">file = <span class="built_in">open</span>(<span class="string">&quot;/app/flag&quot;</span>, <span class="string">&quot;r&quot;</span>)</span><br><span class="line">flag = file.read()</span><br><span class="line"></span><br><span class="line">app.config[<span class="string">&#x27;flag&#x27;</span>] = encode(flag,<span class="string">&#x27;GQIS5EmzfZA1Ci8NslaoMxPXqrvFB7hYOkbg9y20W3&#x27;</span>,<span class="string">&#x27;xwdFqMck1vA0pl7B8WO3DrG</span></span><br><span class="line"><span class="string">Lma4sZ2Y6ouCPEHSQVT&#x27;</span>)</span><br><span class="line">flag = <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">os.remove(<span class="string">&quot;/app/flag&quot;</span>)</span><br><span class="line">nicknames = [<span class="string">&#x27;˜”*°★☆★_%s_★☆★°°*&#x27;</span>, <span class="string">&#x27;%s ~♡ⓛⓞⓥⓔ♡~&#x27;</span>, <span class="string">&#x27;%s Вêчңø в øĤлâйĤé&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;♪ ♪ ♪ %s ♪ ♪ ♪ &#x27;</span>, <span class="string">&#x27;[♥♥♥%s♥♥♥]&#x27;</span>, <span class="string">&#x27;%s, kOтO®Aя )(оТеЛ@ ©4@$tьЯ&#x27;</span>, <span class="string">&#x27;♔%s♔&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;[♂+♂=♥]%s[♂+♂=♥]&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span>, methods=[<span class="string">&#x27;GET&#x27;</span>, <span class="string">&#x27;POST&#x27;</span>]</span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">index</span>():</span><br><span class="line">    <span class="keyword">if</span> request.method == <span class="string">&#x27;POST&#x27;</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            p = request.values.get(<span class="string">&#x27;nickname&#x27;</span>)</span><br><span class="line">            <span class="built_in">id</span> = random.randint(<span class="number">0</span>, <span class="built_in">len</span>(nicknames) - <span class="number">1</span>)</span><br><span class="line">            <span class="keyword">if</span> p != <span class="literal">None</span>:</span><br><span class="line">                <span class="keyword">if</span> <span class="string">&#x27;.&#x27;</span> <span class="keyword">in</span> p <span class="keyword">or</span> <span class="string">&#x27;_&#x27;</span> <span class="keyword">in</span> p <span class="keyword">or</span> <span class="string">&#x27;\&#x27;&#x27;</span> <span class="keyword">in</span> p:</span><br><span class="line">                    <span class="keyword">return</span> <span class="string">&#x27;Your nickname contains restricted characters!&#x27;</span></span><br><span class="line">                <span class="keyword">return</span> render_template_string(nicknames[<span class="built_in">id</span>] % p)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="built_in">print</span>(e)</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;Exception&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> render_template(<span class="string">&#x27;index.html&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/syc&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">syc</span>():</span><br><span class="line">    <span class="keyword">if</span> <span class="string">&quot;.&quot;</span> <span class="keyword">in</span> request.args.get(<span class="string">&#x27;name&#x27;</span>) <span class="keyword">or</span> <span class="string">&quot;&#x27;&quot;</span> <span class="keyword">in</span> request.args.get(<span class="string">&#x27;name&#x27;</span>) <span class="keyword">or</span> <span class="string">&#x27;&quot;&#x27;</span> <span class="keyword">in</span> request.args.get(<span class="string">&#x27;name&#x27;</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;nonono&quot;</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> render_template_string(request.args.get(<span class="string">&#x27;name&#x27;</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line"> app.run(host=<span class="string">&#x27;0.0.0.0&#x27;</span>, port=<span class="number">1337</span>)</span><br></pre></td></tr></table></figure>
 
 <p>分析题目源码<br>该题目定义了两个路由</p>
 <ol>
@@ -599,7 +612,7 @@
 <p>缺省情况下，以下全局变量可以在 Jinja2 模板中使用:<br>config: 当前配置对象<br>request: 当前请求对象, 在没有活动请求环境情况下渲染模板时，这个变量不可用。<br>session: 当前会话对象, 在没有活动请求环境情况下渲染模板时，这个变量不可用。<br>g: 请求绑定的全局变量, 在没有活动请求环境情况下渲染模板时，这个变量不可用。</p>
 </blockquote>
 <p>既然config是全局变量, 而 <code>&#123;&#123; ... &#125;&#125;</code> 可以将基本表达式的结果输出, 并且 <code>render_template_string()</code> 会将字符串以Jinja2的规则转义。那是否可以利用 <code>render_template_string()</code> 先将 <code>&quot;&#123;&#123; ... &#125;&#125;&quot;</code> 字符串转义成Jinja2模板格式, 而转义之后就成了 <code>&#123;&#123; ... &#125;&#125;</code> 定界符, 再利用这个定界符输出 config 这个全局变量呢。<br>于是我搭建了一个测试环境, 代码跟输出结果如下:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, render_template_string</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span>():</span></span><br><span class="line">    <span class="keyword">return</span> render_template_string(<span class="string">&quot;&#123;&#123; config &#125;&#125;&quot;</span>)</span><br><span class="line">    </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, render_template_string</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">index</span>():</span><br><span class="line">    <span class="keyword">return</span> render_template_string(<span class="string">&quot;&#123;&#123; config &#125;&#125;&quot;</span>)</span><br><span class="line">    </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
 
 <img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/1.jpg" class="">
 
@@ -608,7 +621,7 @@
 <img src="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/2.png" class="">
 
 <p>是flag!<br>不过有点遗憾的是, flag是加了密的。回到题目中, 再仔细看看代码。找到加密flag的部分:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">encode</span>(<span class="params">line, key, key2</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(<span class="built_in">chr</span>(x ^ <span class="built_in">ord</span>(line[x]) ^ <span class="built_in">ord</span>(key[::-<span class="number">1</span>][x]) ^ <span class="built_in">ord</span>(key2[x])) <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(line)))</span><br><span class="line">    </span><br><span class="line">file = <span class="built_in">open</span>(<span class="string">&quot;/app/flag&quot;</span>, <span class="string">&quot;r&quot;</span>)</span><br><span class="line">flag = file.read()</span><br><span class="line"></span><br><span class="line">app.config[<span class="string">&#x27;flag&#x27;</span>] = encode(flag,<span class="string">&#x27;GQIS5EmzfZA1Ci8NslaoMxPXqrvFB7hYOkbg9y20W3&#x27;</span>,<span class="string">&#x27;xwdFqMck1vA0pl7B8WO3DrGLma4sZ2Y6ouCPEHSQVT&#x27;</span>)</span><br><span class="line">flag = <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">os.remove(<span class="string">&quot;/app/flag&quot;</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">encode</span>(<span class="params">line, key, key2</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(<span class="built_in">chr</span>(x ^ <span class="built_in">ord</span>(line[x]) ^ <span class="built_in">ord</span>(key[::-<span class="number">1</span>][x]) ^ <span class="built_in">ord</span>(key2[x])) <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(line)))</span><br><span class="line">    </span><br><span class="line">file = <span class="built_in">open</span>(<span class="string">&quot;/app/flag&quot;</span>, <span class="string">&quot;r&quot;</span>)</span><br><span class="line">flag = file.read()</span><br><span class="line"></span><br><span class="line">app.config[<span class="string">&#x27;flag&#x27;</span>] = encode(flag,<span class="string">&#x27;GQIS5EmzfZA1Ci8NslaoMxPXqrvFB7hYOkbg9y20W3&#x27;</span>,<span class="string">&#x27;xwdFqMck1vA0pl7B8WO3DrGLma4sZ2Y6ouCPEHSQVT&#x27;</span>)</span><br><span class="line">flag = <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">os.remove(<span class="string">&quot;/app/flag&quot;</span>)</span><br></pre></td></tr></table></figure>
 
 <p>观察 <code>encode()</code> 函数, 发现返回值是由 <code>x</code>, <code>ord(line[x])</code>, <code>ord(key[::-1][x])</code>, <code>ord(key2[x])</code> 四部分亦或得到。<br>亦或参考文章<br>1）：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/tmdsleep/p/9933647.html">https://www.cnblogs.com/tmdsleep/p/9933647.html</a><br>2）：<a target="_blank" rel="noopener" href="http://www.elecfans.com/d/653831.html">http://www.elecfans.com/d/653831.html</a></p>
 <p>通过学习异或运算可知:</p>
@@ -620,7 +633,7 @@
 <p>即加密flag部分, 可以简单理解为:<br><code>密文 = x ^ flag ^ ord(key[::-1][x]) ^ ord(key2[x])</code></p>
 <p>根据推论解密flag, 即:<br><code>flag = x ^ 密文 ^ ord(key[::-1][x]) ^ ord(key2[x])</code></p>
 <p>解密脚本:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">encode</span>(<span class="params">encrypt_flag, key, key2</span>):</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(<span class="built_in">chr</span>(x ^ <span class="built_in">ord</span>(encrypt_flag[x]) ^ <span class="built_in">ord</span>(key[::-<span class="number">1</span>][x]) ^ <span class="built_in">ord</span>(key2[x])) <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(encrypt_flag)))</span><br><span class="line">    </span><br><span class="line">encrypt_flag = <span class="string">&quot;\x18X5\x0cx\x19k&#125;\r\x01a\x0c\x1fT\x16X?hl\x1e\\OLL(n\x17\x0fi]B\x0fh8&quot;</span></span><br><span class="line">key = <span class="string">&quot;GQIS5EmzfZA1Ci8NslaoMxPXqrvFB7hYOkbg9y20W3&quot;</span></span><br><span class="line">key2 = <span class="string">&quot;xwdFqMck1vA0pl7B8WO3DrGLma4sZ2Y6ouCPEHSQVT&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(decode(encrypt_flag, key, key2))</span><br><span class="line"></span><br><span class="line"><span class="comment"># Syc&#123;this_1s_Twice_interv1ew_F14g&#125;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">encode</span>(<span class="params">encrypt_flag, key, key2</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;&#x27;</span>.join(<span class="built_in">chr</span>(x ^ <span class="built_in">ord</span>(encrypt_flag[x]) ^ <span class="built_in">ord</span>(key[::-<span class="number">1</span>][x]) ^ <span class="built_in">ord</span>(key2[x])) <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(encrypt_flag)))</span><br><span class="line">    </span><br><span class="line">encrypt_flag = <span class="string">&quot;\x18X5\x0cx\x19k&#125;\r\x01a\x0c\x1fT\x16X?hl\x1e\\OLL(n\x17\x0fi]B\x0fh8&quot;</span></span><br><span class="line">key = <span class="string">&quot;GQIS5EmzfZA1Ci8NslaoMxPXqrvFB7hYOkbg9y20W3&quot;</span></span><br><span class="line">key2 = <span class="string">&quot;xwdFqMck1vA0pl7B8WO3DrGLma4sZ2Y6ouCPEHSQVT&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(decode(encrypt_flag, key, key2))</span><br><span class="line"></span><br><span class="line"><span class="comment"># Syc&#123;this_1s_Twice_interv1ew_F14g&#125;</span></span><br></pre></td></tr></table></figure>
 
 <p>解码得到第一个flag:<br><code>Syc&#123;this_1s_Twice_interv1ew_F14g&#125;</code></p>
 <p>其实仔细看一下, 构造的解密脚本其实和原加密脚本一样。</p>
@@ -668,11 +681,11 @@
     <!-- license -->
     
         <div class="license-wrapper">
-            <p>Author：<a href="https://lamber-maybe.github.io">Lamber</a>
-            <p>Link：<a href="https://lamber-maybe.github.io/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/">https://lamber-maybe.github.io/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/</a>
-            <p>Publish date：<a href="https://lamber-maybe.github.io/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/">August 30th 2021, 10:10:39 pm</a>
-            <p>Update date：<a href="https://lamber-maybe.github.io/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/">August 30th 2021, 10:34:56 pm</a>
-            <p>License：本文采用<a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
+            <p>原文作者：<a href="https://lamber-maybe.github.io">Lamber</a>
+            <p>原文链接：<a href="https://lamber-maybe.github.io/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/">https://lamber-maybe.github.io/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/</a>
+            <p>发表日期：<a href="https://lamber-maybe.github.io/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/">August 30th 2021, 10:10:39 pm</a>
+            <p>更新日期：<a href="https://lamber-maybe.github.io/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/">August 30th 2021, 10:34:56 pm</a>
+            <p>版权声明：本文采用<a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
         </div>
     
     <!-- paginator -->
@@ -1116,8 +1129,6 @@
         
         
         
-        
-        
     
     
     
@@ -1127,6 +1138,10 @@
         Total : 23
         </div>
         <!-- search  -->
+        
+            <div class="site-search site-search-loading popup-trigger">
+                <span class="iconfont-archer search-icon">&#xe627;</span>
+            </div>
         
     </div>
     
@@ -1291,11 +1306,6 @@
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
         
-            <span class="sidebar-tag-name" data-tags="环境搭建">
-                <span class="iconfont-archer">&#xe606;</span>
-                环境搭建
-            </span>
-        
             <span class="sidebar-tag-name" data-tags="Java">
                 <span class="iconfont-archer">&#xe606;</span>
                 Java
@@ -1306,14 +1316,9 @@
                 Burp
             </span>
         
-            <span class="sidebar-tag-name" data-tags="记录">
+            <span class="sidebar-tag-name" data-tags="环境搭建">
                 <span class="iconfont-archer">&#xe606;</span>
-                记录
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="面试">
-                <span class="iconfont-archer">&#xe606;</span>
-                面试
+                环境搭建
             </span>
         
             <span class="sidebar-tag-name" data-tags="HTTP">
@@ -1326,6 +1331,16 @@
                 DNS
             </span>
         
+            <span class="sidebar-tag-name" data-tags="记录">
+                <span class="iconfont-archer">&#xe606;</span>
+                记录
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="面试">
+                <span class="iconfont-archer">&#xe606;</span>
+                面试
+            </span>
+        
             <span class="sidebar-tag-name" data-tags="RCE">
                 <span class="iconfont-archer">&#xe606;</span>
                 RCE
@@ -1334,16 +1349,6 @@
             <span class="sidebar-tag-name" data-tags="PHP">
                 <span class="iconfont-archer">&#xe606;</span>
                 PHP
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="基础漏洞">
-                <span class="iconfont-archer">&#xe606;</span>
-                基础漏洞
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="基础">
-                <span class="iconfont-archer">&#xe606;</span>
-                基础
             </span>
         
             <span class="sidebar-tag-name" data-tags="Linux">
@@ -1359,6 +1364,16 @@
             <span class="sidebar-tag-name" data-tags="原理分析">
                 <span class="iconfont-archer">&#xe606;</span>
                 原理分析
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="基础漏洞">
+                <span class="iconfont-archer">&#xe606;</span>
+                基础漏洞
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="基础">
+                <span class="iconfont-archer">&#xe606;</span>
+                基础
             </span>
         
             <span class="sidebar-tag-name" data-tags="笔试">
@@ -1386,16 +1401,6 @@
                 学习资源
             </span>
         
-            <span class="sidebar-tag-name" data-tags="CDN">
-                <span class="iconfont-archer">&#xe606;</span>
-                CDN
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="IP">
-                <span class="iconfont-archer">&#xe606;</span>
-                IP
-            </span>
-        
             <span class="sidebar-tag-name" data-tags="XSS">
                 <span class="iconfont-archer">&#xe606;</span>
                 XSS
@@ -1404,6 +1409,16 @@
             <span class="sidebar-tag-name" data-tags="逻辑漏洞">
                 <span class="iconfont-archer">&#xe606;</span>
                 逻辑漏洞
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="CDN">
+                <span class="iconfont-archer">&#xe606;</span>
+                CDN
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="IP">
+                <span class="iconfont-archer">&#xe606;</span>
+                IP
             </span>
         
             <span class="sidebar-tag-name" data-tags="SSTI">
@@ -1432,19 +1447,14 @@
         <div class="sidebar-panel-categories">
     <div class="sidebar-categories-name">
     
-        <span class="sidebar-category-name" data-categories="备份">
-            <span class="iconfont-archer">&#xe60a;</span>
-            备份
-        </span>
-    
         <span class="sidebar-category-name" data-categories="安全开发">
             <span class="iconfont-archer">&#xe60a;</span>
             安全开发
         </span>
     
-        <span class="sidebar-category-name" data-categories="求职">
+        <span class="sidebar-category-name" data-categories="备份">
             <span class="iconfont-archer">&#xe60a;</span>
-            求职
+            备份
         </span>
     
         <span class="sidebar-category-name" data-categories="协议相关">
@@ -1452,19 +1462,24 @@
             协议相关
         </span>
     
+        <span class="sidebar-category-name" data-categories="求职">
+            <span class="iconfont-archer">&#xe60a;</span>
+            求职
+        </span>
+    
         <span class="sidebar-category-name" data-categories="CTF">
             <span class="iconfont-archer">&#xe60a;</span>
             CTF
         </span>
     
-        <span class="sidebar-category-name" data-categories="SQL注入">
-            <span class="iconfont-archer">&#xe60a;</span>
-            SQL注入
-        </span>
-    
         <span class="sidebar-category-name" data-categories="SHELL">
             <span class="iconfont-archer">&#xe60a;</span>
             SHELL
+        </span>
+    
+        <span class="sidebar-category-name" data-categories="SQL注入">
+            <span class="iconfont-archer">&#xe60a;</span>
+            SQL注入
         </span>
     
         <span class="sidebar-category-name" data-categories="XSS">
@@ -1487,14 +1502,14 @@
             学习资源
         </span>
     
-        <span class="sidebar-category-name" data-categories="信息收集">
-            <span class="iconfont-archer">&#xe60a;</span>
-            信息收集
-        </span>
-    
         <span class="sidebar-category-name" data-categories="漏洞挖掘">
             <span class="iconfont-archer">&#xe60a;</span>
             漏洞挖掘
+        </span>
+    
+        <span class="sidebar-category-name" data-categories="信息收集">
+            <span class="iconfont-archer">&#xe60a;</span>
+            信息收集
         </span>
     
     </div>
@@ -1529,6 +1544,28 @@
         <!-- fancybox -->
         <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" defer></script>
         <!-- algolia -->
+        
+            <div class="site-search site-search-loading">
+    <div class="algolia-popup popup">
+        <div class="algolia-search">
+            <div class="algolia-search-input-icon">
+                <i class="fa fa-search"></i>
+            </div>
+            <div class="algolia-search-input" id="algolia-search-input"></div>
+            <div class="popup-btn-close">
+                <i class="iconfont-archer">&#xe609;</i>
+            </div>
+        </div>
+
+        <div class="algolia-results">
+            <div id="algolia-stats" class="algolia-stats"></div>
+            <div id="algolia-hits"></div>
+            <div id="algolia-pagination" class="algolia-pagination"></div>
+        </div>
+    </div>
+</div>
+
+            <script src="/scripts/search.js?v=20211217" defer></script>
         
         <!-- busuanzi -->
         

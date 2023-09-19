@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
     <!-- title -->
 
 
@@ -25,7 +25,7 @@
 <meta property="og:url" content="https://lamber-maybe.github.io/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
 <meta property="og:site_name" content="Lamber&#39;s Blog">
 <meta property="og:description" content="一、前言 burp官方支持三种语言开发插件：Java、Python、Ruby。但一般情况下推荐使用Java来做插件开发。原因有以下两点： 当用python去做插件的时候，如果需要使用到某个库，而这个库又是用C语言实现的。那么插件将无法正常运行。因为burp在执行python写的插件的时候，是通过Jython（Jython是一种完整的语言，而不是一个Java翻译器或仅仅是一个Python编译器，它是">
-<meta property="og:locale" content="en_US">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://lamber-maybe.github.io/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/1.png">
 <meta property="og:image" content="https://lamber-maybe.github.io/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/2.png">
 <meta property="og:image" content="https://lamber-maybe.github.io/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/3.png">
@@ -221,12 +221,25 @@
     <link rel="preload" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" as="font" crossorigin>
     <!-- algolia -->
     
+        <script>
+            var hits = JSON.parse('{"per_page":10}')
+            var labels = JSON.parse('{"input_placeholder":"Search for Posts","hits_empty":"We did not find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}')
+
+            var algolia = {
+                applicationID: 'IB5HJ10YQM',
+                apiKey: '',
+                indexName: 'blog',
+                hits: hits,
+                labels: labels
+            }
+        </script>
+    
     <!-- 百度统计  -->
     
     <!-- Google tag (gtag.js) -->
     
 
-<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Lamber's Blog" type="application/atom+xml">
+<meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="Lamber's Blog" type="application/atom+xml">
 </head>
 
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
@@ -351,7 +364,7 @@
                 <!-- 文章字数统计 -->
                 
                     <div class="post-intro-read">
-                        <span>Word count: <span class="post-count word-count">889</span>Reading time: <span class="post-count reading-time">3 min</span></span>
+                        <span>字数统计: <span class="post-count word-count">889</span>阅读时长: <span class="post-count reading-time">3 min</span></span>
                     </div>
                 
                 <div class="post-intro-meta">
@@ -541,7 +554,7 @@
 <li>首先我们创建一个IDEA工程文件，并且创建一个名叫burp的包。然后启动之前准备好的bat文件。并将burp里面的API接口文件导出到IDEA的burp包里面。再之后，新建一个class文件，名字为BurpExtender。然后写入以下代码。<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/3.png" class="">
 <img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/4.png" class=""></li>
 </ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> burp;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BurpExtender</span> <span class="keyword">implements</span> <span class="title">IBurpExtender</span></span>&#123;</span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// implements IBurpExtender</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">registerExtenderCallbacks</span><span class="params">(IBurpExtenderCallbacks callbacks)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// set our extension name</span></span><br><span class="line">        callbacks.setExtensionName(<span class="string">&quot;Hello world extension&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// obtain our output and error streams</span></span><br><span class="line">        PrintWriter stdout = <span class="keyword">new</span> PrintWriter(callbacks.getStdout(), <span class="keyword">true</span>);</span><br><span class="line">        PrintWriter stderr = <span class="keyword">new</span> PrintWriter(callbacks.getStderr(), <span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to our output stream</span></span><br><span class="line">        stdout.println(<span class="string">&quot;This is output&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to our error stream</span></span><br><span class="line">        stderr.println(<span class="string">&quot;This is errors&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to the Burp alerts tab</span></span><br><span class="line">        callbacks.issueAlert(<span class="string">&quot;Hello alerts&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// throw an exception that will appear in our error stream</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;Hello exception&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> burp;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BurpExtender</span> <span class="keyword">implements</span> <span class="title class_">IBurpExtender</span>&#123;</span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// implements IBurpExtender</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">registerExtenderCallbacks</span><span class="params">(IBurpExtenderCallbacks callbacks)</span> &#123;</span><br><span class="line">        <span class="comment">// set our extension name</span></span><br><span class="line">        callbacks.setExtensionName(<span class="string">&quot;Hello world extension&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// obtain our output and error streams</span></span><br><span class="line">        <span class="type">PrintWriter</span> <span class="variable">stdout</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">PrintWriter</span>(callbacks.getStdout(), <span class="literal">true</span>);</span><br><span class="line">        <span class="type">PrintWriter</span> <span class="variable">stderr</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">PrintWriter</span>(callbacks.getStderr(), <span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to our output stream</span></span><br><span class="line">        stdout.println(<span class="string">&quot;This is output&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to our error stream</span></span><br><span class="line">        stderr.println(<span class="string">&quot;This is errors&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to the Burp alerts tab</span></span><br><span class="line">        callbacks.issueAlert(<span class="string">&quot;Hello alerts&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// throw an exception that will appear in our error stream</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;Hello exception&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <p>将项目打包为jar包然后从burp导入jar包</p>
 <img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/5.png" class="">
@@ -558,11 +571,11 @@
     <!-- license -->
     
         <div class="license-wrapper">
-            <p>Author：<a href="https://lamber-maybe.github.io">Lamber</a>
-            <p>Link：<a href="https://lamber-maybe.github.io/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/">https://lamber-maybe.github.io/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/</a>
-            <p>Publish date：<a href="https://lamber-maybe.github.io/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/">August 27th 2021, 10:55:18 pm</a>
-            <p>Update date：<a href="https://lamber-maybe.github.io/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/">August 29th 2021, 11:50:30 pm</a>
-            <p>License：本文采用<a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
+            <p>原文作者：<a href="https://lamber-maybe.github.io">Lamber</a>
+            <p>原文链接：<a href="https://lamber-maybe.github.io/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/">https://lamber-maybe.github.io/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/</a>
+            <p>发表日期：<a href="https://lamber-maybe.github.io/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/">August 27th 2021, 10:55:18 pm</a>
+            <p>更新日期：<a href="https://lamber-maybe.github.io/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/">August 29th 2021, 11:50:30 pm</a>
+            <p>版权声明：本文采用<a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
         </div>
     
     <!-- paginator -->
@@ -1006,8 +1019,6 @@
         
         
         
-        
-        
     
     
     
@@ -1017,6 +1028,10 @@
         Total : 23
         </div>
         <!-- search  -->
+        
+            <div class="site-search site-search-loading popup-trigger">
+                <span class="iconfont-archer search-icon">&#xe627;</span>
+            </div>
         
     </div>
     
@@ -1181,11 +1196,6 @@
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
         
-            <span class="sidebar-tag-name" data-tags="环境搭建">
-                <span class="iconfont-archer">&#xe606;</span>
-                环境搭建
-            </span>
-        
             <span class="sidebar-tag-name" data-tags="Java">
                 <span class="iconfont-archer">&#xe606;</span>
                 Java
@@ -1196,14 +1206,9 @@
                 Burp
             </span>
         
-            <span class="sidebar-tag-name" data-tags="记录">
+            <span class="sidebar-tag-name" data-tags="环境搭建">
                 <span class="iconfont-archer">&#xe606;</span>
-                记录
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="面试">
-                <span class="iconfont-archer">&#xe606;</span>
-                面试
+                环境搭建
             </span>
         
             <span class="sidebar-tag-name" data-tags="HTTP">
@@ -1216,6 +1221,16 @@
                 DNS
             </span>
         
+            <span class="sidebar-tag-name" data-tags="记录">
+                <span class="iconfont-archer">&#xe606;</span>
+                记录
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="面试">
+                <span class="iconfont-archer">&#xe606;</span>
+                面试
+            </span>
+        
             <span class="sidebar-tag-name" data-tags="RCE">
                 <span class="iconfont-archer">&#xe606;</span>
                 RCE
@@ -1224,16 +1239,6 @@
             <span class="sidebar-tag-name" data-tags="PHP">
                 <span class="iconfont-archer">&#xe606;</span>
                 PHP
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="基础漏洞">
-                <span class="iconfont-archer">&#xe606;</span>
-                基础漏洞
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="基础">
-                <span class="iconfont-archer">&#xe606;</span>
-                基础
             </span>
         
             <span class="sidebar-tag-name" data-tags="Linux">
@@ -1249,6 +1254,16 @@
             <span class="sidebar-tag-name" data-tags="原理分析">
                 <span class="iconfont-archer">&#xe606;</span>
                 原理分析
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="基础漏洞">
+                <span class="iconfont-archer">&#xe606;</span>
+                基础漏洞
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="基础">
+                <span class="iconfont-archer">&#xe606;</span>
+                基础
             </span>
         
             <span class="sidebar-tag-name" data-tags="笔试">
@@ -1276,16 +1291,6 @@
                 学习资源
             </span>
         
-            <span class="sidebar-tag-name" data-tags="CDN">
-                <span class="iconfont-archer">&#xe606;</span>
-                CDN
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="IP">
-                <span class="iconfont-archer">&#xe606;</span>
-                IP
-            </span>
-        
             <span class="sidebar-tag-name" data-tags="XSS">
                 <span class="iconfont-archer">&#xe606;</span>
                 XSS
@@ -1294,6 +1299,16 @@
             <span class="sidebar-tag-name" data-tags="逻辑漏洞">
                 <span class="iconfont-archer">&#xe606;</span>
                 逻辑漏洞
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="CDN">
+                <span class="iconfont-archer">&#xe606;</span>
+                CDN
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="IP">
+                <span class="iconfont-archer">&#xe606;</span>
+                IP
             </span>
         
             <span class="sidebar-tag-name" data-tags="SSTI">
@@ -1322,19 +1337,14 @@
         <div class="sidebar-panel-categories">
     <div class="sidebar-categories-name">
     
-        <span class="sidebar-category-name" data-categories="备份">
-            <span class="iconfont-archer">&#xe60a;</span>
-            备份
-        </span>
-    
         <span class="sidebar-category-name" data-categories="安全开发">
             <span class="iconfont-archer">&#xe60a;</span>
             安全开发
         </span>
     
-        <span class="sidebar-category-name" data-categories="求职">
+        <span class="sidebar-category-name" data-categories="备份">
             <span class="iconfont-archer">&#xe60a;</span>
-            求职
+            备份
         </span>
     
         <span class="sidebar-category-name" data-categories="协议相关">
@@ -1342,19 +1352,24 @@
             协议相关
         </span>
     
+        <span class="sidebar-category-name" data-categories="求职">
+            <span class="iconfont-archer">&#xe60a;</span>
+            求职
+        </span>
+    
         <span class="sidebar-category-name" data-categories="CTF">
             <span class="iconfont-archer">&#xe60a;</span>
             CTF
         </span>
     
-        <span class="sidebar-category-name" data-categories="SQL注入">
-            <span class="iconfont-archer">&#xe60a;</span>
-            SQL注入
-        </span>
-    
         <span class="sidebar-category-name" data-categories="SHELL">
             <span class="iconfont-archer">&#xe60a;</span>
             SHELL
+        </span>
+    
+        <span class="sidebar-category-name" data-categories="SQL注入">
+            <span class="iconfont-archer">&#xe60a;</span>
+            SQL注入
         </span>
     
         <span class="sidebar-category-name" data-categories="XSS">
@@ -1377,14 +1392,14 @@
             学习资源
         </span>
     
-        <span class="sidebar-category-name" data-categories="信息收集">
-            <span class="iconfont-archer">&#xe60a;</span>
-            信息收集
-        </span>
-    
         <span class="sidebar-category-name" data-categories="漏洞挖掘">
             <span class="iconfont-archer">&#xe60a;</span>
             漏洞挖掘
+        </span>
+    
+        <span class="sidebar-category-name" data-categories="信息收集">
+            <span class="iconfont-archer">&#xe60a;</span>
+            信息收集
         </span>
     
     </div>
@@ -1419,6 +1434,28 @@
         <!-- fancybox -->
         <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" defer></script>
         <!-- algolia -->
+        
+            <div class="site-search site-search-loading">
+    <div class="algolia-popup popup">
+        <div class="algolia-search">
+            <div class="algolia-search-input-icon">
+                <i class="fa fa-search"></i>
+            </div>
+            <div class="algolia-search-input" id="algolia-search-input"></div>
+            <div class="popup-btn-close">
+                <i class="iconfont-archer">&#xe609;</i>
+            </div>
+        </div>
+
+        <div class="algolia-results">
+            <div id="algolia-stats" class="algolia-stats"></div>
+            <div id="algolia-hits"></div>
+            <div id="algolia-pagination" class="algolia-pagination"></div>
+        </div>
+    </div>
+</div>
+
+            <script src="/scripts/search.js?v=20211217" defer></script>
         
         <!-- busuanzi -->
         

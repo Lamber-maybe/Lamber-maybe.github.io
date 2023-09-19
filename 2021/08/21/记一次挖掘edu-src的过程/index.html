@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
     <!-- title -->
 
 
@@ -25,7 +25,7 @@
 <meta property="og:url" content="https://lamber-maybe.github.io/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/index.html">
 <meta property="og:site_name" content="Lamber&#39;s Blog">
 <meta property="og:description" content="今天在群里和沙雕网友唠嗑，正好聊到了网络安全上面。于是打算展示点与网络安全相关的东西给群友们看看。就拿群友的学校开刀试试。 所有漏洞已提交给edu-src。 信息收集首先收集一下子域名，为了方便起见，直接使用在线子域名查询   逐个查看，找到了三个登录地址。简单测试一下，不能用万能密码进入。这时候发现其中有一个登录地址存在注册功能。 漏洞挖掘存储型XSS注册一个账号，进去之后发现可以编辑个人信息">
-<meta property="og:locale" content="en_US">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://lamber-maybe.github.io/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/%E5%AD%90%E5%9F%9F%E5%90%8D%E6%94%B6%E9%9B%86.png">
 <meta property="og:image" content="https://lamber-maybe.github.io/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/edit.jpg">
 <meta property="og:image" content="https://lamber-maybe.github.io/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/payload.jpg">
@@ -221,12 +221,25 @@
     <link rel="preload" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" as="font" crossorigin>
     <!-- algolia -->
     
+        <script>
+            var hits = JSON.parse('{"per_page":10}')
+            var labels = JSON.parse('{"input_placeholder":"Search for Posts","hits_empty":"We did not find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}')
+
+            var algolia = {
+                applicationID: 'IB5HJ10YQM',
+                apiKey: '',
+                indexName: 'blog',
+                hits: hits,
+                labels: labels
+            }
+        </script>
+    
     <!-- 百度统计  -->
     
     <!-- Google tag (gtag.js) -->
     
 
-<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Lamber's Blog" type="application/atom+xml">
+<meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="Lamber's Blog" type="application/atom+xml">
 </head>
 
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
@@ -351,7 +364,7 @@
                 <!-- 文章字数统计 -->
                 
                     <div class="post-intro-read">
-                        <span>Word count: <span class="post-count word-count">1k</span>Reading time: <span class="post-count reading-time">3 min</span></span>
+                        <span>字数统计: <span class="post-count word-count">1k</span>阅读时长: <span class="post-count reading-time">3 min</span></span>
                     </div>
                 
                 <div class="post-intro-meta">
@@ -574,11 +587,11 @@
     <!-- license -->
     
         <div class="license-wrapper">
-            <p>Author：<a href="https://lamber-maybe.github.io">Lamber</a>
-            <p>Link：<a href="https://lamber-maybe.github.io/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/">https://lamber-maybe.github.io/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/</a>
-            <p>Publish date：<a href="https://lamber-maybe.github.io/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/">August 21st 2021, 1:24:02 am</a>
-            <p>Update date：<a href="https://lamber-maybe.github.io/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/">August 21st 2021, 5:58:24 am</a>
-            <p>License：本文采用<a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
+            <p>原文作者：<a href="https://lamber-maybe.github.io">Lamber</a>
+            <p>原文链接：<a href="https://lamber-maybe.github.io/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/">https://lamber-maybe.github.io/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/</a>
+            <p>发表日期：<a href="https://lamber-maybe.github.io/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/">August 21st 2021, 1:24:02 am</a>
+            <p>更新日期：<a href="https://lamber-maybe.github.io/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/">August 21st 2021, 5:58:24 am</a>
+            <p>版权声明：本文采用<a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
         </div>
     
     <!-- paginator -->
@@ -1022,8 +1035,6 @@
         
         
         
-        
-        
     
     
     
@@ -1033,6 +1044,10 @@
         Total : 23
         </div>
         <!-- search  -->
+        
+            <div class="site-search site-search-loading popup-trigger">
+                <span class="iconfont-archer search-icon">&#xe627;</span>
+            </div>
         
     </div>
     
@@ -1197,11 +1212,6 @@
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
         
-            <span class="sidebar-tag-name" data-tags="环境搭建">
-                <span class="iconfont-archer">&#xe606;</span>
-                环境搭建
-            </span>
-        
             <span class="sidebar-tag-name" data-tags="Java">
                 <span class="iconfont-archer">&#xe606;</span>
                 Java
@@ -1212,14 +1222,9 @@
                 Burp
             </span>
         
-            <span class="sidebar-tag-name" data-tags="记录">
+            <span class="sidebar-tag-name" data-tags="环境搭建">
                 <span class="iconfont-archer">&#xe606;</span>
-                记录
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="面试">
-                <span class="iconfont-archer">&#xe606;</span>
-                面试
+                环境搭建
             </span>
         
             <span class="sidebar-tag-name" data-tags="HTTP">
@@ -1232,6 +1237,16 @@
                 DNS
             </span>
         
+            <span class="sidebar-tag-name" data-tags="记录">
+                <span class="iconfont-archer">&#xe606;</span>
+                记录
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="面试">
+                <span class="iconfont-archer">&#xe606;</span>
+                面试
+            </span>
+        
             <span class="sidebar-tag-name" data-tags="RCE">
                 <span class="iconfont-archer">&#xe606;</span>
                 RCE
@@ -1240,16 +1255,6 @@
             <span class="sidebar-tag-name" data-tags="PHP">
                 <span class="iconfont-archer">&#xe606;</span>
                 PHP
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="基础漏洞">
-                <span class="iconfont-archer">&#xe606;</span>
-                基础漏洞
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="基础">
-                <span class="iconfont-archer">&#xe606;</span>
-                基础
             </span>
         
             <span class="sidebar-tag-name" data-tags="Linux">
@@ -1265,6 +1270,16 @@
             <span class="sidebar-tag-name" data-tags="原理分析">
                 <span class="iconfont-archer">&#xe606;</span>
                 原理分析
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="基础漏洞">
+                <span class="iconfont-archer">&#xe606;</span>
+                基础漏洞
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="基础">
+                <span class="iconfont-archer">&#xe606;</span>
+                基础
             </span>
         
             <span class="sidebar-tag-name" data-tags="笔试">
@@ -1292,16 +1307,6 @@
                 学习资源
             </span>
         
-            <span class="sidebar-tag-name" data-tags="CDN">
-                <span class="iconfont-archer">&#xe606;</span>
-                CDN
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="IP">
-                <span class="iconfont-archer">&#xe606;</span>
-                IP
-            </span>
-        
             <span class="sidebar-tag-name" data-tags="XSS">
                 <span class="iconfont-archer">&#xe606;</span>
                 XSS
@@ -1310,6 +1315,16 @@
             <span class="sidebar-tag-name" data-tags="逻辑漏洞">
                 <span class="iconfont-archer">&#xe606;</span>
                 逻辑漏洞
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="CDN">
+                <span class="iconfont-archer">&#xe606;</span>
+                CDN
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="IP">
+                <span class="iconfont-archer">&#xe606;</span>
+                IP
             </span>
         
             <span class="sidebar-tag-name" data-tags="SSTI">
@@ -1338,19 +1353,14 @@
         <div class="sidebar-panel-categories">
     <div class="sidebar-categories-name">
     
-        <span class="sidebar-category-name" data-categories="备份">
-            <span class="iconfont-archer">&#xe60a;</span>
-            备份
-        </span>
-    
         <span class="sidebar-category-name" data-categories="安全开发">
             <span class="iconfont-archer">&#xe60a;</span>
             安全开发
         </span>
     
-        <span class="sidebar-category-name" data-categories="求职">
+        <span class="sidebar-category-name" data-categories="备份">
             <span class="iconfont-archer">&#xe60a;</span>
-            求职
+            备份
         </span>
     
         <span class="sidebar-category-name" data-categories="协议相关">
@@ -1358,19 +1368,24 @@
             协议相关
         </span>
     
+        <span class="sidebar-category-name" data-categories="求职">
+            <span class="iconfont-archer">&#xe60a;</span>
+            求职
+        </span>
+    
         <span class="sidebar-category-name" data-categories="CTF">
             <span class="iconfont-archer">&#xe60a;</span>
             CTF
         </span>
     
-        <span class="sidebar-category-name" data-categories="SQL注入">
-            <span class="iconfont-archer">&#xe60a;</span>
-            SQL注入
-        </span>
-    
         <span class="sidebar-category-name" data-categories="SHELL">
             <span class="iconfont-archer">&#xe60a;</span>
             SHELL
+        </span>
+    
+        <span class="sidebar-category-name" data-categories="SQL注入">
+            <span class="iconfont-archer">&#xe60a;</span>
+            SQL注入
         </span>
     
         <span class="sidebar-category-name" data-categories="XSS">
@@ -1393,14 +1408,14 @@
             学习资源
         </span>
     
-        <span class="sidebar-category-name" data-categories="信息收集">
-            <span class="iconfont-archer">&#xe60a;</span>
-            信息收集
-        </span>
-    
         <span class="sidebar-category-name" data-categories="漏洞挖掘">
             <span class="iconfont-archer">&#xe60a;</span>
             漏洞挖掘
+        </span>
+    
+        <span class="sidebar-category-name" data-categories="信息收集">
+            <span class="iconfont-archer">&#xe60a;</span>
+            信息收集
         </span>
     
     </div>
@@ -1435,6 +1450,28 @@
         <!-- fancybox -->
         <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" defer></script>
         <!-- algolia -->
+        
+            <div class="site-search site-search-loading">
+    <div class="algolia-popup popup">
+        <div class="algolia-search">
+            <div class="algolia-search-input-icon">
+                <i class="fa fa-search"></i>
+            </div>
+            <div class="algolia-search-input" id="algolia-search-input"></div>
+            <div class="popup-btn-close">
+                <i class="iconfont-archer">&#xe609;</i>
+            </div>
+        </div>
+
+        <div class="algolia-results">
+            <div id="algolia-stats" class="algolia-stats"></div>
+            <div id="algolia-hits"></div>
+            <div id="algolia-pagination" class="algolia-pagination"></div>
+        </div>
+    </div>
+</div>
+
+            <script src="/scripts/search.js?v=20211217" defer></script>
         
         <!-- busuanzi -->
         
