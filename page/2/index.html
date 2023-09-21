@@ -458,6 +458,46 @@
             
         
         <article class="index-post">
+            <a class="abstract-title" href="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/">
+                
+                <span class="abstract-title-text">BurpSuit 插件开发（一）</span>
+            </a>
+            <div class="abstract-content">
+                一、前言
+burp官方支持三种语言开发插件：Java、Python、Ruby。但一般情况下推荐使用Java来做插件开发。原因有以下两点：
+当用python去做插件的时候，如果需要使用到某个库，而这个库又是用C语言实现的。那么插件将无法正常运行。因为burp在执行python写的插件的时候，是通过Jython（Jython是一种完整的语言，而不是一个Java翻译器或仅仅是一个Python编译器，它是一个Python语言在Java中的完全实现。）去解析执行的。而Jython是无法使用C写的模块，所以在这时候插件就不能正常运行。
+burp本身是Java写的，使用Java去开发插件兼容性最高，会...
+            </div>
+            <!-- read more -->
+            
+            <div class="abstract-post-meta">
+                <!-- date -->
+                <div class="abstract-date" title="Last updated: 2021/08/29">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2021/08/27</span>
+                </div>
+                <!-- tags -->
+                
+                    <div class= abstract-tags >
+    
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Java">Java</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Burp">Burp</a>
+    
+</div>
+
+                
+            </div>
+        </article>
+        <div class="index-post-divider"></div>
+    
+        
+        
+        
+        
+            
+        
+        <article class="index-post">
             <a class="abstract-title" href="/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/">
                 
                 <span class="abstract-title-text">InCTF 2019 - （PHP + 1, PHP + 1.5 and PHP + 2.5）三道题的复现</span>
@@ -954,7 +994,22 @@ SQL注入的主要危害
         
         
         
+        
+        
+        
+        
+        
     
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -1041,7 +1096,7 @@ SQL注入的主要危害
     
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 15
+        Total : 16
         </div>
         <!-- search  -->
         
@@ -1059,6 +1114,12 @@ SQL注入的主要危害
             <div class="archive-year"> 2023 </div>
             <ul class="year-list">
             
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/21</span>
+            <a class="archive-post-title" href="/2023/09/21/Ubuntu22-04%E6%90%AD%E5%BB%BALAMP%E7%8E%AF%E5%A2%83/">Ubuntu22.04搭建LAMP环境</a>
+        </li>
+    
         
         <li class="archive-post-item">
             <span class="archive-post-date">09/19</span>
@@ -1169,14 +1230,14 @@ SQL注入的主要危害
                 环境搭建
             </span>
         
-            <span class="sidebar-tag-name" data-tags="RCE">
+            <span class="sidebar-tag-name" data-tags="Java">
                 <span class="iconfont-archer">&#xe606;</span>
-                RCE
+                Java
             </span>
         
-            <span class="sidebar-tag-name" data-tags="PHP">
+            <span class="sidebar-tag-name" data-tags="Burp">
                 <span class="iconfont-archer">&#xe606;</span>
-                PHP
+                Burp
             </span>
         
             <span class="sidebar-tag-name" data-tags="HTTP">
@@ -1204,16 +1265,6 @@ SQL注入的主要危害
                 原理分析
             </span>
         
-            <span class="sidebar-tag-name" data-tags="Java">
-                <span class="iconfont-archer">&#xe606;</span>
-                Java
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="Burp">
-                <span class="iconfont-archer">&#xe606;</span>
-                Burp
-            </span>
-        
             <span class="sidebar-tag-name" data-tags="基础漏洞">
                 <span class="iconfont-archer">&#xe606;</span>
                 基础漏洞
@@ -1224,9 +1275,14 @@ SQL注入的主要危害
                 基础
             </span>
         
-            <span class="sidebar-tag-name" data-tags="入门">
+            <span class="sidebar-tag-name" data-tags="RCE">
                 <span class="iconfont-archer">&#xe606;</span>
-                入门
+                RCE
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="PHP">
+                <span class="iconfont-archer">&#xe606;</span>
+                PHP
             </span>
         
             <span class="sidebar-tag-name" data-tags="算法">
@@ -1244,19 +1300,14 @@ SQL注入的主要危害
                 记录
             </span>
         
+            <span class="sidebar-tag-name" data-tags="入门">
+                <span class="iconfont-archer">&#xe606;</span>
+                入门
+            </span>
+        
             <span class="sidebar-tag-name" data-tags="学习资源">
                 <span class="iconfont-archer">&#xe606;</span>
                 学习资源
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="CDN">
-                <span class="iconfont-archer">&#xe606;</span>
-                CDN
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="IP">
-                <span class="iconfont-archer">&#xe606;</span>
-                IP
             </span>
         
             <span class="sidebar-tag-name" data-tags="XSS">
@@ -1279,6 +1330,16 @@ SQL注入的主要危害
                 flask
             </span>
         
+            <span class="sidebar-tag-name" data-tags="CDN">
+                <span class="iconfont-archer">&#xe606;</span>
+                CDN
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="IP">
+                <span class="iconfont-archer">&#xe606;</span>
+                IP
+            </span>
+        
     </div>
     <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
     <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
@@ -1295,9 +1356,9 @@ SQL注入的主要危害
             备份
         </span>
     
-        <span class="sidebar-category-name" data-categories="CTF">
+        <span class="sidebar-category-name" data-categories="安全开发">
             <span class="iconfont-archer">&#xe60a;</span>
-            CTF
+            安全开发
         </span>
     
         <span class="sidebar-category-name" data-categories="协议相关">
@@ -1310,24 +1371,14 @@ SQL注入的主要危害
             SHELL
         </span>
     
-        <span class="sidebar-category-name" data-categories="安全开发">
-            <span class="iconfont-archer">&#xe60a;</span>
-            安全开发
-        </span>
-    
         <span class="sidebar-category-name" data-categories="SQL注入">
             <span class="iconfont-archer">&#xe60a;</span>
             SQL注入
         </span>
     
-        <span class="sidebar-category-name" data-categories="机器学习">
+        <span class="sidebar-category-name" data-categories="CTF">
             <span class="iconfont-archer">&#xe60a;</span>
-            机器学习
-        </span>
-    
-        <span class="sidebar-category-name" data-categories="redis">
-            <span class="iconfont-archer">&#xe60a;</span>
-            redis
+            CTF
         </span>
     
         <span class="sidebar-category-name" data-categories="XSS">
@@ -1335,9 +1386,19 @@ SQL注入的主要危害
             XSS
         </span>
     
+        <span class="sidebar-category-name" data-categories="redis">
+            <span class="iconfont-archer">&#xe60a;</span>
+            redis
+        </span>
+    
         <span class="sidebar-category-name" data-categories="求职">
             <span class="iconfont-archer">&#xe60a;</span>
             求职
+        </span>
+    
+        <span class="sidebar-category-name" data-categories="机器学习">
+            <span class="iconfont-archer">&#xe60a;</span>
+            机器学习
         </span>
     
         <span class="sidebar-category-name" data-categories="学习资源">
@@ -1345,14 +1406,14 @@ SQL注入的主要危害
             学习资源
         </span>
     
-        <span class="sidebar-category-name" data-categories="信息收集">
-            <span class="iconfont-archer">&#xe60a;</span>
-            信息收集
-        </span>
-    
         <span class="sidebar-category-name" data-categories="漏洞挖掘">
             <span class="iconfont-archer">&#xe60a;</span>
             漏洞挖掘
+        </span>
+    
+        <span class="sidebar-category-name" data-categories="信息收集">
+            <span class="iconfont-archer">&#xe60a;</span>
+            信息收集
         </span>
     
     </div>

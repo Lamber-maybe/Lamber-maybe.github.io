@@ -443,6 +443,37 @@
             
         
         <article class="index-post">
+            <a class="abstract-title" href="/2023/09/21/Ubuntu22-04%E6%90%AD%E5%BB%BALAMP%E7%8E%AF%E5%A2%83/">
+                
+                <span class="abstract-title-text">Ubuntu22.04搭建LAMP环境</span>
+            </a>
+            <div class="abstract-content">
+                
+LAMP 环境即 （Linux + Apache + Mysql + PHP）集成环境
+
+1. 更新源首先更新 Ubuntu22.04 中的所有东西
+1234567891011121314151617181920212223242526# 1. 备份sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak# 2. 换源sudo vim /etc/apt/sources.list# 使用vim修改配置内容如下（原有内容直接添加 #(井号) 进行注释）deb http://mirrors.aliyun.com/ubuntu/ focal...
+            </div>
+            <!-- read more -->
+            
+            <div class="abstract-post-meta">
+                <!-- date -->
+                <div class="abstract-date" title="Last updated: 2023/09/21">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/09/21</span>
+                </div>
+                <!-- tags -->
+                
+            </div>
+        </article>
+        <div class="index-post-divider"></div>
+    
+        
+        
+        
+        
+            
+        
+        <article class="index-post">
             <a class="abstract-title" href="/2023/09/19/hello-world/">
                 
                 <span class="abstract-title-text">Hello World</span>
@@ -654,7 +685,22 @@ More inf...
         
         
         
+        
+        
+        
+        
+        
     
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -741,7 +787,7 @@ More inf...
     
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 15
+        Total : 16
         </div>
         <!-- search  -->
         
@@ -759,6 +805,12 @@ More inf...
             <div class="archive-year"> 2023 </div>
             <ul class="year-list">
             
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/21</span>
+            <a class="archive-post-title" href="/2023/09/21/Ubuntu22-04%E6%90%AD%E5%BB%BALAMP%E7%8E%AF%E5%A2%83/">Ubuntu22.04搭建LAMP环境</a>
+        </li>
+    
         
         <li class="archive-post-item">
             <span class="archive-post-date">09/19</span>
@@ -869,14 +921,14 @@ More inf...
                 环境搭建
             </span>
         
-            <span class="sidebar-tag-name" data-tags="RCE">
+            <span class="sidebar-tag-name" data-tags="Java">
                 <span class="iconfont-archer">&#xe606;</span>
-                RCE
+                Java
             </span>
         
-            <span class="sidebar-tag-name" data-tags="PHP">
+            <span class="sidebar-tag-name" data-tags="Burp">
                 <span class="iconfont-archer">&#xe606;</span>
-                PHP
+                Burp
             </span>
         
             <span class="sidebar-tag-name" data-tags="HTTP">
@@ -904,16 +956,6 @@ More inf...
                 原理分析
             </span>
         
-            <span class="sidebar-tag-name" data-tags="Java">
-                <span class="iconfont-archer">&#xe606;</span>
-                Java
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="Burp">
-                <span class="iconfont-archer">&#xe606;</span>
-                Burp
-            </span>
-        
             <span class="sidebar-tag-name" data-tags="基础漏洞">
                 <span class="iconfont-archer">&#xe606;</span>
                 基础漏洞
@@ -924,9 +966,14 @@ More inf...
                 基础
             </span>
         
-            <span class="sidebar-tag-name" data-tags="入门">
+            <span class="sidebar-tag-name" data-tags="RCE">
                 <span class="iconfont-archer">&#xe606;</span>
-                入门
+                RCE
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="PHP">
+                <span class="iconfont-archer">&#xe606;</span>
+                PHP
             </span>
         
             <span class="sidebar-tag-name" data-tags="算法">
@@ -944,19 +991,14 @@ More inf...
                 记录
             </span>
         
+            <span class="sidebar-tag-name" data-tags="入门">
+                <span class="iconfont-archer">&#xe606;</span>
+                入门
+            </span>
+        
             <span class="sidebar-tag-name" data-tags="学习资源">
                 <span class="iconfont-archer">&#xe606;</span>
                 学习资源
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="CDN">
-                <span class="iconfont-archer">&#xe606;</span>
-                CDN
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="IP">
-                <span class="iconfont-archer">&#xe606;</span>
-                IP
             </span>
         
             <span class="sidebar-tag-name" data-tags="XSS">
@@ -979,6 +1021,16 @@ More inf...
                 flask
             </span>
         
+            <span class="sidebar-tag-name" data-tags="CDN">
+                <span class="iconfont-archer">&#xe606;</span>
+                CDN
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="IP">
+                <span class="iconfont-archer">&#xe606;</span>
+                IP
+            </span>
+        
     </div>
     <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
     <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
@@ -995,9 +1047,9 @@ More inf...
             备份
         </span>
     
-        <span class="sidebar-category-name" data-categories="CTF">
+        <span class="sidebar-category-name" data-categories="安全开发">
             <span class="iconfont-archer">&#xe60a;</span>
-            CTF
+            安全开发
         </span>
     
         <span class="sidebar-category-name" data-categories="协议相关">
@@ -1010,24 +1062,14 @@ More inf...
             SHELL
         </span>
     
-        <span class="sidebar-category-name" data-categories="安全开发">
-            <span class="iconfont-archer">&#xe60a;</span>
-            安全开发
-        </span>
-    
         <span class="sidebar-category-name" data-categories="SQL注入">
             <span class="iconfont-archer">&#xe60a;</span>
             SQL注入
         </span>
     
-        <span class="sidebar-category-name" data-categories="机器学习">
+        <span class="sidebar-category-name" data-categories="CTF">
             <span class="iconfont-archer">&#xe60a;</span>
-            机器学习
-        </span>
-    
-        <span class="sidebar-category-name" data-categories="redis">
-            <span class="iconfont-archer">&#xe60a;</span>
-            redis
+            CTF
         </span>
     
         <span class="sidebar-category-name" data-categories="XSS">
@@ -1035,9 +1077,19 @@ More inf...
             XSS
         </span>
     
+        <span class="sidebar-category-name" data-categories="redis">
+            <span class="iconfont-archer">&#xe60a;</span>
+            redis
+        </span>
+    
         <span class="sidebar-category-name" data-categories="求职">
             <span class="iconfont-archer">&#xe60a;</span>
             求职
+        </span>
+    
+        <span class="sidebar-category-name" data-categories="机器学习">
+            <span class="iconfont-archer">&#xe60a;</span>
+            机器学习
         </span>
     
         <span class="sidebar-category-name" data-categories="学习资源">
@@ -1045,14 +1097,14 @@ More inf...
             学习资源
         </span>
     
-        <span class="sidebar-category-name" data-categories="信息收集">
-            <span class="iconfont-archer">&#xe60a;</span>
-            信息收集
-        </span>
-    
         <span class="sidebar-category-name" data-categories="漏洞挖掘">
             <span class="iconfont-archer">&#xe60a;</span>
             漏洞挖掘
+        </span>
+    
+        <span class="sidebar-category-name" data-categories="信息收集">
+            <span class="iconfont-archer">&#xe60a;</span>
+            信息收集
         </span>
     
     </div>
