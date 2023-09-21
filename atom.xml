@@ -6,7 +6,7 @@
   <link href="https://lamber-maybe.github.io/atom.xml" rel="self"/>
   
   <link href="https://lamber-maybe.github.io/"/>
-  <updated>2023-09-21T02:50:49.712Z</updated>
+  <updated>2023-09-21T14:41:14.388Z</updated>
   <id>https://lamber-maybe.github.io/</id>
   
   <author>
@@ -15,6 +15,26 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>DedeCMS 组合漏洞分析</title>
+    <link href="https://lamber-maybe.github.io/2023/09/21/DedeCMS-%E7%BB%84%E5%90%88%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
+    <id>https://lamber-maybe.github.io/2023/09/21/DedeCMS-%E7%BB%84%E5%90%88%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/</id>
+    <published>2023-09-21T14:40:27.000Z</published>
+    <updated>2023-09-21T14:41:14.388Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="代码注入漏洞-CVE-2022-36216-–-鸡肋"><a href="#代码注入漏洞-CVE-2022-36216-–-鸡肋" class="headerlink" title="代码注入漏洞(CVE-2022-36216) – 鸡肋"></a>代码注入漏洞(CVE-2022-36216) – 鸡肋</h2><h3 id="1-简述"><a href="#1-简述" class="headerlink" title="1. 简述"></a>1. 简述</h3><p>漏洞涉及文件:<br><code>/uploads/dede/member_toadmin.php</code><br><code>/uploads/include/common.inc.php</code><br>整体流程简述:<br>参数传入流程</p><ul><li><code>/uploads/include/common.inc.php</code><ol><li><code>_RunMagicQuotes()</code></li><li><code>addslashes($svar)</code></li></ol></li></ul><p>下面的<code>$id</code> 值是通过参数传入流程传入进来的。</p><ul><li><code>/uploads/dede/member_toadmin.php</code><ol><li><code>$arr_password[$id] = &quot;&#123;$timestamp&#125;&quot;;</code></li><li><code>$content = &quot;json_encode($arr_password);</code></li><li><code>$fp = fopen($filename, &#39;w&#39;)</code><ol><li><code>$filename = DEDEDATA.&#39;/password.data.php&#39;;</code></li></ol></li><li><code>fwrite($fp, $content);</code></li></ol></li></ul><p>漏洞代码节选:</p><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">// /uploads/include/common.inc.php 文件处代码</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!<span class="title function_ invoke__">defined</span>(<span class="string">&#x27;DEDEREQUEST&#x27;</span>))</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">foreach</span>(<span class="title function_ invoke__">Array</span>(<span class="string">&#x27;_GET&#x27;</span>,<span class="string">&#x27;_POST&#x27;</span>,<span class="string">&#x27;_COOKIE&#x27;</span>) <span class="keyword">as</span> <span class="variable">$_request</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">foreach</span>(<span class="variable">$$_request</span> <span class="keyword">as</span> <span class="variable">$_k</span> =&gt; <span class="variable">$_v</span>)</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$_k</span> == <span class="string">&#x27;nvarname&#x27;</span>) $&#123;<span class="variable">$_k</span>&#125; = <span class="variable">$_v</span>;</span><br><span class="line"><span class="keyword">else</span> $&#123;<span class="variable">$_k</span>&#125; = <span class="title function_ invoke__">_RunMagicQuotes</span>(<span class="variable">$_v</span>);</span><br><span class="line">&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// /uploads/include/common.inc.php 文件处代码</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">_RunMagicQuotes</span>(<span class="params">&amp;<span class="variable">$svar</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(!<span class="title function_ invoke__">get_magic_quotes_gpc</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>( <span class="title function_ invoke__">is_array</span>(<span class="variable">$svar</span>) )</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">foreach</span>(<span class="variable">$svar</span> <span class="keyword">as</span> <span class="variable">$_k</span> =&gt; <span class="variable">$_v</span>) <span class="variable">$svar</span>[<span class="variable">$_k</span>] = <span class="title function_ invoke__">_RunMagicQuotes</span>(<span class="variable">$_v</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            ...</span><br><span class="line">            <span class="variable">$svar</span> = <span class="title function_ invoke__">addslashes</span>(<span class="variable">$svar</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable">$svar</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// /uploads/dede/member_toadmin.php</span></span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$dopost</span> == <span class="string">&quot;toadmin&quot;</span>)</span><br><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="variable">$filename</span> = DEDEDATA.<span class="string">&#x27;/password.data.php&#x27;</span>;</span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_ invoke__">file_exists</span>(<span class="variable">$filename</span>)) &#123;</span><br><span class="line">        <span class="keyword">require_once</span>(DEDEDATA . <span class="string">&#x27;/password.data.php&#x27;</span>);</span><br><span class="line">        <span class="variable">$arr_password</span> = <span class="title function_ invoke__">json_decode</span>(<span class="variable">$str_password</span>, <span class="literal">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    <span class="variable">$arr_password</span>[<span class="variable">$id</span>] = <span class="string">&quot;<span class="subst">&#123;$timestamp&#125;</span>&quot;</span>;</span><br><span class="line">    <span class="variable">$content</span> = <span class="string">&quot;&lt;?php\r\n\$str_password=&#x27;&quot;</span>.<span class="title function_ invoke__">json_encode</span>(<span class="variable">$arr_password</span>).<span class="string">&quot;&#x27;;&quot;</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="variable">$fp</span> = <span class="title function_ invoke__">fopen</span>(<span class="variable">$filename</span>, <span class="string">&#x27;w&#x27;</span>) <span class="keyword">or</span> <span class="keyword">die</span>(<span class="string">&quot;写入文件 <span class="subst">$filename</span> 失败，请检查权限！&quot;</span>);</span><br><span class="line">    <span class="title function_ invoke__">fwrite</span>(<span class="variable">$fp</span>, <span class="variable">$content</span>);</span><br><span class="line">    <span class="title function_ invoke__">fclose</span>(<span class="variable">$fp</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure><h3 id="2-分析"><a href="#2-分析" class="headerlink" title="2. 分析"></a>2. 分析</h3><p>漏洞成因:<br>在DedeCMS中, 首先会用<code>_RunMagicQuotes()</code>函数，把 <code>$_GET, $_POST, $_COOKIE</code> 这三种方式获取到的用户输入过滤一遍。</p><p>然后在<code>_RunMagicQuotes()</code>函数中, 调用了PHP内置的<code>addslashes()</code>函数将获取到的所有输入进行转义。</p><p>然后 <code>json_encode()</code> 函数会将反斜杠进行转义, 这时候单引号就逃逸了 <code>addslashes()</code>函数的过滤, 逃逸了过滤的单引号, 和最开头的单引号实现了闭合。如下图所示<br><img src="https://i.imgur.com/SVTDVha.png"></p><p>闭合掉单引号之后, 利用php拼接的性质, 就能传入恶意函数了, 当 <code>$id</code> 的值为 <code>&#39;.phpinfo()?&gt;</code>时, 如下图所示<br><img src="https://i.imgur.com/1SmQgOI.png"></p><h3 id="3-复现"><a href="#3-复现" class="headerlink" title="3. 复现"></a>3. 复现</h3><p>1.首先打开注册会员功能<br>找到本地文件<code>uploads/install/config.cache.inc.php</code>, 将里面的<code>$cfg_mb_open = &#39;N&#39;;</code> 改为 <code>$cfg_mb_open = &#39;Y&#39;;</code>。<br>2.然后注册一个会员(就在主页上)<br><img src="https://i.imgur.com/1zXukpT.png"><br>3.前往后台页面, 找到<code>会员 -&gt; 注册会员列表 -&gt; 提升</code>。点击<code>提升</code>按钮, 按照提示填写表格。填写完毕之后, <strong>暂时先不要点击<code>确定提升</code>按钮</strong>。<br><img src="https://i.imgur.com/e4yxB6m.png"></p><p><img src="https://i.imgur.com/I0wrsRM.png"><br>4.配置好浏览器代理, 打开BurpSuit或者类似的其它工具, 开启<code>Proxy</code>模块中的<code>Intercept is on</code>。然后<strong>再点击上一步的<code>确定提升</code>按钮</strong>, 这时候能够捕获到HTTP请求包, 请求体部分如下所示。<br><img src="https://i.imgur.com/mqNAGVO.png"></p><p>请注意这里的id参数, 这里就是漏洞触发点, 将其修改为 <code>3&#39;.phpinfo()?&gt;</code>, 然后将数据包<code>Forward</code> 放回去<br><img src="https://i.imgur.com/qtWW1xZ.png"><br>可以看到, 恶意代码已经成功注入到 <code>/uploads/data/password.data.php</code> 文件中<br><img src="https://i.imgur.com/HcvRqXO.png"><br>访问 <code>/uploads/data/password.data.php</code> 文件, 可以看到成功执行了注入进去的代码。<br><img src="https://i.imgur.com/Ki8Xqbs.png"></p><h3 id="4-鸡肋"><a href="#4-鸡肋" class="headerlink" title="4. 鸡肋"></a>4. 鸡肋</h3><p>让我们回到最开始的那段漏洞代码片段中, 里面有一段代码是这样写的。</p><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$filename</span> = DEDEDATA.<span class="string">&#x27;/password.data.php&#x27;</span>;</span><br><span class="line"><span class="keyword">if</span> (<span class="title function_ invoke__">file_exists</span>(<span class="variable">$filename</span>)) &#123;</span><br><span class="line">    <span class="keyword">require_once</span>(DEDEDATA . <span class="string">&#x27;/password.data.php&#x27;</span>);</span><br><span class="line">    <span class="variable">$arr_password</span> = <span class="title function_ invoke__">json_decode</span>(<span class="variable">$str_password</span>, <span class="literal">true</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>这段代码, 检测了是否存在 <code>password.data.php</code> 这个文件, 如果存在的话, 则直接对<code>password.data.php</code> 文件的内容进行解码。也就是说我们没有办法再往里面注入恶意代码了。</p><p>那么问题来了，如果遇到网站已经有一个正常内容的<code>password.data.php</code>文件，这个漏洞就没有任何意义了，毕竟这个漏洞只能在没有这个文件的情况下才能触发。食之无味，弃之可惜。</p><h2 id="任意文件删除漏洞-CVE-2022-30508-–-无用"><a href="#任意文件删除漏洞-CVE-2022-30508-–-无用" class="headerlink" title="任意文件删除漏洞(CVE-2022-30508) – 无用"></a>任意文件删除漏洞(CVE-2022-30508) – 无用</h2><h3 id="1-简述-1"><a href="#1-简述-1" class="headerlink" title="1. 简述"></a>1. 简述</h3><p>漏洞涉及文件: <code>/uploads/dede/upload.php</code><br>漏洞具体代码:</p><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$delete</span> = <span class="title function_ invoke__">preg_replace</span>(<span class="string">&quot;#^([.]*[/]*)*#&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="variable">$delete</span>);</span><br><span class="line">...</span><br><span class="line"><span class="keyword">if</span> (<span class="variable">$dopost</span> === <span class="string">&#x27;delete&#x27;</span>) &#123;</span><br><span class="line">    <span class="variable">$uploadTmp</span> = DEDEDATA . <span class="string">&#x27;/uploadtmp&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_ invoke__">unlink</span>(<span class="variable">$uploadTmp</span> . <span class="string">&#x27;/&#x27;</span> . <span class="variable">$delete</span>)) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&#x27;success&#x27;</span>;</span><br><span class="line">        <span class="keyword">exit</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&#x27;fail&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure><h3 id="2-分析-1"><a href="#2-分析-1" class="headerlink" title="2. 分析"></a>2. 分析</h3><p>漏洞成因: preg_replace()对过滤不严格，导致依然能够路径穿越。然后通过代码中的unlink()函数实现任意文件删除。</p><h3 id="3-复现-1"><a href="#3-复现-1" class="headerlink" title="3. 复现"></a>3. 复现</h3><p>首先在根目录下新建一个test.txt文件<br><img src="https://i.imgur.com/eF9RTwG.png"></p><p>由于该漏洞涉及的代码片段比较简单，直接使用内置的参数输入方式输入参数，这里选择的是<code>$_GET</code>传参<br><code>/uploads/dede/upload.php?dopost=delete&amp;delete=/Rebmal/../../../test.txt</code><br><img src="https://i.imgur.com/nJrLlIw.png"><br>可以看到已经成功删除了<code>test.txt</code>文件。</p><h3 id="4-无用"><a href="#4-无用" class="headerlink" title="4. 无用"></a>4. 无用</h3><p>这就像一个不是漏洞的漏洞，除了恶作剧好像带来不了更多的危害了。既不能获取数据，也不能获取权限。这么个无用的漏洞，能否发挥出一点用处呢？</p><h2 id="组合使用-化腐朽为神奇"><a href="#组合使用-化腐朽为神奇" class="headerlink" title="组合使用, 化腐朽为神奇"></a>组合使用, 化腐朽为神奇</h2><p>回顾一下上面的两个漏洞，仔细思考一下:<br>第一个任意代码注入漏洞，会在已经存在 <code>password.data.php</code> 文件的情况下失效。<br>第二个任意文件删除漏洞，可以删除任意的文件。</p><p>这两个漏洞一组合，不就能无限制的进行代码注入了吗?</p><p>首先, 使用任意文件删除漏洞删除 <code>password.data.php</code> 文件。<br><code>/uploads/dede/upload.php?dopost=delete&amp;delete=/Rebmal/../../password.data.php</code><br>然后再使用代码注入漏洞进行恶意代码写入。</p><p>这样就实现了无限制的代码注入。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h2 id=&quot;代码注入漏洞-CVE-2022-36216-–-鸡肋&quot;&gt;&lt;a href=&quot;#代码注入漏洞-CVE-2022-36216-–-鸡肋&quot; class=&quot;headerlink&quot; title=&quot;代码注入漏洞(CVE-2022-36216) – 鸡肋&quot;&gt;&lt;/a&gt;代码注入漏洞(</summary>
+      
+    
+    
+    
+    
+  </entry>
   
   <entry>
     <title>Ubuntu22.04搭建LAMP环境</title>
@@ -56,32 +76,6 @@
     
     
     
-    
-  </entry>
-  
-  <entry>
-    <title>机器学习入门</title>
-    <link href="https://lamber-maybe.github.io/2021/11/17/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8/"/>
-    <id>https://lamber-maybe.github.io/2021/11/17/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%85%A5%E9%97%A8/</id>
-    <published>2021-11-17T11:11:20.000Z</published>
-    <updated>2021-11-17T11:37:45.574Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h2><h3 id="基本术语"><a href="#基本术语" class="headerlink" title="基本术语"></a>基本术语</h3><p>数据集(data set): 所有数据的集合<br>示例(instance) 或 样本(sample): 关于一个事件或对象的描述. (可以把一个示例称为一个“特征向量”(feature vector))<br>属性(attribute) 或 特征(feature): 反映事件或对象在某方面的表现或性质的事项<br>属性值(attribute value): 属性上的取值<br>属性空间(attribute space), 样本空间(sample space) 或 输入空间: 属性张成的空间</p><p>维数(dimensionality): 每个示例的属性数量</p><p>学习(learning) 或 训练(training): 从数据中学得模型的过程</p><p>训练数据(training data): 训练过程中使用的数据<br>训练样本(training sample): 训练过程中的每个样本<br>训练集(training set): 训练样本组成的集合</p><p>监督学习(supervised learning): 分类(ckassification) 和 回归(regression) 属于监督学习<br>无监督学习(unsupervised learning): 聚类(clustering) 属于无监督学习</p><h3 id="假设空间"><a href="#假设空间" class="headerlink" title="假设空间"></a>假设空间</h3><h3 id="归纳偏好"><a href="#归纳偏好" class="headerlink" title="归纳偏好"></a>归纳偏好</h3><h2 id="模型评估与选择"><a href="#模型评估与选择" class="headerlink" title="模型评估与选择"></a>模型评估与选择</h2><h3 id="经验误差与过拟合"><a href="#经验误差与过拟合" class="headerlink" title="经验误差与过拟合"></a>经验误差与过拟合</h3><h3 id="评估方法"><a href="#评估方法" class="headerlink" title="评估方法"></a>评估方法</h3><h3 id="比较检验"><a href="#比较检验" class="headerlink" title="比较检验"></a>比较检验</h3><h3 id="偏差与方差"><a href="#偏差与方差" class="headerlink" title="偏差与方差"></a>偏差与方差</h3>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;h2 id=&quot;基础概念&quot;&gt;&lt;a href=&quot;#基础概念&quot; class=&quot;headerlink&quot; title=&quot;基础概念&quot;&gt;&lt;/a&gt;基础概念&lt;/h2&gt;&lt;h3 id=&quot;基本术语&quot;&gt;&lt;a href=&quot;#基本术语&quot; class=&quot;headerlink&quot; title=&quot;基本术语&quot;&gt;&lt;/a</summary>
-      
-    
-    
-    
-    <category term="机器学习" scheme="https://lamber-maybe.github.io/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
-    
-    
-    <category term="基础" scheme="https://lamber-maybe.github.io/tags/%E5%9F%BA%E7%A1%80/"/>
-    
-    <category term="入门" scheme="https://lamber-maybe.github.io/tags/%E5%85%A5%E9%97%A8/"/>
     
   </entry>
   
@@ -134,38 +128,6 @@
     <category term="CDN" scheme="https://lamber-maybe.github.io/tags/CDN/"/>
     
     <category term="IP" scheme="https://lamber-maybe.github.io/tags/IP/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>基础算法题</title>
-    <link href="https://lamber-maybe.github.io/2021/09/04/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95%E9%A2%98/"/>
-    <id>https://lamber-maybe.github.io/2021/09/04/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95%E9%A2%98/</id>
-    <published>2021-09-04T15:52:26.000Z</published>
-    <updated>2021-09-19T12:33:32.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>输入:<br>1,2,2,4</p><p>输出:<br>2,3</p><p>一群人排成一排，找其年龄的最长连续长度<br>输入:<br>21,40,41,22,23,24</p><p>输出:<br>4</p><p>对于给定的 str1 和 str2 识别其最长子序列长度<br>输入:<br>abcde cdefg</p><p>输出:<br>3</p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;p&gt;输入:&lt;br&gt;1,2,2,4&lt;/p&gt;
-&lt;p&gt;输出:&lt;br&gt;2,3&lt;/p&gt;
-&lt;p&gt;一群人排成一排，找其年龄的最长连续长度&lt;br&gt;输入:&lt;br&gt;21,40,41,22,23,24&lt;/p&gt;
-&lt;p&gt;输出:&lt;br&gt;4&lt;/p&gt;
-&lt;p&gt;对于给定的 str1 和 str2 识别其最长子序列</summary>
-      
-    
-    
-    
-    <category term="求职" scheme="https://lamber-maybe.github.io/categories/%E6%B1%82%E8%81%8C/"/>
-    
-    
-    <category term="算法" scheme="https://lamber-maybe.github.io/tags/%E7%AE%97%E6%B3%95/"/>
-    
-    <category term="编程" scheme="https://lamber-maybe.github.io/tags/%E7%BC%96%E7%A8%8B/"/>
-    
-    <category term="记录" scheme="https://lamber-maybe.github.io/tags/%E8%AE%B0%E5%BD%95/"/>
     
   </entry>
   
