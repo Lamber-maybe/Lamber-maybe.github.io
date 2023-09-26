@@ -458,6 +458,34 @@
             
         
         <article class="index-post">
+            <a class="abstract-title" href="/2023/09/26/DedeCMS%E5%89%8D%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2022-35516/">
+                
+                <span class="abstract-title-text">DedeCMS前台代码执行(CVE-2022-35516)</span>
+            </a>
+            <div class="abstract-content">
+                影响版本: DedeCMS v5.7.93 - v5.7.96漏洞产生原因: 在后台登录功能处，没有对用户名进行过滤，导致用户可以从用户名处注入恶意代码。漏洞代码
+12345678910111213141516171819// /dede/login.php&lt;?php$filename = DEDEDATA.&#x27;/login.data.php&#x27;;// 连续登录失败用户锁定  $count = 1;  $timestamp = time();  if ($arr_login[$userid] != &#x27;&#x27;) &#123;      $count =...
+            </div>
+            <!-- read more -->
+            
+            <div class="abstract-post-meta">
+                <!-- date -->
+                <div class="abstract-date" title="Last updated: 2023/09/26">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/09/26</span>
+                </div>
+                <!-- tags -->
+                
+            </div>
+        </article>
+        <div class="index-post-divider"></div>
+    
+        
+        
+        
+        
+            
+        
+        <article class="index-post">
             <a class="abstract-title" href="/2023/09/21/Ubuntu22-04%E6%90%AD%E5%BB%BALAMP%E7%8E%AF%E5%A2%83/">
                 
                 <span class="abstract-title-text">Ubuntu22.04搭建LAMP环境</span>
@@ -804,45 +832,6 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
         </article>
         <div class="index-post-divider"></div>
     
-        
-        
-        
-        
-            
-        
-        <article class="index-post">
-            <a class="abstract-title" href="/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/">
-                
-                <span class="abstract-title-text">InCTF 2019 - （PHP + 1, PHP + 1.5 and PHP + 2.5）三道题的复现</span>
-            </a>
-            <div class="abstract-content">
-                题目描述这篇writeup是关于这次比赛 PHP+1, PHP+1.5和PHP+2.5这三道代码审计题目的。我们可以用同一个payload来解决这三道题目。这三道题的考点是全部相同的: Bypass the WAF and get a shell
-题目分析首先看第一道题（PHP+1），打开题目链接就能直接获取到题目代码
-123456789101112131415161718192021222324252627282930313233343536373839404142434445&lt;?php// PHP+1$input = $_GET[&#x27;input&#x27;];funct...
-            </div>
-            <!-- read more -->
-            
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2021/08/29">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2021/08/26</span>
-                </div>
-                <!-- tags -->
-                
-                    <div class= abstract-tags >
-    
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags="RCE">RCE</a>
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags="PHP">PHP</a>
-    
-</div>
-
-                
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-    
     <!-- paginator  -->
     
         <nav class="page-nav">
@@ -1124,6 +1113,11 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
         
         
         
+        
+        
+        
+        
+        
     
         
         
@@ -1217,7 +1211,7 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
     
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 15
+        Total : 16
         </div>
         <!-- search  -->
         
@@ -1235,6 +1229,12 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
             <div class="archive-year"> 2023 </div>
             <ul class="year-list">
             
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/26</span>
+            <a class="archive-post-title" href="/2023/09/26/DedeCMS%E5%89%8D%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2022-35516/">DedeCMS前台代码执行(CVE-2022-35516)</a>
+        </li>
+    
         
         <li class="archive-post-item">
             <span class="archive-post-date">09/21</span>
@@ -1363,6 +1363,16 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
                 环境搭建
             </span>
         
+            <span class="sidebar-tag-name" data-tags="Java">
+                <span class="iconfont-archer">&#xe606;</span>
+                Java
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="Burp">
+                <span class="iconfont-archer">&#xe606;</span>
+                Burp
+            </span>
+        
             <span class="sidebar-tag-name" data-tags="HTTP">
                 <span class="iconfont-archer">&#xe606;</span>
                 HTTP
@@ -1398,16 +1408,6 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
                 基础
             </span>
         
-            <span class="sidebar-tag-name" data-tags="Java">
-                <span class="iconfont-archer">&#xe606;</span>
-                Java
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="Burp">
-                <span class="iconfont-archer">&#xe606;</span>
-                Burp
-            </span>
-        
             <span class="sidebar-tag-name" data-tags="RCE">
                 <span class="iconfont-archer">&#xe606;</span>
                 RCE
@@ -1433,16 +1433,6 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
                 IP
             </span>
         
-            <span class="sidebar-tag-name" data-tags="SSTI">
-                <span class="iconfont-archer">&#xe606;</span>
-                SSTI
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="flask">
-                <span class="iconfont-archer">&#xe606;</span>
-                flask
-            </span>
-        
             <span class="sidebar-tag-name" data-tags="XSS">
                 <span class="iconfont-archer">&#xe606;</span>
                 XSS
@@ -1451,6 +1441,16 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
             <span class="sidebar-tag-name" data-tags="逻辑漏洞">
                 <span class="iconfont-archer">&#xe606;</span>
                 逻辑漏洞
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="SSTI">
+                <span class="iconfont-archer">&#xe606;</span>
+                SSTI
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="flask">
+                <span class="iconfont-archer">&#xe606;</span>
+                flask
             </span>
         
     </div>
@@ -1469,6 +1469,11 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
             备份
         </span>
     
+        <span class="sidebar-category-name" data-categories="安全开发">
+            <span class="iconfont-archer">&#xe60a;</span>
+            安全开发
+        </span>
+    
         <span class="sidebar-category-name" data-categories="协议相关">
             <span class="iconfont-archer">&#xe60a;</span>
             协议相关
@@ -1482,11 +1487,6 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
         <span class="sidebar-category-name" data-categories="SQL注入">
             <span class="iconfont-archer">&#xe60a;</span>
             SQL注入
-        </span>
-    
-        <span class="sidebar-category-name" data-categories="安全开发">
-            <span class="iconfont-archer">&#xe60a;</span>
-            安全开发
         </span>
     
         <span class="sidebar-category-name" data-categories="CTF">

