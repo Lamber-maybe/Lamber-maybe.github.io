@@ -21,7 +21,7 @@
     <meta name="description" content="">
     <meta property="og:type" content="website">
 <meta property="og:title" content="Lamber&#39;s Blog">
-<meta property="og:url" content="https://lamber-maybe.github.io/categories/%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91/index.html">
+<meta property="og:url" content="https://lamber-maybe.github.io/tags/Misc/index.html">
 <meta property="og:site_name" content="Lamber&#39;s Blog">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:author" content="Lamber">
@@ -443,31 +443,34 @@
             
         
         <article class="index-post">
-            <a class="abstract-title" href="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/">
+            <a class="abstract-title" href="/2022/11/16/%E5%9B%BE%E7%89%87%E9%9A%90%E5%86%99%E7%AE%80%E8%AE%B0/">
                 
-                <span class="abstract-title-text">BurpSuit 插件开发（一）</span>
+                <span class="abstract-title-text">图片隐写简记</span>
             </a>
             <div class="abstract-content">
-                一、前言
-burp官方支持三种语言开发插件：Java、Python、Ruby。但一般情况下推荐使用Java来做插件开发。原因有以下两点：
-当用python去做插件的时候，如果需要使用到某个库，而这个库又是用C语言实现的。那么插件将无法正常运行。因为burp在执行python写的插件的时候，是通过Jython（Jython是一种完整的语言，而不是一个Java翻译器或仅仅是一个Python编译器，它是一个Python语言在Java中的完全实现。）去解析执行的。而Jython是无法使用C写的模块，所以在这时候插件就不能正常运行。
-burp本身是Java写的，使用Java去开发插件兼容性最高，会...
+                图片隐写一把梭流程总览
+这篇文章适用于以下场景——在一场CTF中如果你实在解不出自己本方向的题目（比如你是一个RE选手，但RE实在是超出能力范围太多），并且你又想在比赛结束前做点什么（不想干巴巴的等WriteUp）。那么你可以参考本文章去尝试着处理一下MISC题目，该文章完全傻瓜式教程。如果想了解具体原理，那你不就成了个MISC选手？（如果你真的想转行，图片隐写的原理在百度上还是能够搜到一大堆的）
+
+
+下载图片，观察图片内容是否会有hint
+右键查看图片属性
+Stegsolve判断图片是否存在LSB隐写
+扔进binwalk看图片中是否有隐藏文件
+HxD直接编辑图片十六进制数据（查看隐藏的...
             </div>
             <!-- read more -->
             
             <div class="abstract-post-meta">
                 <!-- date -->
-                <div class="abstract-date" title="Last updated: 2021/08/29">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2021/08/27</span>
+                <div class="abstract-date" title="Last updated: 2023/09/27">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2022/11/16</span>
                 </div>
                 <!-- tags -->
                 
                     <div class= abstract-tags >
     
     
-        <a class="post-tag" href="javascript:void(0);" data-tags="Java">Java</a>
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags="Burp">Burp</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags="Misc">Misc</a>
     
 </div>
 
@@ -661,16 +664,7 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
         
         
         
-        
-        
-        
-        
-        
     
-        
-        
-        
-        
         
         
         
@@ -759,7 +753,7 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
     
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 16
+        Total : 15
         </div>
         <!-- search  -->
         
@@ -863,12 +857,6 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
     
         
         <li class="archive-post-item">
-            <span class="archive-post-date">08/24</span>
-            <a class="archive-post-title" href="/2021/08/24/HTTP%E5%8D%8F%E8%AE%AE/">HTTP协议</a>
-        </li>
-    
-        
-        <li class="archive-post-item">
             <span class="archive-post-date">08/21</span>
             <a class="archive-post-title" href="/2021/08/21/SQL%E6%B3%A8%E5%85%A5/">SQL注入</a>
         </li>
@@ -906,79 +894,29 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
         
-            <span class="sidebar-tag-name" data-tags="环境搭建">
-                <span class="iconfont-archer">&#xe606;</span>
-                环境搭建
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="Java">
-                <span class="iconfont-archer">&#xe606;</span>
-                Java
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="Burp">
-                <span class="iconfont-archer">&#xe606;</span>
-                Burp
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="HTTP">
-                <span class="iconfont-archer">&#xe606;</span>
-                HTTP
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="DNS">
-                <span class="iconfont-archer">&#xe606;</span>
-                DNS
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="Linux">
-                <span class="iconfont-archer">&#xe606;</span>
-                Linux
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="反弹shell">
-                <span class="iconfont-archer">&#xe606;</span>
-                反弹shell
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="原理分析">
-                <span class="iconfont-archer">&#xe606;</span>
-                原理分析
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="基础漏洞">
-                <span class="iconfont-archer">&#xe606;</span>
-                基础漏洞
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="基础">
-                <span class="iconfont-archer">&#xe606;</span>
-                基础
-            </span>
-        
             <span class="sidebar-tag-name" data-tags="RCE">
                 <span class="iconfont-archer">&#xe606;</span>
                 RCE
             </span>
         
-            <span class="sidebar-tag-name" data-tags="PHP">
+            <span class="sidebar-tag-name" data-tags="文件删除">
                 <span class="iconfont-archer">&#xe606;</span>
-                PHP
+                文件删除
             </span>
         
-            <span class="sidebar-tag-name" data-tags="学习资源">
+            <span class="sidebar-tag-name" data-tags="SQL注入">
                 <span class="iconfont-archer">&#xe606;</span>
-                学习资源
+                SQL注入
             </span>
         
-            <span class="sidebar-tag-name" data-tags="CDN">
+            <span class="sidebar-tag-name" data-tags="Misc">
                 <span class="iconfont-archer">&#xe606;</span>
-                CDN
+                Misc
             </span>
         
-            <span class="sidebar-tag-name" data-tags="IP">
+            <span class="sidebar-tag-name" data-tags="信息收集">
                 <span class="iconfont-archer">&#xe606;</span>
-                IP
+                信息收集
             </span>
         
             <span class="sidebar-tag-name" data-tags="XSS">
@@ -996,11 +934,6 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
                 SSTI
             </span>
         
-            <span class="sidebar-tag-name" data-tags="flask">
-                <span class="iconfont-archer">&#xe606;</span>
-                flask
-            </span>
-        
     </div>
     <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
     <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
@@ -1012,29 +945,14 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
         <div class="sidebar-panel-categories">
     <div class="sidebar-categories-name">
     
-        <span class="sidebar-category-name" data-categories="备份">
+        <span class="sidebar-category-name" data-categories="DedeCMS">
             <span class="iconfont-archer">&#xe60a;</span>
-            备份
+            DedeCMS
         </span>
     
-        <span class="sidebar-category-name" data-categories="安全开发">
+        <span class="sidebar-category-name" data-categories="渗透">
             <span class="iconfont-archer">&#xe60a;</span>
-            安全开发
-        </span>
-    
-        <span class="sidebar-category-name" data-categories="协议相关">
-            <span class="iconfont-archer">&#xe60a;</span>
-            协议相关
-        </span>
-    
-        <span class="sidebar-category-name" data-categories="SHELL">
-            <span class="iconfont-archer">&#xe60a;</span>
-            SHELL
-        </span>
-    
-        <span class="sidebar-category-name" data-categories="SQL注入">
-            <span class="iconfont-archer">&#xe60a;</span>
-            SQL注入
+            渗透
         </span>
     
         <span class="sidebar-category-name" data-categories="CTF">
@@ -1042,19 +960,9 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
             CTF
         </span>
     
-        <span class="sidebar-category-name" data-categories="学习资源">
+        <span class="sidebar-category-name" data-categories="SRC">
             <span class="iconfont-archer">&#xe60a;</span>
-            学习资源
-        </span>
-    
-        <span class="sidebar-category-name" data-categories="信息收集">
-            <span class="iconfont-archer">&#xe60a;</span>
-            信息收集
-        </span>
-    
-        <span class="sidebar-category-name" data-categories="漏洞挖掘">
-            <span class="iconfont-archer">&#xe60a;</span>
-            漏洞挖掘
+            SRC
         </span>
     
     </div>

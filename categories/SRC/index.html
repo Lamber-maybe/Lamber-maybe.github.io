@@ -21,7 +21,7 @@
     <meta name="description" content="">
     <meta property="og:type" content="website">
 <meta property="og:title" content="Lamber&#39;s Blog">
-<meta property="og:url" content="https://lamber-maybe.github.io/tags/Burp/index.html">
+<meta property="og:url" content="https://lamber-maybe.github.io/categories/SRC/index.html">
 <meta property="og:site_name" content="Lamber&#39;s Blog">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:author" content="Lamber">
@@ -443,31 +443,76 @@
             
         
         <article class="index-post">
-            <a class="abstract-title" href="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/">
+            <a class="abstract-title" href="/2021/09/17/%E7%BB%95%E8%BF%87CDN%E5%AF%BB%E6%89%BE%E7%BD%91%E7%AB%99%E7%9C%9F%E5%AE%9EIP/">
                 
-                <span class="abstract-title-text">BurpSuit 插件开发（一）</span>
+                <span class="abstract-title-text">绕过CDN寻找网站真实IP</span>
             </a>
             <div class="abstract-content">
-                一、前言
-burp官方支持三种语言开发插件：Java、Python、Ruby。但一般情况下推荐使用Java来做插件开发。原因有以下两点：
-当用python去做插件的时候，如果需要使用到某个库，而这个库又是用C语言实现的。那么插件将无法正常运行。因为burp在执行python写的插件的时候，是通过Jython（Jython是一种完整的语言，而不是一个Java翻译器或仅仅是一个Python编译器，它是一个Python语言在Java中的完全实现。）去解析执行的。而Jython是无法使用C写的模块，所以在这时候插件就不能正常运行。
-burp本身是Java写的，使用Java去开发插件兼容性最高，会...
+                一. 什么是CDN, 为什么要绕过CDN什么是CDN以及CDN加速?CDN全称是(Content Delivery Network), 即内容分发网络. CDN是构建在现有网络基础之上的智能虚拟网络，依靠部署在各地的边缘服务器，通过中心平台的负载均衡、内容分发、调度等功能模块，使用户就近获取所需内容，降低网络拥塞，提高用户访问响应速度和命中率。CDN的关键技术主要有内容存储和分发技术。
+CDN对网站有什么好处?首先，开启CDN后的网站，会根据用户所在地的不同访问CDN的节点服务器，并不直接访问源服务器，这样可以减少网站服务器宽带资源,降低服务器压力。这也就是大家都在ping百度,但是不同...
             </div>
             <!-- read more -->
             
             <div class="abstract-post-meta">
                 <!-- date -->
-                <div class="abstract-date" title="Last updated: 2021/08/29">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2021/08/27</span>
+                <div class="abstract-date" title="Last updated: 2023/09/27">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2021/09/17</span>
                 </div>
                 <!-- tags -->
                 
                     <div class= abstract-tags >
     
     
-        <a class="post-tag" href="javascript:void(0);" data-tags="Java">Java</a>
+        <a class="post-tag" href="javascript:void(0);" data-tags="信息收集">信息收集</a>
     
-        <a class="post-tag" href="javascript:void(0);" data-tags="Burp">Burp</a>
+</div>
+
+                
+            </div>
+        </article>
+        <div class="index-post-divider"></div>
+    
+        
+        
+        
+        
+            
+        
+        <article class="index-post">
+            <a class="abstract-title" href="/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/">
+                
+                <span class="abstract-title-text">记一次挖掘edu src的过程</span>
+            </a>
+            <div class="abstract-content">
+                今天在群里和沙雕网友唠嗑，正好聊到了网络安全上面。于是打算展示点与网络安全相关的东西给群友们看看。就拿群友的学校开刀试试。
+所有漏洞已提交给edu-src。
+信息收集首先收集一下子域名，为了方便起见，直接使用在线子域名查询
+
+
+逐个查看，找到了三个登录地址。简单测试一下，不能用万能密码进入。这时候发现其中有一个登录地址存在注册功能。
+漏洞挖掘存储型XSS注册一个账号，进去之后发现可以编辑个人信息
+
+
+测一下有没有存储型xss，如果有的话就可以利用申请项目来让管理员查看我的个人信息。然后就可以盗取管理员的cookie
+
+
+打入xss的payload，保存输入的信息，可以看到成功触发payl...
+            </div>
+            <!-- read more -->
+            
+            <div class="abstract-post-meta">
+                <!-- date -->
+                <div class="abstract-date" title="Last updated: 2023/09/27">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2021/08/21</span>
+                </div>
+                <!-- tags -->
+                
+                    <div class= abstract-tags >
+    
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="XSS">XSS</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="逻辑漏洞">逻辑漏洞</a>
     
 </div>
 
@@ -661,16 +706,7 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
         
         
         
-        
-        
-        
-        
-        
     
-        
-        
-        
-        
         
         
         
@@ -759,7 +795,7 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
     
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 16
+        Total : 15
         </div>
         <!-- search  -->
         
@@ -863,12 +899,6 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
     
         
         <li class="archive-post-item">
-            <span class="archive-post-date">08/24</span>
-            <a class="archive-post-title" href="/2021/08/24/HTTP%E5%8D%8F%E8%AE%AE/">HTTP协议</a>
-        </li>
-    
-        
-        <li class="archive-post-item">
             <span class="archive-post-date">08/21</span>
             <a class="archive-post-title" href="/2021/08/21/SQL%E6%B3%A8%E5%85%A5/">SQL注入</a>
         </li>
@@ -906,79 +936,29 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
         
-            <span class="sidebar-tag-name" data-tags="环境搭建">
-                <span class="iconfont-archer">&#xe606;</span>
-                环境搭建
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="Java">
-                <span class="iconfont-archer">&#xe606;</span>
-                Java
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="Burp">
-                <span class="iconfont-archer">&#xe606;</span>
-                Burp
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="HTTP">
-                <span class="iconfont-archer">&#xe606;</span>
-                HTTP
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="DNS">
-                <span class="iconfont-archer">&#xe606;</span>
-                DNS
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="Linux">
-                <span class="iconfont-archer">&#xe606;</span>
-                Linux
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="反弹shell">
-                <span class="iconfont-archer">&#xe606;</span>
-                反弹shell
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="原理分析">
-                <span class="iconfont-archer">&#xe606;</span>
-                原理分析
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="基础漏洞">
-                <span class="iconfont-archer">&#xe606;</span>
-                基础漏洞
-            </span>
-        
-            <span class="sidebar-tag-name" data-tags="基础">
-                <span class="iconfont-archer">&#xe606;</span>
-                基础
-            </span>
-        
             <span class="sidebar-tag-name" data-tags="RCE">
                 <span class="iconfont-archer">&#xe606;</span>
                 RCE
             </span>
         
-            <span class="sidebar-tag-name" data-tags="PHP">
+            <span class="sidebar-tag-name" data-tags="文件删除">
                 <span class="iconfont-archer">&#xe606;</span>
-                PHP
+                文件删除
             </span>
         
-            <span class="sidebar-tag-name" data-tags="学习资源">
+            <span class="sidebar-tag-name" data-tags="SQL注入">
                 <span class="iconfont-archer">&#xe606;</span>
-                学习资源
+                SQL注入
             </span>
         
-            <span class="sidebar-tag-name" data-tags="CDN">
+            <span class="sidebar-tag-name" data-tags="Misc">
                 <span class="iconfont-archer">&#xe606;</span>
-                CDN
+                Misc
             </span>
         
-            <span class="sidebar-tag-name" data-tags="IP">
+            <span class="sidebar-tag-name" data-tags="信息收集">
                 <span class="iconfont-archer">&#xe606;</span>
-                IP
+                信息收集
             </span>
         
             <span class="sidebar-tag-name" data-tags="XSS">
@@ -996,11 +976,6 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
                 SSTI
             </span>
         
-            <span class="sidebar-tag-name" data-tags="flask">
-                <span class="iconfont-archer">&#xe606;</span>
-                flask
-            </span>
-        
     </div>
     <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
     <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
@@ -1012,29 +987,14 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
         <div class="sidebar-panel-categories">
     <div class="sidebar-categories-name">
     
-        <span class="sidebar-category-name" data-categories="备份">
+        <span class="sidebar-category-name" data-categories="DedeCMS">
             <span class="iconfont-archer">&#xe60a;</span>
-            备份
+            DedeCMS
         </span>
     
-        <span class="sidebar-category-name" data-categories="安全开发">
+        <span class="sidebar-category-name" data-categories="渗透">
             <span class="iconfont-archer">&#xe60a;</span>
-            安全开发
-        </span>
-    
-        <span class="sidebar-category-name" data-categories="协议相关">
-            <span class="iconfont-archer">&#xe60a;</span>
-            协议相关
-        </span>
-    
-        <span class="sidebar-category-name" data-categories="SHELL">
-            <span class="iconfont-archer">&#xe60a;</span>
-            SHELL
-        </span>
-    
-        <span class="sidebar-category-name" data-categories="SQL注入">
-            <span class="iconfont-archer">&#xe60a;</span>
-            SQL注入
+            渗透
         </span>
     
         <span class="sidebar-category-name" data-categories="CTF">
@@ -1042,19 +1002,9 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
             CTF
         </span>
     
-        <span class="sidebar-category-name" data-categories="学习资源">
+        <span class="sidebar-category-name" data-categories="SRC">
             <span class="iconfont-archer">&#xe60a;</span>
-            学习资源
-        </span>
-    
-        <span class="sidebar-category-name" data-categories="信息收集">
-            <span class="iconfont-archer">&#xe60a;</span>
-            信息收集
-        </span>
-    
-        <span class="sidebar-category-name" data-categories="漏洞挖掘">
-            <span class="iconfont-archer">&#xe60a;</span>
-            漏洞挖掘
+            SRC
         </span>
     
     </div>

