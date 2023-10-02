@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <!-- title -->
+
+
+    
+
+<!-- keywords -->
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="author" content="Lamber">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Lamber">
+    
+        <meta name="keywords" content="hexo,hexo-theme,hexo-blog,Lamber">
+    
+    <meta name="description" content="">
+    <meta name="description" content="NT(New Technology) LAN(Local Area Network) Manager Authentication Protocol  零、序 首先需要讲解一下非常容易与NTLM协议混淆在一起的那些Hash名称  根据域内环境的年代不同, 密码哈希的存储方式也会有所不同, 并且这些哈希名称甚至和NTLM身份认证协议这个名称十分相似(比如说: Net-NTLMv2 Hash和NTL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NTLM协议解读">
+<meta property="og:url" content="https://lamber-maybe.github.io/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/index.html">
+<meta property="og:site_name" content="Lamber&#39;s Blog">
+<meta property="og:description" content="NT(New Technology) LAN(Local Area Network) Manager Authentication Protocol  零、序 首先需要讲解一下非常容易与NTLM协议混淆在一起的那些Hash名称  根据域内环境的年代不同, 密码哈希的存储方式也会有所不同, 并且这些哈希名称甚至和NTLM身份认证协议这个名称十分相似(比如说: Net-NTLMv2 Hash和NTL">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://lamber-maybe.github.io/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/standards.png">
+<meta property="og:image" content="https://lamber-maybe.github.io/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/the_type1_message.png">
+<meta property="og:image" content="https://lamber-maybe.github.io/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/the_type2_message.png">
+<meta property="og:image" content="https://lamber-maybe.github.io/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/the_type3_message.png">
+<meta property="og:image" content="https://lamber-maybe.github.io/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/john.png">
+<meta property="og:image" content="https://lamber-maybe.github.io/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/hashcat.png">
+<meta property="og:image" content="https://lamber-maybe.github.io/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/add_user_jack.png">
+<meta property="og:image" content="https://lamber-maybe.github.io/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/IIS_Web_Server.png">
+<meta property="og:image" content="https://lamber-maybe.github.io/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/IIS_Web_Server-2.png">
+<meta property="og:image" content="https://lamber-maybe.github.io/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/Windows_Auth_ON.png">
+<meta property="og:image" content="https://lamber-maybe.github.io/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/pop3_start.png">
+<meta property="og:image" content="https://lamber-maybe.github.io/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/NTLM-SMB-jack-123456.png">
+<meta property="og:image" content="https://lamber-maybe.github.io/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/IIS_Web_Server_login.png">
+<meta property="og:image" content="https://lamber-maybe.github.io/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/NTLM-SMTP-jack-123456.png">
+<meta property="article:published_time" content="2023-09-28T12:32:52.000Z">
+<meta property="article:modified_time" content="2023-10-02T03:17:34.614Z">
+<meta property="article:author" content="Lamber">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lamber-maybe.github.io/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/standards.png">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="icon" href="/assets/favicon.ico">
+    
+    <title>NTLM协议解读 · Lamber&#39;s Blog</title>
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+    (function (w) {
+        'use strict'
+        // rel=preload support test
+        if (!w.loadCSS) {
+            w.loadCSS = function () {}
+        }
+        // define on the loadCSS obj
+        var rp = (loadCSS.relpreload = {})
+        // rel=preload feature support test
+        // runs once and returns a function for compat purposes
+        rp.support = (function () {
+            var ret
+            try {
+                ret = w.document.createElement('link').relList.supports('preload')
+            } catch (e) {
+                ret = false
+            }
+            return function () {
+                return ret
+            }
+        })()
+
+        // if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+        // then change that media back to its intended value on load
+        rp.bindMediaToggle = function (link) {
+            // remember existing media attr for ultimate state, or default to 'all'
+            var finalMedia = link.media || 'all'
+
+            function enableStylesheet() {
+                link.media = finalMedia
+            }
+
+            // bind load handlers to enable media
+            if (link.addEventListener) {
+                link.addEventListener('load', enableStylesheet)
+            } else if (link.attachEvent) {
+                link.attachEvent('onload', enableStylesheet)
+            }
+
+            // Set rel and non-applicable media type to start an async request
+            // note: timeout allows this to happen async to let rendering continue in IE
+            setTimeout(function () {
+                link.rel = 'stylesheet'
+                link.media = 'only x'
+            })
+            // also enable media after 3 seconds,
+            // which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+            setTimeout(enableStylesheet, 3000)
+        }
+
+        // loop through link elements in DOM
+        rp.poly = function () {
+            // double check this to prevent external calls from running
+            if (rp.support()) {
+                return
+            }
+            var links = w.document.getElementsByTagName('link')
+            for (var i = 0; i < links.length; i++) {
+                var link = links[i]
+                // qualify links to those with rel=preload and as=style attrs
+                if (
+                    link.rel === 'preload' &&
+                    link.getAttribute('as') === 'style' &&
+                    !link.getAttribute('data-loadcss')
+                ) {
+                    // prevent rerunning on link
+                    link.setAttribute('data-loadcss', true)
+                    // bind listeners to toggle media back
+                    rp.bindMediaToggle(link)
+                }
+            }
+        }
+
+        // if unsupported, run the polyfill
+        if (!rp.support()) {
+            // run once at least
+            rp.poly()
+
+            // rerun poly on an interval until onload
+            var run = w.setInterval(rp.poly, 500)
+            if (w.addEventListener) {
+                w.addEventListener('load', function () {
+                    rp.poly()
+                    w.clearInterval(run)
+                })
+            } else if (w.attachEvent) {
+                w.attachEvent('onload', function () {
+                    rp.poly()
+                    w.clearInterval(run)
+                })
+            }
+        }
+
+        // commonjs
+        if (typeof exports !== 'undefined') {
+            exports.loadCSS = loadCSS
+        } else {
+            w.loadCSS = loadCSS
+        }
+    })(typeof global !== 'undefined' ? global : this)
+</script>
+
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+</style>
+
+    <link rel="preload" href="/css/style.css?v=20211217" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="/css/dark.css?v=20211217" as="style">
+    <link rel="stylesheet" href="/css/dark.css">
+    <link rel="stylesheet" href="/css/mobile.css?v=20211217" media="(max-width: 960px)">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" as="script">
+    <link rel="preload" href="/scripts/main.js?v=20211217" as="script">
+    <link rel="preload" href="/scripts/dark.js?v=20211217" as="script">
+    <link rel="preload" href="/font/Oswald-Regular.ttf" as="font" crossorigin>
+    <link rel="preload" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" as="font" crossorigin>
+    <!-- algolia -->
+    
+        <script>
+            var hits = JSON.parse('{"per_page":10}')
+            var labels = JSON.parse('{"input_placeholder":"Search for Posts","hits_empty":"We did not find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}')
+
+            var algolia = {
+                applicationID: 'IB5HJ10YQM',
+                apiKey: '49a80a6faf7309862841302eba330079',
+                indexName: 'blog',
+                hits: hits,
+                labels: labels
+            }
+        </script>
+    
+    <!-- 百度统计  -->
+    
+    <!-- Google tag (gtag.js) -->
+    
+
+<meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="Lamber's Blog" type="application/atom+xml">
+</head>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ == undefined) {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js" />')
+        }
+    </script>
+    
+        <body class="post-body">
+    
+        <!-- header -->
+        <header class="header header-mobile">
+    <!-- top read progress line -->
+    <div class="header-element">
+        <div class="read-progress"></div>
+    </div>
+    <!-- sidebar menu button -->
+    <div class="header-element">
+        
+            <div class="header-sidebar-menu">
+        
+            
+                <div style="padding-left: 1px;">&#xe775;</div>
+            
+        </div>
+    </div>
+    <!-- header actions -->
+    <div class="header-actions">
+        <!-- theme mode switch button -->
+        <span class="header-theme-btn header-element">
+            <i class="fas fa-adjust"></i>
+        </span>
+        <!-- back to home page text -->
+        <span class="home-link header-element">
+            <a href=/>Lamber's Blog</a>
+        </span>
+    </div>
+    <!-- toggle banner for post layout -->
+    
+        
+            <div class="banner">
+        
+            <div class="blog-title header-element">
+                <a href="/">Lamber&#39;s Blog</a>
+            </div>
+            <div class="post-title header-element">
+                <a href="#" class="post-name">NTLM协议解读</a>
+            </div>
+        </div>
+    
+</header>
+
+        <!-- fixed footer -->
+        <footer class="footer-fixed">
+    <!-- back to top button -->
+    <div class="footer-fixed-element">
+        
+            <div class="back-top back-top-hidden">
+        
+        
+            <div>&#xe639;</div>
+        
+        </div>
+    </div>
+</footer>
+
+        <!-- wrapper -->
+        <div class="wrapper">
+            <div class="site-intro" style="
+
+
+
+
+
+
+
+    height:50vh;
+
+">
+    
+    <!-- 主页  -->
+    
+        
+    <!-- 404页  -->
+    
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/index-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+                NTLM协议解读
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+                
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页 meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+    
+</div>
+
+                
+                <!-- 文章字数统计 -->
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">3.8k</span>阅读时长: <span class="post-count reading-time">16 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <!-- 撰写日期 -->
+                    <span class="iconfont-archer post-intro-calander">&#xe676;</span>
+                    <span class="post-intro-time">2023/09/28</span>
+                    <!-- busuanzi -->
+                    
+                        <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                            <span class="iconfont-archer post-intro-busuanzi">&#xe602;</span>
+                            <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    
+                    <!-- 文章分享 -->
+                    <span class="share-wrapper">
+                        <span class="iconfont-archer share-icon">&#xe71d;</span>
+                        <span class="share-text">Share</span>
+                        <ul class="share-list">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+
+            <script>
+  // get user agent
+  function getBrowserVersions() {
+    var u = window.navigator.userAgent
+    return {
+      userAgent: u,
+      trident: u.indexOf('Trident') > -1, //IE内核
+      presto: u.indexOf('Presto') > -1, //opera内核
+      webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+      gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+      mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+      ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+      android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+      iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+      iPad: u.indexOf('iPad') > -1, //是否为iPad
+      webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+      weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+      uc: u.indexOf('UCBrowser') > -1, //是否为android下的UC浏览器
+    }
+  }
+  var browser = {
+    versions: getBrowserVersions(),
+  }
+  console.log('userAgent: ' + browser.versions.userAgent)
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded')
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document
+        .getElementsByClassName('intro-title')[0]
+        .classList.add('intro-fade-in')
+      document
+        .getElementsByClassName('intro-subtitle')[0]
+        .classList.add('intro-fade-in')
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in')
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb() {
+    if (browser.versions.uc) {
+      console.log('UCBrowser')
+      fontLoaded()
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular'],
+        },
+        loading: function () {
+          // 所有字体开始加载
+          // console.log('font loading');
+        },
+        active: function () {
+          // 所有字体已渲染
+          fontLoaded()
+        },
+        inactive: function () {
+          // 字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout')
+          fontLoaded()
+        },
+        timeout: 5000, // Set the timeout to two seconds
+      })
+    }
+  }
+
+  function asyncErr() {
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document,
+      t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0]
+    o.src = u
+    if (cb) {
+      o.addEventListener(
+        'load',
+        function (e) {
+          cb(null, e)
+        },
+        false
+      )
+    }
+    if (err) {
+      o.addEventListener(
+        'error',
+        function (e) {
+          err(null, e)
+        },
+        false
+      )
+    }
+    s.parentNode.insertBefore(o, s)
+  }
+
+  var asyncLoadWithFallBack = function (arr, success, reject) {
+    var currReject = function () {
+      reject()
+      arr.shift()
+      if (arr.length) async(arr[0], success, currReject)
+    }
+
+    async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack(
+    [
+      'https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js',
+      'https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js',
+      "/lib/webfontloader.min.js",
+    ],
+    asyncCb,
+    asyncErr
+  )
+</script>
+
+            <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+            <div class="container container-unloaded">
+                <main class="main post-page">
+    <article class="article-entry">
+        <blockquote>
+<p>NT(New Technology) LAN(Local Area Network) Manager Authentication Protocol</p>
+</blockquote>
+<h1 id="零、序"><a href="#零、序" class="headerlink" title="零、序"></a>零、序</h1><blockquote>
+<p>首先需要讲解一下非常容易与NTLM协议混淆在一起的那些Hash名称</p>
+</blockquote>
+<p>根据域内环境的年代不同, 密码哈希的存储方式也会有所不同, 并且这些哈希名称甚至和NTLM身份认证协议这个名称十分相似(比如说: Net-NTLMv2 Hash和NTLM, 前者是密码Hash, 而后者则是身份认证协议)</p>
+<img src="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/standards.png" class="">
+<p>过去: 我们为了解决用户需求，现在有14个<em>标准</em>正在运行。<br>设计师A: 14个?太荒谬了吧???我们需要制定一个能解决所有人问题的通用<em>标准</em>。<br>设计师B: 确实!<br>现在: 我们成功的从14个<em>标准</em>减少到了15个<em>标准</em>。<br>研究员: 6</p>
+<p>简单来说，它们的关系如下: </p>
+<table>
+<thead>
+<tr>
+<th>这是密码Hash的种类</th>
+<th>这是身份认证协议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>LM Hash<br>NTLM Hash<br>Net-NTLMv1 Hash(A.K.A. NTLMv1 Hash)<br>Net-NTLMv2 Hash(A.K.A. NTLMv2 Hash)</td>
+<td>NTLM(包含如下两个版本)<br>NTLMv1<br>NTLMv2</td>
+</tr>
+</tbody></table>
+<h1 id="一、NTLM协议简介"><a href="#一、NTLM协议简介" class="headerlink" title="一、NTLM协议简介"></a>一、NTLM协议简介</h1><p>在分清楚<strong>密码哈希</strong>与<strong>认证协议</strong>这些术语之间的区别之后，现在开始正式分析NTLM身份认证协议。该协议主要用于Windows域内的各种身份认证，在现代化的Windows系统中，NTLM协议主要还是用来给Kerberos协议兜底，处理某些Kerberos协议不能使用的场景</p>
+<p>NTLM是一种基于质询(Challenge)和响应(Response)的协议，由以下三种消息组成：</p>
+<ol>
+<li>Type 1 – 协商(Negotiation)</li>
+<li>Type 2 – 质询(Challenge)</li>
+<li>Type 3 – 认证(Authentication)</li>
+</ol>
+<p>NTLM协议的整体流程大致如下：</p>
+<ol>
+<li>客户端向服务端发送协商消息 Type 1。</li>
+<li>服务端发回质询消息 Type 2。最重要的是，它包含一个Server Challenge。</li>
+<li>客户端接收到质询之后，向服务端发起认证消息 Type 3。其中包含域名和用户名信息，还包含对Type 2的响应信息。这些响应信息很关键，它们向服务端证明了客户端用户是知道账户密码的。</li>
+</ol>
+<img src="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/the_type1_message.png" class="">
+<img src="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/the_type2_message.png" class="">
+<img src="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/the_type3_message.png" class="">
+
+<p>NTLM协议有两个版本</p>
+<ul>
+<li>NTLMv1<ul>
+<li>Server Challenge: 8 Byte</li>
+<li>Net-NTLMv1 Hash: DES加密</li>
+</ul>
+</li>
+<li>NTLMv2<ul>
+<li>Server Challenge: 16 Byte</li>
+<li>Net-NTLMv1 Hash: HMAC-MD5加密(Ps: HMAC-MD5与普通MD5相比，简单说就是多了个Key)</li>
+</ul>
+</li>
+</ul>
+<h1 id="二、Windows的各种密码Hash简介"><a href="#二、Windows的各种密码Hash简介" class="headerlink" title="二、Windows的各种密码Hash简介"></a>二、Windows的各种密码Hash简介</h1><h2 id="LM-Hash-–-1987年"><a href="#LM-Hash-–-1987年" class="headerlink" title="LM Hash – 1987年"></a>LM Hash – 1987年</h2><p>LM Hash是Windows使用的最古老的密码存储方式，非常容易被破解，通常位于Windows系统中SAM数据库里面或者域控中NTDS数据库里面。</p>
+<p>e.g. LM Hash</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">299BD128C1101FD6</span><br></pre></td></tr></table></figure>
+
+<p>LM Hash生成过程</p>
+<ol>
+<li>将用户密码中所有的小写字母转换为大写，并转换为16进制字符串</li>
+<li>如果转换后的16进制字符串的长度不足14字节，用0补全。</li>
+<li>然后将这14字节分为两组，每组7个字节，然后转为二进制数据，每组二进制数据长度为 <code>7*8 = 56bit</code> 然后每组二进制数据按7bit为一组，分为8组，每组末尾加0又补为8bit，然后转为16进制，这样每组就变成了8字节的16进制数据 </li>
+<li>然后用上面生成的两组8字节的16进制数据作为密钥，分别对<code>KGS!@#$%</code>这串明文进行DES加密(传闻可能是<strong>K</strong>ey of <strong>G</strong>len and <strong>S</strong>teve and then the combination of <strong>Shift + 12345</strong>.)</li>
+<li>然后将DES加密之后的两组密文进行拼接，得到最终的LM Hash值。</li>
+</ol>
+<p>本地实现一下加密流程(Python)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#coding=utf-8  </span></span><br><span class="line"><span class="keyword">import</span> re  </span><br><span class="line"><span class="keyword">import</span> binascii  </span><br><span class="line"><span class="keyword">from</span> pyDes <span class="keyword">import</span> *  </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">DesEncrypt</span>(<span class="params"><span class="built_in">str</span>, Des_Key</span>):  </span><br><span class="line">    k = des(binascii.a2b_hex(Des_Key), ECB, pad=<span class="literal">None</span>)  </span><br><span class="line">    EncryptStr = k.encrypt(<span class="built_in">str</span>)  </span><br><span class="line">    <span class="keyword">return</span> binascii.b2a_hex(EncryptStr)  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">group_just</span>(<span class="params">length,text</span>):  </span><br><span class="line">    <span class="comment"># text 00110001001100100011001100110100001101010011011000000000  </span></span><br><span class="line">    text_area = re.findall(<span class="string">r&#x27;.&#123;%d&#125;&#x27;</span> % <span class="built_in">int</span>(length), text) <span class="comment"># [&#x27;0011000&#x27;, &#x27;1001100&#x27;, &#x27;1000110&#x27;, &#x27;0110011&#x27;, &#x27;0100001&#x27;, &#x27;1010100&#x27;, &#x27;1101100&#x27;, &#x27;0000000&#x27;]  </span></span><br><span class="line">    text_area_padding = [i + <span class="string">&#x27;0&#x27;</span> <span class="keyword">for</span> i <span class="keyword">in</span> text_area] <span class="comment">#[&#x27;00110000&#x27;, &#x27;10011000&#x27;, &#x27;10001100&#x27;, &#x27;01100110&#x27;, &#x27;01000010&#x27;, &#x27;10101000&#x27;, &#x27;11011000&#x27;, &#x27;00000000&#x27;]  </span></span><br><span class="line">    hex_str = <span class="string">&#x27;&#x27;</span>.join(text_area_padding) <span class="comment"># 0011000010011000100011000110011001000010101010001101100000000000  </span></span><br><span class="line">    hex_int = <span class="built_in">hex</span>(<span class="built_in">int</span>(hex_str, <span class="number">2</span>))[<span class="number">2</span>:].rstrip(<span class="string">&quot;L&quot;</span>) <span class="comment">#30988c6642a8d800  </span></span><br><span class="line">    <span class="keyword">if</span> hex_int == <span class="string">&#x27;0&#x27;</span>:  </span><br><span class="line">        hex_int = <span class="string">&#x27;0000000000000000&#x27;</span>  </span><br><span class="line">    <span class="keyword">return</span> hex_int  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">lm_hash</span>(<span class="params">password</span>):  </span><br><span class="line">    <span class="comment"># 1. 用户的密码转换为大写，密码转换为16进制字符串，不足14 byte将会用0来再后面补全。  </span></span><br><span class="line">    pass_hex = binascii.hexlify(password.upper().encode()).decode().ljust(<span class="number">28</span>, <span class="string">&#x27;0&#x27;</span>)  </span><br><span class="line">    <span class="built_in">print</span>(pass_hex)  </span><br><span class="line">    <span class="comment"># 2. 密码的16进制字符串被分成两个7byte部分。每部分转换成比特流，并且长度位56bit，长度不足使用0在左边补齐长度  </span></span><br><span class="line">    left_str = pass_hex[:<span class="number">14</span>] <span class="comment">#31323334353600  </span></span><br><span class="line">    right_str = pass_hex[<span class="number">14</span>:] <span class="comment">#00000000000000  </span></span><br><span class="line">    left_stream = <span class="built_in">bin</span>(<span class="built_in">int</span>(left_str, <span class="number">16</span>)).lstrip(<span class="string">&#x27;0b&#x27;</span>).rjust(<span class="number">56</span>, <span class="string">&#x27;0&#x27;</span>) <span class="comment"># 00110001001100100011001100110100001101010011011000000000  </span></span><br><span class="line">    right_stream = <span class="built_in">bin</span>(<span class="built_in">int</span>(right_str, <span class="number">16</span>)).lstrip(<span class="string">&#x27;0b&#x27;</span>).rjust(<span class="number">56</span>, <span class="string">&#x27;0&#x27;</span>) <span class="comment"># 00000000000000000000000000000000000000000000000000000000  </span></span><br><span class="line">    <span class="comment"># 3. 再分7bit为一组,每组末尾加0，再组成一组  </span></span><br><span class="line">    left_stream = group_just(<span class="number">7</span>,left_stream) <span class="comment"># 30988c6642a8d800  </span></span><br><span class="line">    right_stream = group_just(<span class="number">7</span>,right_stream) <span class="comment"># 0000000000000000  </span></span><br><span class="line">    <span class="comment"># 4. 上步骤得到的二组，分别作为key 为 &quot;KGS!@#$%&quot;进行DES加密。  </span></span><br><span class="line">    left_lm = DesEncrypt(<span class="string">&#x27;KGS!@#$%&#x27;</span>,left_stream) <span class="comment">#44efce164ab921ca  </span></span><br><span class="line">    right_lm = DesEncrypt(<span class="string">&#x27;KGS!@#$%&#x27;</span>,right_stream) <span class="comment"># aad3b435b51404ee  </span></span><br><span class="line">    <span class="comment"># 5. 将加密后的两组拼接在一起，得到最终LM HASH值。  </span></span><br><span class="line">    <span class="keyword">return</span> left_lm + right_lm  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:  </span><br><span class="line">    <span class="built_in">hash</span> = lm_hash(<span class="string">&quot;123456&quot;</span>)  </span><br><span class="line">    <span class="built_in">print</span>(<span class="built_in">hash</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="NTLM-Hash-–-1993年"><a href="#NTLM-Hash-–-1993年" class="headerlink" title="NTLM Hash – 1993年"></a>NTLM Hash – 1993年</h2><p>这是现代 Windows 系统上存储密码的方式，可以通过转储 SAM 数据库或使用 Mimikatz 来获取。它们还存储在域控制器上的 NTDS.dit 文件中。NTLM Hash可以用来进行哈希传递攻击(Pass The Hash)。</p>
+<p>e.g. NTLM Hash(pass: 123456)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">32ed87bdb5fdc5e9cba88547376818d4</span><br></pre></td></tr></table></figure>
+
+<p>NTLM Hash所采用的算法</p>
+<ol>
+<li>先将用密码转换为16进制格式</li>
+<li>然后将16进制格式的密码进行unicode编码</li>
+<li>然后将unicode编码用md4算法加密生成哈希值</li>
+</ol>
+<p>本地实现一下加密流程(Python)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> binascii</span><br><span class="line"><span class="keyword">import</span> hashlib</span><br><span class="line"></span><br><span class="line">passwd = <span class="string">&quot;123456&quot;</span></span><br><span class="line">unicode_hex_passwd = passwd.encode(<span class="string">&#x27;utf-16le&#x27;</span>)</span><br><span class="line">md4_passwd = hashlib.new(<span class="string">&quot;md4&quot;</span>,unicode_hex_passwd).digest()</span><br><span class="line"><span class="built_in">print</span>(binascii.hexlify(md4_passwd))</span><br></pre></td></tr></table></figure>
+
+
+<p>LM Hash和NTLM Hash的区别 </p>
+<ul>
+<li>LM Hash从Windows Vista/Server 2008开始就已经默认关闭了，但是可以[在GPO中启用它](<a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-US/troubleshoot/windows-server/windows-security/prevent-windows-store-lm-hash-password">https://learn.microsoft.com/en-US/troubleshoot/windows-server/windows-security/prevent-windows-store-lm-hash-password</a></li>
+<li>LM Hash不区分大小写, NTLM Hash区分大小写。</li>
+<li>LM Hash字符集有限，只有142个字符，NTLM Hash支持整个unicode字符集(65535个字符)</li>
+<li>LM Hash将用户密码按7个字符为一组拆分成两组，并且会用0填充不足的部分，NTLM Hash根据用户输入的整个密码计算Hash值。</li>
+</ul>
+<p>转储 SAM/NTDS 数据库时，LM Hash与NTLM Hash一起显示在冒号之前。</p>
+<p>这两种Hash都会生成128-bit(16 byte)的值，大部分密码破解者会先破解LM Hash。然后通过对密码的各种大小写组合去尝试破解NT Hash</p>
+<p>LM 哈希是一种非常弱的单向函数，用于存储密码。 LM 哈希最初是为 LAN Manager 操作系统发明的，后来被包含在 Windows NT 中以实现向后兼容性。仍然包含它是为了向后兼容。由于 LM 哈希的计算方式，任何具有 LM 哈希的密码都不会比从 142 个字符的字符集中选择的 7 个字符的密码更强。</p>
+<h2 id="Net-NTLMv1-Hash-又被称为-NTLMv1-Hash-–-1993年"><a href="#Net-NTLMv1-Hash-又被称为-NTLMv1-Hash-–-1993年" class="headerlink" title="Net-NTLMv1 Hash(又被称为 NTLMv1 Hash) – 1993年"></a>Net-NTLMv1 Hash(又被称为 NTLMv1 Hash) – 1993年</h2><p>服务器发送8个字节的随机数(Server Challenge)来验证客户端身份</p>
+<p>Net-NTLMv1 Hash的结构</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">username:hostname:LM responce:NTLM responce:challenge</span><br></pre></td></tr></table></figure>
+
+<p>e.g. Net-NTLMv1 Hash</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">u4-netntlm::kNS:338d08f8e26de93300000000000000000000000000000000:9526fb8c23a90751cdd619b6cea564742e1e4bf33006ba41:cb8086049ec4736c</span><br></pre></td></tr></table></figure>
+
+<h2 id="Net-NTLMv2-Hash-又被称为-NTLMv2-Hash-–-1998年"><a href="#Net-NTLMv2-Hash-又被称为-NTLMv2-Hash-–-1998年" class="headerlink" title="Net-NTLMv2 Hash(又被称为 NTLMv2 Hash) – 1998年"></a>Net-NTLMv2 Hash(又被称为 NTLMv2 Hash) – 1998年</h2><p>Net-NTLMv2 Hash的结构</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[User name]::[Domain name]:[NTLM Server Challenge]:[HMAC-MD5]:[blob]</span><br></pre></td></tr></table></figure>
+
+<p>e.g. Net-NTLMv2 Hash：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jack::WidgetLLC.Internal:9b5afa46ef7bd599:ad3157225b1766669a2a61c158c47db8:010100000000000071ac95fe34edd90140a80b1bed9758f400000000020012005700490044004700450054004c004c0043000100100043004c00490045004e00540030003300040024005700690064006700650074004c004c0043002e0049006e007400650072006e0061006c000300360043004c00490045004e005400300033002e005700690064006700650074004c004c0043002e0049006e007400650072006e0061006c00050024005700690064006700650074004c004c0043002e0049006e007400650072006e0061006c000700080071ac95fe34edd90106000400020000000800300030000000000000000000000000300000c78e803920758ec5672c36696ee163f6a4e61c8b5463c247daef8571677995a40a001000000000000000000000000000000000000900200053004d00540050002f0075006e007300700065006300690066006900650064000000000000000000</span><br></pre></td></tr></table></figure>
+
+<p>在基于SMTP协议的NTLM认证中, 提取并构造出Net-NTLMv2 Hash。<br>示例认证流量如下(在SMTP协议认证中，NTLM认证过程是通过base64编码传递的): </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Client-negotiation: </span><br><span class="line">TlRMTVNTUAABAAAAt4II4gAAAAAAAAAAAAAAAAAAAAAKAGFKAAAADw==</span><br><span class="line"></span><br><span class="line">Server-challenge: TlRMTVNTUAACAAAAEgASADgAAAA1gonim1r6Ru971ZkAAAAAAAAAAMQAxABKAAAACgA5OAAAAA9XAEkARABHAEUAVABMAEwAQwACABIAVwBJAEQARwBFAFQATABMAEMAAQAQAEMATABJAEUATgBUADAAMwAEACQAVwBpAGQAZwBlAHQATABMAEMALgBJAG4AdABlAHIAbgBhAGwAAwA2AEMATABJAEUATgBUADAAMwAuAFcAaQBkAGcAZQB0AEwATABDAC4ASQBuAHQAZQByAG4AYQBsAAUAJABXAGkAZABnAGUAdABMAEwAQwAuAEkAbgB0AGUAcgBuAGEAbAAHAAgAcayV/jTt2QEAAAAA</span><br><span class="line"></span><br><span class="line">Client-authentication:</span><br><span class="line">TlRMTVNTUAADAAAAGAAYAJQAAABoAWgBrAAAACQAJABYAAAACAAIAHwAAAAQABAAhAAAABAAEAAUAgAANYKI4goAYUoAAAAPlpzQGvcgZYNK+bFD8MLj4lcAaQBkAGcAZQB0AEwATABDAC4ASQBuAHQAZQByAG4AYQBsAGoAYQBjAGsAQwBMAEkARQBOAFQAMAAxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK0xVyJbF2ZmmiphwVjEfbgBAQAAAAAAAHGslf407dkBQKgLG+2XWPQAAAAAAgASAFcASQBEAEcARQBUAEwATABDAAEAEABDAEwASQBFAE4AVAAwADMABAAkAFcAaQBkAGcAZQB0AEwATABDAC4ASQBuAHQAZQByAG4AYQBsAAMANgBDAEwASQBFAE4AVAAwADMALgBXAGkAZABnAGUAdABMAEwAQwAuAEkAbgB0AGUAcgBuAGEAbAAFACQAVwBpAGQAZwBlAHQATABMAEMALgBJAG4AdABlAHIAbgBhAGwABwAIAHGslf407dkBBgAEAAIAAAAIADAAMAAAAAAAAAAAAAAAADAAAMeOgDkgdY7FZyw2aW7hY/ak5hyLVGPCR9rvhXFneZWkCgAQAAAAAAAAAAAAAAAAAAAAAAAJACAAUwBNAFQAUAAvAHUAbgBzAHAAZQBjAGkAZgBpAGUAZAAAAAAAAAAAAB9PQ7SVTdDE/LiHVir1drI=</span><br></pre></td></tr></table></figure>
+
+<p>我们如果要构造一个完整的Net-NTLMv2 Hash，需要查阅NTLM协议规范，去查找所涉及的字段的值，然后按照Net-NTLMv2 Hash的结构拼凑在一起。</p>
+<p>User name: 查阅上图的The Type 3 Message可以看到，User name的security buffer在36字节到44字节这个位置。继续查阅官方给的细则。</p>
+<table>
+<thead>
+<tr>
+<th align="left">byte</th>
+<th>example</th>
+<th align="left">description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">36</td>
+<td>0x080008004c000000</td>
+<td align="left">User Name Security Buffer: <br><br>Length: 8 bytes (0x0800)<br>Allocated Space: 8 bytes (0x0800) <br>Offset: 76 bytes (0x4c000000)</td>
+</tr>
+</tbody></table>
+<p>发现这8个字节中，前两个字节代表User name的长度(A)，后四个字节代表User name的偏移(B)。也就是说，在NTLM通信数据中，从第B个字节开始，数A个字节长度，就能得到User name这个字段的值。同理，按照同样的方法，查阅上图的The Type 3 Message也能取到Domain name。</p>
+<p>然后我们取NTLM Server Challenge的值，在The Type 2 Message中，可以看到NTLM Server Challenge是从第24个字节开始，往后数8个字节。</p>
+<p>最后取<code>[HMAC-MD5]:[blob]</code>部分，根据The Type 3 Message取到NTLM Response的值，然后以0101数据开始的部分为blob部分，0101之前的数据为 HMAC-MD5(也叫NTPoofStr)的值。<br>例如取到的NTLM Response的值为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ad3157225b1766669a2a61c158c47db8010100000000000071ac95fe34edd90140a80b1bed9758f400000000020012005700490044004700450054004c004c0043000100100043004c00490045004e00540030003300040024005700690064006700650074004c004c0043002e0049006e007400650072006e0061006c000300360043004c00490045004e005400300033002e005700690064006700650074004c004c0043002e0049006e007400650072006e0061006c00050024005700690064006700650074004c004c0043002e0049006e007400650072006e0061006c000700080071ac95fe34edd90106000400020000000800300030000000000000000000000000300000c78e803920758ec5672c36696ee163f6a4e61c8b5463c247daef8571677995a40a001000000000000000000000000000000000000900200053004d00540050002f0075006e007300700065006300690066006900650064000000000000000000</span><br></pre></td></tr></table></figure>
+
+<p>则HMAC-MD5(NTPoofStr)为:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ad3157225b1766669a2a61c158c47db8</span><br></pre></td></tr></table></figure>
+
+<p>blob为:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">010100000000000071ac95fe34edd90140a80b1bed9758f400000000020012005700490044004700450054004c004c0043000100100043004c00490045004e00540030003300040024005700690064006700650074004c004c0043002e0049006e007400650072006e0061006c000300360043004c00490045004e005400300033002e005700690064006700650074004c004c0043002e0049006e007400650072006e0061006c00050024005700690064006700650074004c004c0043002e0049006e007400650072006e0061006c000700080071ac95fe34edd90106000400020000000800300030000000000000000000000000300000c78e803920758ec5672c36696ee163f6a4e61c8b5463c247daef8571677995a40a001000000000000000000000000000000000000900200053004d00540050002f0075006e007300700065006300690066006900650064000000000000000000</span><br></pre></td></tr></table></figure>
+
+<p>根据协议规范写了一个提取Net-NTLMv2 Hash的脚本(Net-NTLMv2_Hash_extract.py)，输入authentication和challenge即可提取出Net-NTLMv2 Hash。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> base64  </span><br><span class="line"><span class="keyword">import</span> argparse  </span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">extract_info</span>(<span class="params">auth, start, end</span>):  </span><br><span class="line">    buffer_slice = base64.b64decode(auth)[start:end]  </span><br><span class="line">    length = <span class="built_in">int</span>(buffer_slice[<span class="number">0</span>:<span class="number">2</span>][::-<span class="number">1</span>].<span class="built_in">hex</span>(), <span class="number">16</span>)  </span><br><span class="line">    offset = <span class="built_in">int</span>(buffer_slice[<span class="number">4</span>:<span class="number">8</span>][::-<span class="number">1</span>].<span class="built_in">hex</span>(), <span class="number">16</span>)  </span><br><span class="line">    data = base64.b64decode(auth)[offset:offset+length]  </span><br><span class="line">    <span class="keyword">return</span> data  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">parse_authentication</span>(<span class="params">auth, challenge</span>):  </span><br><span class="line">    user_name = extract_info(auth, <span class="number">36</span>, <span class="number">42</span>)  </span><br><span class="line">    domain_name = extract_info(auth, <span class="number">28</span>, <span class="number">36</span>)  </span><br><span class="line">    ntlm_response = extract_info(auth, <span class="number">20</span>, <span class="number">28</span>)  </span><br><span class="line">    server_challenge = base64.b64decode(challenge)[<span class="number">24</span>:<span class="number">32</span>]  </span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> &#123;  </span><br><span class="line">        <span class="string">&#x27;User name&#x27;</span>: user_name[::<span class="number">2</span>].decode(<span class="string">&#x27;utf-8&#x27;</span>),  </span><br><span class="line">        <span class="string">&#x27;Domain name&#x27;</span>: domain_name[::<span class="number">2</span>].decode(<span class="string">&#x27;utf-8&#x27;</span>),  </span><br><span class="line">        <span class="string">&#x27;NTLM Server Challenge&#x27;</span>: server_challenge.<span class="built_in">hex</span>(),  </span><br><span class="line">        <span class="string">&#x27;HMAC-MD5&#x27;</span>: ntlm_response.<span class="built_in">hex</span>()[:<span class="number">32</span>],  </span><br><span class="line">        <span class="string">&#x27;blob&#x27;</span>: ntlm_response.<span class="built_in">hex</span>()[<span class="number">32</span>:]  </span><br><span class="line">    &#125;  </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:  </span><br><span class="line">    parser = argparse.ArgumentParser(description=<span class="string">&#x27;解析Base64编码形式的NTLM协议，并生成Net-NTLMv2 Hash&#x27;</span>)  </span><br><span class="line">    parser.add_argument(<span class="string">&#x27;--authentication&#x27;</span>, required=<span class="literal">True</span>, <span class="built_in">help</span>=<span class="string">&#x27;Base64-encoded authentication data&#x27;</span>)  </span><br><span class="line">    parser.add_argument(<span class="string">&#x27;--challenge&#x27;</span>, required=<span class="literal">True</span>, <span class="built_in">help</span>=<span class="string">&#x27;Base64-encoded challenge data&#x27;</span>)  </span><br><span class="line">  </span><br><span class="line">    args = parser.parse_args()  </span><br><span class="line">  </span><br><span class="line">    authentication = args.authentication  </span><br><span class="line">    challenge = args.challenge  </span><br><span class="line">  </span><br><span class="line">    res = parse_authentication(authentication, challenge)  </span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;生成的Net-NTLMv2 Hash为: \n&quot;</span>)  </span><br><span class="line">    <span class="built_in">print</span>(res[<span class="string">&#x27;User name&#x27;</span>]             + <span class="string">&quot;::&quot;</span>+  </span><br><span class="line">          res[<span class="string">&#x27;Domain name&#x27;</span>]           + <span class="string">&quot;:&quot;</span> +  </span><br><span class="line">          res[<span class="string">&#x27;NTLM Server Challenge&#x27;</span>] + <span class="string">&quot;:&quot;</span> +  </span><br><span class="line">          res[<span class="string">&#x27;HMAC-MD5&#x27;</span>]              + <span class="string">&quot;:&quot;</span> +  </span><br><span class="line">          res[<span class="string">&#x27;blob&#x27;</span>]                  + <span class="string">&quot;\n&quot;</span>)  </span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;使用hashcat进行爆破(需要自行安装hashcat):\n\t hashcat -m 5600 \&quot;Net-NTLMv2 Hash\&quot; wordlist.txt --force&quot;</span>)  </span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;或者使用john进行爆破(需要自行安装john):\n\t john --wordlist=wordlist.txt --format=netntlmv2 Net-NTLMv2-Hash.txt&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>运行脚本: </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python Net-NTLMv2_Hash_extract.py --authentication TlRMTVNTUAADAAAAGAAYAJQAAABoAWgBrAAAACQAJABYAAAACAAIAHwAAAAQABAAhAAAABAAEAAUAgAANYKI4goAYUoAAAAPlpzQGvcgZYNK+bFD8MLj4lcAaQBkAGcAZQB0AEwATABDAC4ASQBuAHQAZQByAG4AYQBsAGoAYQBjAGsAQwBMAEkARQBOAFQAMAAxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK0xVyJbF2ZmmiphwVjEfbgBAQAAAAAAAHGslf407dkBQKgLG+2XWPQAAAAAAgASAFcASQBEAEcARQBUAEwATABDAAEAEABDAEwASQBFAE4AVAAwADMABAAkAFcAaQBkAGcAZQB0AEwATABDAC4ASQBuAHQAZQByAG4AYQBsAAMANgBDAEwASQBFAE4AVAAwADMALgBXAGkAZABnAGUAdABMAEwAQwAuAEkAbgB0AGUAcgBuAGEAbAAFACQAVwBpAGQAZwBlAHQATABMAEMALgBJAG4AdABlAHIAbgBhAGwABwAIAHGslf407dkBBgAEAAIAAAAIADAAMAAAAAAAAAAAAAAAADAAAMeOgDkgdY7FZyw2aW7hY/ak5hyLVGPCR9rvhXFneZWkCgAQAAAAAAAAAAAAAAAAAAAAAAAJACAAUwBNAFQAUAAvAHUAbgBzAHAAZQBjAGkAZgBpAGUAZAAAAAAAAAAAAB9PQ7SVTdDE/LiHVir1drI= --challenge TlRMTVNTUAACAAAAEgASADgAAAA1gonim1r6Ru971ZkAAAAAAAAAAMQAxABKAAAACgA5OAAAAA9XAEkARABHAEUAVABMAEwAQwACABIAVwBJAEQARwBFAFQATABMAEMAAQAQAEMATABJAEUATgBUADAAMwAEACQAVwBpAGQAZwBlAHQATABMAEMALgBJAG4AdABlAHIAbgBhAGwAAwA2AEMATABJAEUATgBUADAAMwAuAFcAaQBkAGcAZQB0AEwATABDAC4ASQBuAHQAZQByAG4AYQBsAAUAJABXAGkAZABnAGUAdABMAEwAQwAuAEkAbgB0AGUAcgBuAGEAbAAHAAgAcayV/jTt2QEAAAAA</span><br></pre></td></tr></table></figure>
+
+<p>输出结果:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">生成的Net-NTLMv2 Hash为:</span><br><span class="line"></span><br><span class="line">jack::WidgetLLC.Internal:9b5afa46ef7bd599:ad3157225b1766669a2a61c158c47db8:010100000000000071ac95fe34edd90140a80b1bed9758f400000000020012005700490044004700450054004c004c0043000100100043004c00490045004e00540030003300040024005700690064006700650074004c004c0043002e0049006e007400650072006e0061006c000300360043004c00490045004e005400300033002e005700690064006700650074004c004c0043002e0049006e007400650072006e0061006c00050024005700690064006700650074004c004c0043002e0049006e007400650072006e0061006c000700080071ac95fe34edd90106000400020000000800300030000000000000000000000000300000c78e803920758ec5672c36696ee163f6a4e61c8b5463c247daef8571677995a40a001000000000000000000000000000000000000900200053004d00540050002f0075006e007300700065006300690066006900650064000000000000000000</span><br><span class="line"></span><br><span class="line">使用hashcat进行爆破(需要自行安装hashcat):</span><br><span class="line">         hashcat -m 5600 &quot;Net-NTLMv2 Hash&quot; wordlist.txt --force</span><br><span class="line">或者使用john进行爆破(需要自行安装john):</span><br><span class="line">         john --wordlist=wordlist.txt --format=netntlmv2 Net-NTLMv2-Hash.txt</span><br></pre></td></tr></table></figure>
+
+
+<p>Net-NTLMv1 Hash 与 Net-NTLMv2 Hash的区别</p>
+<ul>
+<li>Net-NTLMv1 Hash使用DES加密，Net-NTLMv2 Hash使用HMAC-MD5加密</li>
+</ul>
+<h1 id="二、NTLM相关的攻击手法"><a href="#二、NTLM相关的攻击手法" class="headerlink" title="二、NTLM相关的攻击手法"></a>二、NTLM相关的攻击手法</h1><h2 id="Hash爆破"><a href="#Hash爆破" class="headerlink" title="Hash爆破"></a>Hash爆破</h2><p>Net-NTLMv2 Hash爆破(其余Hash爆破方式类似)<br>使用工具john进行爆破:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">john --wordlist=/usr/share/wordlists/rockyou.txt --format=netntlmv2 Net-NTLMv2-Hash.txt</span><br></pre></td></tr></table></figure>
+<p>将Net-NTLMv2 Hash先写入一个文件, 然后使用john进行爆破, 爆破结果比较明显, 如图所示:</p>
+<img src="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/john.png" class="">
+
+<p>使用工具hashcat进行爆破</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hashcat -m 5600 &quot;jack::WidgetLLC.Internal:9b5afa46ef7bd599:ad3157225b1766669a2a61c158c47db8:010100000000000071ac95fe34edd90140a80b1bed9758f400000000020012005700490044004700450054004c004c0043000100100043004c00490045004e00540030003300040024005700690064006700650074004c004c0043002e0049006e007400650072006e0061006c000300360043004c00490045004e005400300033002e005700690064006700650074004c004c0043002e0049006e007400650072006e0061006c00050024005700690064006700650074004c004c0043002e0049006e007400650072006e0061006c000700080071ac95fe34edd90106000400020000000800300030000000000000000000000000300000c78e803920758ec5672c36696ee163f6a4e61c8b5463c247daef8571677995a40a001000000000000000000000000000000000000900200053004d00540050002f0075006e007300700065006300690066006900650064000000000000000000&quot; /usr/share/wordlists/rockyou.txt --force</span><br></pre></td></tr></table></figure>
+
+<p>爆破结果会附加在Net-NTLMv2 Hash之后, 如图所示:</p>
+<img src="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/hashcat.png" class="">
+
+
+<h2 id="Net-NTLM-Relay-A-K-A-NTLM-Relay"><a href="#Net-NTLM-Relay-A-K-A-NTLM-Relay" class="headerlink" title="Net-NTLM Relay (A.K.A. NTLM Relay)"></a>Net-NTLM Relay (A.K.A. NTLM Relay)</h2><h2 id="PTH"><a href="#PTH" class="headerlink" title="PTH"></a>PTH</h2><ul>
+<li>可以使用NTLM Hash进行PTH攻击</li>
+<li>无法使用 Net-NTLM Hash进行PTH攻击</li>
+</ul>
+<h1 id="三、搭建NTLM协议认证环境进行流量分析"><a href="#三、搭建NTLM协议认证环境进行流量分析" class="headerlink" title="三、搭建NTLM协议认证环境进行流量分析"></a>三、搭建NTLM协议认证环境进行流量分析</h1><blockquote>
+<p>所有Windows虚拟机镜像都在微软官网进行下载，没有在任何第三方渠道进行下载。完整域环境搭建，请参考另一篇文章。</p>
+</blockquote>
+<p>域控:<br>DC01 </p>
+<ul>
+<li>内网IP地址: 192.168.0.1</li>
+<li>操作系统: Windows Server 2016 Standard Evaluation<br>域成员:<br>Client01</li>
+<li>内网IP地址: 192.168.0.3</li>
+<li>操作系统: Windows10</li>
+<li>在该篇文章中所扮演的角色: Wireshark(在此台机器上进行抓取流量包的操作)<br>Client02</li>
+<li>内网IP地址: 192.168.0.4</li>
+<li>操作系统: Windows Server 2012 R2 Standard Evaluation</li>
+<li>在该篇文章中所扮演的角色: IIS Web Server<br>Client03</li>
+<li>内网IP地址: 192.168.0.5</li>
+<li>操作系统: Windows Server 2016 Standard Evaluation</li>
+<li>在该篇文章中所扮演的角色: <a target="_blank" rel="noopener" href="https://www.microsoft.com/zh-cn/download/details.aspx?id=57388">ExchangeServer2016-x64-cu11</a></li>
+</ul>
+<h2 id="1-在DC01上创建测试用账户"><a href="#1-在DC01上创建测试用账户" class="headerlink" title="1. 在DC01上创建测试用账户"></a>1. 在DC01上创建测试用账户</h2><p>在域控 DC01 上，添加账户jack，密码123456。(此处使用弱密码是因为更改过域内策略，如果无法使用弱密码，就按照要求使用强密码即可)<br>服务器管理器 -&gt; 工具 -&gt; Active Directory用户和计算机 -&gt; Users -&gt; 新建 -&gt; 用户</p>
+<img src="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/add_user_jack.png" class="">
+
+<h2 id="2-在Client02上搭建IIS-Web-Server"><a href="#2-在Client02上搭建IIS-Web-Server" class="headerlink" title="2. 在Client02上搭建IIS Web Server"></a>2. 在Client02上搭建IIS Web Server</h2><p>在Client02上搭建IIS Web服务器并且启用NTLM认证，步骤如下：</p>
+<p>首先安装IIS服务，服务管理器 -&gt; 管理 -&gt; 添加角色和功能 -&gt; … -&gt; 服务器角色 -&gt; Web服务器(IIS) -&gt; … -&gt; 角色服务 -&gt; Windows身份验证。中间省略掉的部分则采用默认值即可。</p>
+<img src="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/IIS_Web_Server.png" class="">
+<img src="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/IIS_Web_Server-2.png" class="">
+
+<p>然后启用Windows身份验证，步骤如下：</p>
+<p>服务管理器 -&gt; 工具 -&gt; Internet Information Services (IIS)管理器 -&gt; CLIENT02 -&gt; Default Web Site -&gt; 身份验证</p>
+<p>注意，这里将 <code>匿名身份验证</code> 禁用，将 <code>Windows 身份验证</code> 启用。目的是为了让用户在访问这个Web服务器的时候，必须要先经过 <code>Windows</code> 身份验证，也就是这篇文章所述的NTLM认证</p>
+<img src="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/Windows_Auth_ON.png" class="">
+
+<h2 id="3-在Client03上搭建ExchangeServer"><a href="#3-在Client03上搭建ExchangeServer" class="headerlink" title="3. 在Client03上搭建ExchangeServer"></a>3. 在Client03上搭建ExchangeServer</h2><p>在Client03上搭建ExchangeServer2016-x64-cu11服务，用来进行SMTP协议中的NTLM认证<br>首先根据上面提供的链接，下载ExchangeServer，然后直接安装即可，中途会反复遇到几次报错，按照报错提示，安装缺失的软件即可。</p>
+<p>安装完毕之后，打开 <code>Exchange Management Shell</code> 使用如下命令检查pop3服务的状态</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Get-Service</span> MSExchangePOP3; <span class="built_in">Get-Service</span> MSExchangePOP3BE</span><br></pre></td></tr></table></figure>
+<p>如果显示 <code>Stop</code> 则需要手动开启一下 pop3服务</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Start-Service</span> MSExchangePOP3; <span class="built_in">Start-Service</span> MSExchangePOP3BE</span><br></pre></td></tr></table></figure>
+
+<img src="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/pop3_start.png" class="">
+
+<h1 id="四、在SMB协议中使用NTLM认证"><a href="#四、在SMB协议中使用NTLM认证" class="headerlink" title="四、在SMB协议中使用NTLM认证"></a>四、在SMB协议中使用NTLM认证</h1><p>在Client01机器的命令行中，使用 <code>net use \\192.168.0.1 /user:jack 123456</code> 命令进行认证。<br>Wireshark使用过滤器 <code>ip.addr == 192.168.0.1 &amp;&amp; ip.addr == 192.168.0.3</code> 抓取干净完整的流量包，可以看到在SMB协议中，NTLM认证过程如下所示:</p>
+<img src="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/NTLM-SMB-jack-123456.png" class="">
+
+
+<h1 id="五、在HTTP协议中使用NTLM认证"><a href="#五、在HTTP协议中使用NTLM认证" class="headerlink" title="五、在HTTP协议中使用NTLM认证"></a>五、在HTTP协议中使用NTLM认证</h1><p>打开Client01机器的浏览器，访问环境搭建中在Client02里搭建好的IIS Web Server。在本示例中的地址为 <code>http://192.168.0.4</code>。<br>Wireshark使用过滤器 <code>ip.addr == 192.168.0.3 &amp;&amp; ip.addr == 192.168.0.4</code> 抓取干净完整的流量包，可以看到在HTTP协议中，NTLM认证过程如下所示:</p>
+<img src="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/IIS_Web_Server_login.png" class="">
+
+
+<h1 id="六、在SMTP协议中使用NTLM认证"><a href="#六、在SMTP协议中使用NTLM认证" class="headerlink" title="六、在SMTP协议中使用NTLM认证"></a>六、在SMTP协议中使用NTLM认证</h1><p>NTLM认证通信脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"><span class="keyword">import</span> spnego</span><br><span class="line"><span class="keyword">import</span> smtplib</span><br><span class="line"><span class="keyword">from</span> smtplib <span class="keyword">import</span> SMTPException, SMTPAuthenticationError</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># SMTP服务器信息</span></span><br><span class="line">smtp_server = <span class="string">&#x27;CLIENT03.WidgetLLC.Internal&#x27;</span></span><br><span class="line">smtp_port = <span class="number">25</span></span><br><span class="line">username = <span class="string">&#x27;WidgetLLC.Internal\jack&#x27;</span></span><br><span class="line">password = <span class="string">&#x27;123456&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 邮件信息</span></span><br><span class="line">sender_email = <span class="string">&#x27;jack@widgetllc.internal&#x27;</span></span><br><span class="line">receiver_email = <span class="string">&#x27;recipient_email&#x27;</span></span><br><span class="line">subject = <span class="string">&#x27;Test Subject&#x27;</span></span><br><span class="line">message = <span class="string">&#x27;Test Message&#x27;</span></span><br><span class="line"></span><br><span class="line">smtp = smtplib.SMTP(smtp_server, smtp_port)</span><br><span class="line"></span><br><span class="line">ehlo_response = smtp.ehlo()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义NTLM认证函数</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">ntlm_authenticate</span>(<span class="params">smtp, username, password</span>):</span><br><span class="line">    auth = spnego.client(username, password, service=<span class="string">&quot;SMTP&quot;</span>, protocol=<span class="string">&quot;ntlm&quot;</span>)</span><br><span class="line">    ntlm_negotiate = auth.step()</span><br><span class="line"></span><br><span class="line">    code, response = smtp.docmd(<span class="string">&quot;AUTH&quot;</span>, <span class="string">&quot;NTLM &quot;</span> + base64.b64encode(ntlm_negotiate).decode())</span><br><span class="line">    <span class="keyword">if</span> code != <span class="number">334</span>:</span><br><span class="line">        <span class="keyword">raise</span> SMTPException(<span class="string">&quot;Server did not respond as expected to NTLM negotiate message&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># I&#x27;m unsure of the format that is returned but if it&#x27;s like the above this should work</span></span><br><span class="line">    <span class="comment"># This is essentially getting the base64 decoded value of challenge response</span></span><br><span class="line">    ntlm_challenge = base64.b64decode(response)</span><br><span class="line">    ntlm_auth = auth.step(ntlm_challenge)</span><br><span class="line">    code, response = smtp.docmd(<span class="string">&quot;&quot;</span>, base64.b64encode(ntlm_auth).decode())</span><br><span class="line">    <span class="keyword">if</span> code != <span class="number">235</span>:</span><br><span class="line">        <span class="keyword">raise</span> SMTPAuthenticationError(code, response)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 发起NTLM认证</span></span><br><span class="line">ntlm_authenticate(smtp, username, password)</span><br></pre></td></tr></table></figure>
+
+<p>运行脚本，抓取流量</p>
+<img src="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/NTLM-SMTP-jack-123456.png" class="">
+
+<h1 id="七、在POP3协议中使用NTLM认证"><a href="#七、在POP3协议中使用NTLM认证" class="headerlink" title="七、在POP3协议中使用NTLM认证"></a>七、在POP3协议中使用NTLM认证</h1><p>与SMTP协议类似，但是在此域环境内有问题，在这里先记录一个完整的认证流量以作示例。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">+OK The Microsoft Exchange POP3 service is ready.</span><br><span class="line">CAPA</span><br><span class="line">+OK</span><br><span class="line">TOP</span><br><span class="line">UIDL</span><br><span class="line">SASL NTLM GSSAPI PLAIN</span><br><span class="line">USER</span><br><span class="line">STLS</span><br><span class="line">.</span><br><span class="line">AUTH NTLM</span><br><span class="line">+</span><br><span class="line">TlRMTVNTUAABAAAAB4IIogAAAAAAAAAAAAAAAAAAAAAKAPBVAAAADw==</span><br><span class="line">+ TlRMTVNTUAACAAAAFgAWADgAAAAFgomiamT/6VDuVecAAAAAAAAAAMYAxgBOAAAABgGxHQAAAA9IAEEASQBUAE8ATgBHAEEAVQBUAE8AAgAWAEgAQQBJAFQATwBOAEcAQQBVAFQATwABABgARQBYAEMASABBAE4ARwBFAEMAQQBTADEABAAeAGgAYQBpAHQAbwBuAGcAYQB1AHQAbwAuAGMAbwBtAAMAOABFAFgAQwBIAEEATgBHAEUAQwBBAFMAMQAuAGgAYQBpAHQAbwBuAGcAYQB1AHQAbwAuAGMAbwBtAAUAHgBoAGEAaQB0AG8AbgBnAGEAdQB0AG8ALgBjAG8AbQAHAAgAzTOA+Z/q2AEAAAAA</span><br><span class="line">TlRMTVNTUAADAAAAGAAYAJQAAABsAWwBrAAAAB4AHgBYAAAADAAMAHYAAAASABIAggAAAAAAAAAYAgAABYKIogoA8FUAAAAPYdznrTVtDUxmF1WtBfjr9GgAYQBpAHQAbwBuAGcAYQB1AHQAbwAuAGMAbwBtAHkAYQBuAGcAYwB3AEgAVAAtAEkAVAAtAEwATQBKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAN7wrwZiAOdQVt8u+bBLSKwBAQAAAAAAAM0zgPmf6tgBDBnp1aIuEEQAAAAAAgAWAEgAQQBJAFQATwBOAEcAQQBVAFQATwABABgARQBYAEMASABBAE4ARwBFAEMAQQBTADEABAAeAGgAYQBpAHQAbwBuAGcAYQB1AHQAbwAuAGMAbwBtAAMAOABFAFgAQwBIAEEATgBHAEUAQwBBAFMAMQAuAGgAYQBpAHQAbwBuAGcAYQB1AHQAbwAuAGMAbwBtAAUAHgBoAGEAaQB0AG8AbgBnAGEAdQB0AG8ALgBjAG8AbQAHAAgAzTOA+Z/q2AEGAAQAAgAAAAgAMAAwAAAAAAAAAAEAAAAAIAAAk3DLhY8sOzXjQ82ybZdaUYmBrKyAo813ZeXES00/oKkKABAAAAAAAAAAAAAAAAAAAAAAAAkAIgBwAG8AcAAvADEAOQAyAC4AMQA2ADgALgA2ADEALgA3ADEAAAAAAAAAAAA=</span><br><span class="line">+OK User successfully logged on.</span><br><span class="line">STAT</span><br><span class="line">+OK 251 190008736</span><br><span class="line">QUIT</span><br><span class="line">+OK Microsoft Exchange Server 2010 POP3 server signing off.</span><br></pre></td></tr></table></figure>
+    </article>
+    <!-- license -->
+    
+        <div class="license-wrapper">
+            <p>原文作者：<a href="https://lamber-maybe.github.io">Lamber</a>
+            <p>原文链接：<a href="https://lamber-maybe.github.io/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/">https://lamber-maybe.github.io/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/</a>
+            <p>发表日期：<a href="https://lamber-maybe.github.io/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/">September 28th 2023, 8:32:52 pm</a>
+            <p>更新日期：<a href="https://lamber-maybe.github.io/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/">October 2nd 2023, 11:17:34 am</a>
+            <p>版权声明：本文采用<a rel="license noopener" target="_blank" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
+        </div>
+    
+    <!-- paginator -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href="/2023/10/01/DedeCMS%E5%90%8E%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2023-5301/" title="DedeCMS后台代码执行 CVE-2023-5301">
+                    <div class="nextTitle">DedeCMS后台代码执行 CVE-2023-5301</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href="/2023/09/26/DedeCMS%E5%89%8D%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2022-35516/" title="DedeCMS前台代码执行(CVE-2022-35516)">
+                    <div class="prevTitle">DedeCMS前台代码执行(CVE-2022-35516)</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- comment -->
+    
+        <div class="post-comment">
+            <!-- 来必力 City 版安装代码 -->
+
+
+            
+
+            
+
+            
+
+            <!-- utteranc评论 -->
+
+
+            <!-- partial('_partial/comment/changyan') -->
+            <!--PC版-->
+
+
+            
+            
+
+            
+
+        </div>
+    
+    <!-- timeliness note -->
+    <!-- idea from: https://hexo.fluid-dev.com/posts/hexo-injector/#%E6%96%87%E7%AB%A0%E6%97%B6%E6%95%88%E6%80%A7%E6%8F%90%E7%A4%BA -->
+    
+    <!-- Mathjax -->
+    
+</main>
+
+                <!-- profile -->
+                
+            </div>
+            <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+        <div class="social">
+            
+    
+        
+            
+                <a href="mailto:957742501@qq.com" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+            
+                <a href="//github.com/Lamber-maybe" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title=wechat>
+                    
+                    <img class="profile-qr" src="/assets/wechat.png" />
+                </span>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer qq" title=qq>
+                    
+                    <img class="profile-qr" src="/assets/qq.png" />
+                </span>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+
+        </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- website approve for Chinese user -->
+    
+    <!-- 不蒜子  -->
+    
+        <div class="busuanzi-container">
+            
+             
+                <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+            
+        </div>
+    	
+</footer>
+
+        </div>
+        <!-- toc -->
+        
+            <div class="toc-wrapper toc-wrapper-loding" style=
+
+
+
+
+
+
+
+    top:50vh;
+
+>
+                <div class="toc-catalog">
+                    <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+                </div>
+                <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%9B%B6%E3%80%81%E5%BA%8F"><span class="toc-number">1.</span> <span class="toc-text">零、序</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81NTLM%E5%8D%8F%E8%AE%AE%E7%AE%80%E4%BB%8B"><span class="toc-number">2.</span> <span class="toc-text">一、NTLM协议简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Windows%E7%9A%84%E5%90%84%E7%A7%8D%E5%AF%86%E7%A0%81Hash%E7%AE%80%E4%BB%8B"><span class="toc-number">3.</span> <span class="toc-text">二、Windows的各种密码Hash简介</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#LM-Hash-%E2%80%93-1987%E5%B9%B4"><span class="toc-number">3.1.</span> <span class="toc-text">LM Hash – 1987年</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NTLM-Hash-%E2%80%93-1993%E5%B9%B4"><span class="toc-number">3.2.</span> <span class="toc-text">NTLM Hash – 1993年</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Net-NTLMv1-Hash-%E5%8F%88%E8%A2%AB%E7%A7%B0%E4%B8%BA-NTLMv1-Hash-%E2%80%93-1993%E5%B9%B4"><span class="toc-number">3.3.</span> <span class="toc-text">Net-NTLMv1 Hash(又被称为 NTLMv1 Hash) – 1993年</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Net-NTLMv2-Hash-%E5%8F%88%E8%A2%AB%E7%A7%B0%E4%B8%BA-NTLMv2-Hash-%E2%80%93-1998%E5%B9%B4"><span class="toc-number">3.4.</span> <span class="toc-text">Net-NTLMv2 Hash(又被称为 NTLMv2 Hash) – 1998年</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81NTLM%E7%9B%B8%E5%85%B3%E7%9A%84%E6%94%BB%E5%87%BB%E6%89%8B%E6%B3%95"><span class="toc-number">4.</span> <span class="toc-text">二、NTLM相关的攻击手法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Hash%E7%88%86%E7%A0%B4"><span class="toc-number">4.1.</span> <span class="toc-text">Hash爆破</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Net-NTLM-Relay-A-K-A-NTLM-Relay"><span class="toc-number">4.2.</span> <span class="toc-text">Net-NTLM Relay (A.K.A. NTLM Relay)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PTH"><span class="toc-number">4.3.</span> <span class="toc-text">PTH</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E6%90%AD%E5%BB%BANTLM%E5%8D%8F%E8%AE%AE%E8%AE%A4%E8%AF%81%E7%8E%AF%E5%A2%83%E8%BF%9B%E8%A1%8C%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90"><span class="toc-number">5.</span> <span class="toc-text">三、搭建NTLM协议认证环境进行流量分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%9C%A8DC01%E4%B8%8A%E5%88%9B%E5%BB%BA%E6%B5%8B%E8%AF%95%E7%94%A8%E8%B4%A6%E6%88%B7"><span class="toc-number">5.1.</span> <span class="toc-text">1. 在DC01上创建测试用账户</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%9C%A8Client02%E4%B8%8A%E6%90%AD%E5%BB%BAIIS-Web-Server"><span class="toc-number">5.2.</span> <span class="toc-text">2. 在Client02上搭建IIS Web Server</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%9C%A8Client03%E4%B8%8A%E6%90%AD%E5%BB%BAExchangeServer"><span class="toc-number">5.3.</span> <span class="toc-text">3. 在Client03上搭建ExchangeServer</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%9C%A8SMB%E5%8D%8F%E8%AE%AE%E4%B8%AD%E4%BD%BF%E7%94%A8NTLM%E8%AE%A4%E8%AF%81"><span class="toc-number">6.</span> <span class="toc-text">四、在SMB协议中使用NTLM认证</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E5%9C%A8HTTP%E5%8D%8F%E8%AE%AE%E4%B8%AD%E4%BD%BF%E7%94%A8NTLM%E8%AE%A4%E8%AF%81"><span class="toc-number">7.</span> <span class="toc-text">五、在HTTP协议中使用NTLM认证</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%9C%A8SMTP%E5%8D%8F%E8%AE%AE%E4%B8%AD%E4%BD%BF%E7%94%A8NTLM%E8%AE%A4%E8%AF%81"><span class="toc-number">8.</span> <span class="toc-text">六、在SMTP协议中使用NTLM认证</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E5%9C%A8POP3%E5%8D%8F%E8%AE%AE%E4%B8%AD%E4%BD%BF%E7%94%A8NTLM%E8%AE%A4%E8%AF%81"><span class="toc-number">9.</span> <span class="toc-text">七、在POP3协议中使用NTLM认证</span></a></li></ol>
+            </div>
+        
+        <!-- sidebar -->
+        <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+        <div class="sidebar-panel-archives">
+    <!-- 在 ejs 中将 archive 按照时间排序 -->
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 17
+        </div>
+        <!-- search  -->
+        
+            <div class="site-search site-search-loading popup-trigger">
+                <span class="iconfont-archer search-icon">&#xe627;</span>
+            </div>
+        
+    </div>
+    
+    <div class="post-archive">
+    
+        
+            
+            
+            <div class="archive-year"> 2023 </div>
+            <ul class="year-list">
+            
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/01</span>
+            <a class="archive-post-title" href="/2023/10/01/DedeCMS%E5%90%8E%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2023-5301/">DedeCMS后台代码执行 CVE-2023-5301</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/28</span>
+            <a class="archive-post-title" href="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/">NTLM协议解读</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/26</span>
+            <a class="archive-post-title" href="/2023/09/26/DedeCMS%E5%89%8D%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2022-35516/">DedeCMS前台代码执行(CVE-2022-35516)</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/21</span>
+            <a class="archive-post-title" href="/2023/09/21/Ubuntu22-04%E6%90%AD%E5%BB%BALAMP%E7%8E%AF%E5%A2%83/">Ubuntu22.04搭建LAMP环境</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/19</span>
+            <a class="archive-post-title" href="/2023/09/19/hello-world/">Hello World</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/31</span>
+            <a class="archive-post-title" href="/2023/03/31/DedeCMS-%E7%BB%84%E5%90%88%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/">DedeCMS 组合漏洞分析</a>
+        </li>
+    
+        
+            
+            
+                
+                </ul>
+            
+            <div class="archive-year"> 2022 </div>
+            <ul class="year-list">
+            
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/16</span>
+            <a class="archive-post-title" href="/2022/11/16/%E5%9B%BE%E7%89%87%E9%9A%90%E5%86%99%E7%AE%80%E8%AE%B0/">图片隐写简记</a>
+        </li>
+    
+        
+            
+            
+                
+                </ul>
+            
+            <div class="archive-year"> 2021 </div>
+            <ul class="year-list">
+            
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/02</span>
+            <a class="archive-post-title" href="/2021/11/02/Backup-and-Tips/">Backup and Tips</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/17</span>
+            <a class="archive-post-title" href="/2021/09/17/%E7%BB%95%E8%BF%87CDN%E5%AF%BB%E6%89%BE%E7%BD%91%E7%AB%99%E7%9C%9F%E5%AE%9EIP/">绕过CDN寻找网站真实IP</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/31</span>
+            <a class="archive-post-title" href="/2021/08/31/Linux%E4%B8%8B%E5%B8%B8%E8%A7%81%E7%9A%84%E5%87%A0%E7%A7%8D%E5%8F%8D%E5%BC%B9shell/">Linux下常见的几种反弹shell</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/30</span>
+            <a class="archive-post-title" href="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/">记一道典型的flask SSTI题目</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/27</span>
+            <a class="archive-post-title" href="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/">BurpSuit 插件开发（一）</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/26</span>
+            <a class="archive-post-title" href="/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/">InCTF 2019 - （PHP + 1, PHP + 1.5 and PHP + 2.5）三道题的复现</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/21</span>
+            <a class="archive-post-title" href="/2021/08/21/SQL%E6%B3%A8%E5%85%A5/">SQL注入</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/21</span>
+            <a class="archive-post-title" href="/2021/08/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%8C%96%E6%8E%98edu-src%E7%9A%84%E8%BF%87%E7%A8%8B/">记一次挖掘edu src的过程</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/18</span>
+            <a class="archive-post-title" href="/2021/08/18/%E7%A0%81%E4%B8%80%E4%BA%9B%E7%BD%91%E7%AB%99/">码一些网站（长期更新）</a>
+        </li>
+    
+        
+            
+            
+                
+                </ul>
+            
+            <div class="archive-year"> 2019 </div>
+            <ul class="year-list">
+            
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/27</span>
+            <a class="archive-post-title" href="/2019/08/27/%E7%AC%AC%E4%B8%80%E6%AC%A1%E5%8F%82%E4%B8%8E%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E9%A1%B9%E7%9B%AE/">第一次参与渗透测试项目</a>
+        </li>
+    
+    </div>
+</div>
+
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+        
+            <span class="sidebar-tag-name" data-tags="RCE">
+                <span class="iconfont-archer">&#xe606;</span>
+                RCE
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="文件删除">
+                <span class="iconfont-archer">&#xe606;</span>
+                文件删除
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="SQL注入">
+                <span class="iconfont-archer">&#xe606;</span>
+                SQL注入
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="Misc">
+                <span class="iconfont-archer">&#xe606;</span>
+                Misc
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="信息收集">
+                <span class="iconfont-archer">&#xe606;</span>
+                信息收集
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="XSS">
+                <span class="iconfont-archer">&#xe606;</span>
+                XSS
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="逻辑漏洞">
+                <span class="iconfont-archer">&#xe606;</span>
+                逻辑漏洞
+            </span>
+        
+            <span class="sidebar-tag-name" data-tags="SSTI">
+                <span class="iconfont-archer">&#xe606;</span>
+                SSTI
+            </span>
+        
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+        缺失模块，请参考主题文档进行安装配置：https://github.com/fi3ework/hexo-theme-archer#%E5%AE%89%E8%A3%85%E4%B8%BB%E9%A2%98
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+        <span class="sidebar-category-name" data-categories="DedeCMS">
+            <span class="iconfont-archer">&#xe60a;</span>
+            DedeCMS
+        </span>
+    
+        <span class="sidebar-category-name" data-categories="渗透">
+            <span class="iconfont-archer">&#xe60a;</span>
+            渗透
+        </span>
+    
+        <span class="sidebar-category-name" data-categories="RFC">
+            <span class="iconfont-archer">&#xe60a;</span>
+            RFC
+        </span>
+    
+        <span class="sidebar-category-name" data-categories="CTF">
+            <span class="iconfont-archer">&#xe60a;</span>
+            CTF
+        </span>
+    
+        <span class="sidebar-category-name" data-categories="SRC">
+            <span class="iconfont-archer">&#xe60a;</span>
+            SRC
+        </span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+
+    </div>
+</div>
+
+        <!-- site-meta -->
+        <script>
+    var siteMetaRoot = "/"
+    if (siteMetaRoot === "undefined") {
+        siteMetaRoot = '/'
+    }
+    var siteMeta = {
+        url: "https://lamber-maybe.github.io",
+        root: siteMetaRoot,
+        author: "Lamber"
+    }
+</script>
+
+        <!-- import experimental options here -->
+        <!-- Custom Font -->
+
+
+        <!-- main func -->
+        <script src="/scripts/main.js?v=20211217"></script>
+        <!-- dark mode -->
+        <script src="/scripts/dark.js?v=20211217"></script>
+        <!-- fancybox -->
+        <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" defer></script>
+        <!-- algolia -->
+        
+            <div class="site-search site-search-loading">
+    <div class="algolia-popup popup">
+        <div class="algolia-search">
+            <div class="algolia-search-input-icon">
+                <i class="fa fa-search"></i>
+            </div>
+            <div class="algolia-search-input" id="algolia-search-input"></div>
+            <div class="popup-btn-close">
+                <i class="iconfont-archer">&#xe609;</i>
+            </div>
+        </div>
+
+        <div class="algolia-results">
+            <div id="algolia-stats" class="algolia-stats"></div>
+            <div id="algolia-hits"></div>
+            <div id="algolia-pagination" class="algolia-pagination"></div>
+        </div>
+    </div>
+</div>
+
+            <script src="/scripts/search.js?v=20211217" defer></script>
+        
+        <!-- busuanzi -->
+        
+            <script src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script>
+        
+        <!-- CNZZ -->
+        
+        <!-- async load share.js -->
+        
+            <script src="/scripts/share.js?v=20211217" async></script>
+        
+        <!-- mermaid -->
+        
+    </body>
+</html>

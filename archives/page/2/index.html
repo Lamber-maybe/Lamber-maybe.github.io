@@ -443,6 +443,74 @@
             
         
         <article class="index-post">
+            <a class="abstract-title" href="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/">
+                
+                <span class="abstract-title-text">记一道典型的flask SSTI题目</span>
+            </a>
+            <div class="abstract-content">
+                一、概念了解及环境搭建1. 一些新概念
+PyCharm是一种Python IDE，带有一整套可以帮助用户在使用Python语言开发时提高其效率的工具，比如调试、语法高亮、Project管理、代码跳转、智能提示、自动完成、单元测试、版本控制。此外，该IDE提供了一些高级功能，以用于支持Django框架下的专业Web开发。
+IDE: 集成开发环境(Integrated Development Environment)是用于提供程序开发环境的应用程序。简单来说就是提高程序员开发效率的东西。
+web服务器, 应用服务器：处理逻辑的服务器，处理php,python,不能直接通过nginx这种web...
+            </div>
+            <!-- read more -->
+            
+            <div class="abstract-post-meta">
+                <!-- date -->
+                <div class="abstract-date" title="Last updated: 2023/09/27">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2021/08/30</span>
+                </div>
+                <!-- tags -->
+                
+                    <div class= abstract-tags >
+    
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="SSTI">SSTI</a>
+    
+</div>
+
+                
+            </div>
+        </article>
+        <div class="index-post-divider"></div>
+    
+        
+        
+        
+        
+            
+        
+        <article class="index-post">
+            <a class="abstract-title" href="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/">
+                
+                <span class="abstract-title-text">BurpSuit 插件开发（一）</span>
+            </a>
+            <div class="abstract-content">
+                一、前言
+burp官方支持三种语言开发插件：Java、Python、Ruby。但一般情况下推荐使用Java来做插件开发。原因有以下两点：
+当用python去做插件的时候，如果需要使用到某个库，而这个库又是用C语言实现的。那么插件将无法正常运行。因为burp在执行python写的插件的时候，是通过Jython（Jython是一种完整的语言，而不是一个Java翻译器或仅仅是一个Python编译器，它是一个Python语言在Java中的完全实现。）去解析执行的。而Jython是无法使用C写的模块，所以在这时候插件就不能正常运行。
+burp本身是Java写的，使用Java去开发插件兼容性最高，会...
+            </div>
+            <!-- read more -->
+            
+            <div class="abstract-post-meta">
+                <!-- date -->
+                <div class="abstract-date" title="Last updated: 2023/09/27">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2021/08/27</span>
+                </div>
+                <!-- tags -->
+                
+            </div>
+        </article>
+        <div class="index-post-divider"></div>
+    
+        
+        
+        
+        
+            
+        
+        <article class="index-post">
             <a class="abstract-title" href="/2021/08/26/InCTF-2019-%EF%BC%88PHP-1-PHP-1-5-and-PHP-2-5%EF%BC%89%E4%B8%89%E9%81%93%E9%A2%98%E7%9A%84%E5%A4%8D%E7%8E%B0/">
                 
                 <span class="abstract-title-text">InCTF 2019 - （PHP + 1, PHP + 1.5 and PHP + 2.5）三道题的复现</span>
@@ -833,7 +901,29 @@ AWVS主要扫描web层面的漏洞，可以自行挖掘目录结构，还可以�
         
         
         
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
     
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -922,7 +1012,7 @@ AWVS主要扫描web层面的漏洞，可以自行挖掘目录结构，还可以�
     
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 15
+        Total : 17
         </div>
         <!-- search  -->
         
@@ -940,6 +1030,18 @@ AWVS主要扫描web层面的漏洞，可以自行挖掘目录结构，还可以�
             <div class="archive-year"> 2023 </div>
             <ul class="year-list">
             
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/01</span>
+            <a class="archive-post-title" href="/2023/10/01/DedeCMS%E5%90%8E%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2023-5301/">DedeCMS后台代码执行 CVE-2023-5301</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/28</span>
+            <a class="archive-post-title" href="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/">NTLM协议解读</a>
+        </li>
+    
         
         <li class="archive-post-item">
             <span class="archive-post-date">09/26</span>
@@ -1122,6 +1224,11 @@ AWVS主要扫描web层面的漏洞，可以自行挖掘目录结构，还可以�
         <span class="sidebar-category-name" data-categories="渗透">
             <span class="iconfont-archer">&#xe60a;</span>
             渗透
+        </span>
+    
+        <span class="sidebar-category-name" data-categories="RFC">
+            <span class="iconfont-archer">&#xe60a;</span>
+            RFC
         </span>
     
         <span class="sidebar-category-name" data-categories="CTF">

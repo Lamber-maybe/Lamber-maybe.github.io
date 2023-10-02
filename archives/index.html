@@ -443,6 +443,77 @@
             
         
         <article class="index-post">
+            <a class="abstract-title" href="/2023/10/01/DedeCMS%E5%90%8E%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2023-5301/">
+                
+                <span class="abstract-title-text">DedeCMS后台代码执行 CVE-2023-5301</span>
+            </a>
+            <div class="abstract-content">
+                漏洞产生原因: 写入inc文件+文件包含导致任意代码执行漏洞代码: 
+123456789101112131415161718192021222324252627282930313233343536&lt;?php// dede/album_add.php...if ($albumUploadFiles !== &#x27;&#x27;) &#123;      $files = json_decode(stripslashes($albumUploadFiles), true);        foreach ($files as $file) &#123;          $uplo...
+            </div>
+            <!-- read more -->
+            
+            <div class="abstract-post-meta">
+                <!-- date -->
+                <div class="abstract-date" title="Last updated: 2023/10/01">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/10/01</span>
+                </div>
+                <!-- tags -->
+                
+                    <div class= abstract-tags >
+    
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="RCE">RCE</a>
+    
+</div>
+
+                
+            </div>
+        </article>
+        <div class="index-post-divider"></div>
+    
+        
+        
+        
+        
+            
+        
+        <article class="index-post">
+            <a class="abstract-title" href="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/">
+                
+                <span class="abstract-title-text">NTLM协议解读</span>
+            </a>
+            <div class="abstract-content">
+                
+NT(New Technology) LAN(Local Area Network) Manager Authentication Protocol
+
+零、序
+首先需要讲解一下非常容易与NTLM协议混淆在一起的那些Hash名称
+
+根据域内环境的年代不同, 密码哈希的存储方式也会有所不同, 并且这些哈希名称甚至和NTLM身份认证协议这个名称十分相似(比如说: Net-NTLMv2 Hash和NTLM, 前者是密码Hash, 而后者则是身份认证协议)
+
+过去: 我们为了解决用户需求，现在有14个标准正在运行。设计师A: 14个?太荒谬了吧???我们需要制定一个能解决所有人问题的通用标准。设...
+            </div>
+            <!-- read more -->
+            
+            <div class="abstract-post-meta">
+                <!-- date -->
+                <div class="abstract-date" title="Last updated: 2023/10/02">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/09/28</span>
+                </div>
+                <!-- tags -->
+                
+            </div>
+        </article>
+        <div class="index-post-divider"></div>
+    
+        
+        
+        
+        
+            
+        
+        <article class="index-post">
             <a class="abstract-title" href="/2023/09/26/DedeCMS%E5%89%8D%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2022-35516/">
                 
                 <span class="abstract-title-text">DedeCMS前台代码执行(CVE-2022-35516)</span>
@@ -741,74 +812,6 @@ stdin 0 –&gt; /dev/tty0stdout 1 –&gt; /dev/tty0stderr 2 –&gt; /dev/tty0
         </article>
         <div class="index-post-divider"></div>
     
-        
-        
-        
-        
-            
-        
-        <article class="index-post">
-            <a class="abstract-title" href="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/">
-                
-                <span class="abstract-title-text">记一道典型的flask SSTI题目</span>
-            </a>
-            <div class="abstract-content">
-                一、概念了解及环境搭建1. 一些新概念
-PyCharm是一种Python IDE，带有一整套可以帮助用户在使用Python语言开发时提高其效率的工具，比如调试、语法高亮、Project管理、代码跳转、智能提示、自动完成、单元测试、版本控制。此外，该IDE提供了一些高级功能，以用于支持Django框架下的专业Web开发。
-IDE: 集成开发环境(Integrated Development Environment)是用于提供程序开发环境的应用程序。简单来说就是提高程序员开发效率的东西。
-web服务器, 应用服务器：处理逻辑的服务器，处理php,python,不能直接通过nginx这种web...
-            </div>
-            <!-- read more -->
-            
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2023/09/27">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2021/08/30</span>
-                </div>
-                <!-- tags -->
-                
-                    <div class= abstract-tags >
-    
-    
-        <a class="post-tag" href="javascript:void(0);" data-tags="SSTI">SSTI</a>
-    
-</div>
-
-                
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-    
-        
-        
-        
-        
-            
-        
-        <article class="index-post">
-            <a class="abstract-title" href="/2021/08/27/BurpSuit-%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89/">
-                
-                <span class="abstract-title-text">BurpSuit 插件开发（一）</span>
-            </a>
-            <div class="abstract-content">
-                一、前言
-burp官方支持三种语言开发插件：Java、Python、Ruby。但一般情况下推荐使用Java来做插件开发。原因有以下两点：
-当用python去做插件的时候，如果需要使用到某个库，而这个库又是用C语言实现的。那么插件将无法正常运行。因为burp在执行python写的插件的时候，是通过Jython（Jython是一种完整的语言，而不是一个Java翻译器或仅仅是一个Python编译器，它是一个Python语言在Java中的完全实现。）去解析执行的。而Jython是无法使用C写的模块，所以在这时候插件就不能正常运行。
-burp本身是Java写的，使用Java去开发插件兼容性最高，会...
-            </div>
-            <!-- read more -->
-            
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2023/09/27">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2021/08/27</span>
-                </div>
-                <!-- tags -->
-                
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-    
     <!-- paginator  -->
     
         <nav class="page-nav">
@@ -998,7 +1001,29 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
         
         
         
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
     
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -1087,7 +1112,7 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
     
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 15
+        Total : 17
         </div>
         <!-- search  -->
         
@@ -1105,6 +1130,18 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
             <div class="archive-year"> 2023 </div>
             <ul class="year-list">
             
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/01</span>
+            <a class="archive-post-title" href="/2023/10/01/DedeCMS%E5%90%8E%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2023-5301/">DedeCMS后台代码执行 CVE-2023-5301</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/28</span>
+            <a class="archive-post-title" href="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/">NTLM协议解读</a>
+        </li>
+    
         
         <li class="archive-post-item">
             <span class="archive-post-date">09/26</span>
@@ -1287,6 +1324,11 @@ burp本身是Java写的，使用Java去开发插件兼容性最高，会...
         <span class="sidebar-category-name" data-categories="渗透">
             <span class="iconfont-archer">&#xe60a;</span>
             渗透
+        </span>
+    
+        <span class="sidebar-category-name" data-categories="RFC">
+            <span class="iconfont-archer">&#xe60a;</span>
+            RFC
         </span>
     
         <span class="sidebar-category-name" data-categories="CTF">

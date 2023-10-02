@@ -443,6 +443,42 @@
             
         
         <article class="index-post">
+            <a class="abstract-title" href="/2023/10/01/DedeCMS%E5%90%8E%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2023-5301/">
+                
+                <span class="abstract-title-text">DedeCMS后台代码执行 CVE-2023-5301</span>
+            </a>
+            <div class="abstract-content">
+                漏洞产生原因: 写入inc文件+文件包含导致任意代码执行漏洞代码: 
+123456789101112131415161718192021222324252627282930313233343536&lt;?php// dede/album_add.php...if ($albumUploadFiles !== &#x27;&#x27;) &#123;      $files = json_decode(stripslashes($albumUploadFiles), true);        foreach ($files as $file) &#123;          $uplo...
+            </div>
+            <!-- read more -->
+            
+            <div class="abstract-post-meta">
+                <!-- date -->
+                <div class="abstract-date" title="Last updated: 2023/10/01">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/10/01</span>
+                </div>
+                <!-- tags -->
+                
+                    <div class= abstract-tags >
+    
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="RCE">RCE</a>
+    
+</div>
+
+                
+            </div>
+        </article>
+        <div class="index-post-divider"></div>
+    
+        
+        
+        
+        
+            
+        
+        <article class="index-post">
             <a class="abstract-title" href="/2023/09/26/DedeCMS%E5%89%8D%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2022-35516/">
                 
                 <span class="abstract-title-text">DedeCMS前台代码执行(CVE-2022-35516)</span>
@@ -742,7 +778,29 @@ $arr_password[$id] = &quot;&#123;$timestamp&#125;&q...
         
         
         
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
     
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         
         
@@ -831,7 +889,7 @@ $arr_password[$id] = &quot;&#123;$timestamp&#125;&q...
     
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 15
+        Total : 17
         </div>
         <!-- search  -->
         
@@ -849,6 +907,18 @@ $arr_password[$id] = &quot;&#123;$timestamp&#125;&q...
             <div class="archive-year"> 2023 </div>
             <ul class="year-list">
             
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/01</span>
+            <a class="archive-post-title" href="/2023/10/01/DedeCMS%E5%90%8E%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2023-5301/">DedeCMS后台代码执行 CVE-2023-5301</a>
+        </li>
+    
+        
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/28</span>
+            <a class="archive-post-title" href="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/">NTLM协议解读</a>
+        </li>
+    
         
         <li class="archive-post-item">
             <span class="archive-post-date">09/26</span>
@@ -1031,6 +1101,11 @@ $arr_password[$id] = &quot;&#123;$timestamp&#125;&q...
         <span class="sidebar-category-name" data-categories="渗透">
             <span class="iconfont-archer">&#xe60a;</span>
             渗透
+        </span>
+    
+        <span class="sidebar-category-name" data-categories="RFC">
+            <span class="iconfont-archer">&#xe60a;</span>
+            RFC
         </span>
     
         <span class="sidebar-category-name" data-categories="CTF">
