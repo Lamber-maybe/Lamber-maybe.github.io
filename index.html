@@ -429,33 +429,6 @@
         <div class="index-post-divider"></div>
             
         <article class="index-post">
-            <a class="abstract-title" href="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/">
-                <span class="abstract-title-text">NTLM协议解读</span>
-            </a>
-            <div class="abstract-content">
-                
-NT(New Technology) LAN(Local Area Network) Manager Authentication Protocol
-
-零、序
-首先需要讲解一下非常容易与NTLM协议混淆在一起的那些Hash名称
-
-根据年代不同, 密码哈希的存储方式也会有所不同, 并且这些哈希名称和NTLM身份认证协议这个名称也十分相似(比如说: Net-NTLMv2 Hash和Net-NTLMv2, 前者是密码Hash, 而后者则是身份认证协议)
-
-
-过去: 我们为了解决用户需求，现在有14个标准正在运行。设计师A: 14个?太荒谬了吧???我们需要制定一个能解决所有人问题的通用标准。...
-            </div>
-            <!-- read more -->
-            <div class="abstract-post-meta">
-                <!-- date -->
-                <div class="abstract-date" title="Last updated: 2023/11/08">
-                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/09/28</span>
-                </div>
-                <!-- tags -->
-            </div>
-        </article>
-        <div class="index-post-divider"></div>
-            
-        <article class="index-post">
             <a class="abstract-title" href="/2023/09/26/DedeCMS%E5%89%8D%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2022-35516/">
                 <span class="abstract-title-text">DedeCMS前台代码执行(CVE-2022-35516)</span>
             </a>
@@ -670,6 +643,31 @@ stdin 0 –&gt; /dev/tty0stdout 1 –&gt; /dev/tty0stderr 2 –&gt; /dev/tty0
             </div>
         </article>
         <div class="index-post-divider"></div>
+            
+        <article class="index-post">
+            <a class="abstract-title" href="/2021/08/30/%E8%AE%B0%E4%B8%80%E9%81%93%E5%85%B8%E5%9E%8B%E7%9A%84flask-SSTI%E9%A2%98%E7%9B%AE/">
+                <span class="abstract-title-text">记一道典型的flask SSTI题目</span>
+            </a>
+            <div class="abstract-content">
+                一、概念了解及环境搭建1. 一些新概念
+PyCharm是一种Python IDE，带有一整套可以帮助用户在使用Python语言开发时提高其效率的工具，比如调试、语法高亮、Project管理、代码跳转、智能提示、自动完成、单元测试、版本控制。此外，该IDE提供了一些高级功能，以用于支持Django框架下的专业Web开发。
+IDE: 集成开发环境(Integrated Development Environment)是用于提供程序开发环境的应用程序。简单来说就是提高程序员开发效率的东西。
+web服务器, 应用服务器：处理逻辑的服务器，处理php,python,不能直接通过nginx这种web...
+            </div>
+            <!-- read more -->
+            <div class="abstract-post-meta">
+                <!-- date -->
+                <div class="abstract-date" title="Last updated: 2023/09/27">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2021/08/30</span>
+                </div>
+                <!-- tags -->
+                    <div class= abstract-tags >
+        <a class="post-tag" href="javascript:void(0);" data-tags="SSTI">SSTI</a>
+</div>
+
+            </div>
+        </article>
+        <div class="index-post-divider"></div>
     <!-- paginator  -->
         <nav class="page-nav">
             <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">NEXT &gt;</a>
@@ -754,10 +752,9 @@ stdin 0 –&gt; /dev/tty0stdout 1 –&gt; /dev/tty0stderr 2 –&gt; /dev/tty0
         
         
         
-        
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 17
+        Total : 16
         </div>
         <!-- search  -->
             <div class="site-search site-search-loading popup-trigger">
@@ -770,10 +767,6 @@ stdin 0 –&gt; /dev/tty0stdout 1 –&gt; /dev/tty0stderr 2 –&gt; /dev/tty0
         <li class="archive-post-item">
             <span class="archive-post-date">10/01</span>
             <a class="archive-post-title" href="/2023/10/01/DedeCMS%E5%90%8E%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2023-5301/">DedeCMS后台代码执行 CVE-2023-5301</a>
-        </li>
-        <li class="archive-post-item">
-            <span class="archive-post-date">09/28</span>
-            <a class="archive-post-title" href="/2023/09/28/NTLM%E5%8D%8F%E8%AE%AE%E8%A7%A3%E8%AF%BB/">NTLM协议解读</a>
         </li>
         <li class="archive-post-item">
             <span class="archive-post-date">09/26</span>
@@ -861,10 +854,6 @@ stdin 0 –&gt; /dev/tty0stdout 1 –&gt; /dev/tty0stderr 2 –&gt; /dev/tty0
                 <span class="iconfont-archer">&#xe606;</span>
                 SQL注入
             </span>
-            <span class="sidebar-tag-name" data-tags="Misc">
-                <span class="iconfont-archer">&#xe606;</span>
-                Misc
-            </span>
             <span class="sidebar-tag-name" data-tags="信息收集">
                 <span class="iconfont-archer">&#xe606;</span>
                 信息收集
@@ -881,6 +870,10 @@ stdin 0 –&gt; /dev/tty0stdout 1 –&gt; /dev/tty0stderr 2 –&gt; /dev/tty0
                 <span class="iconfont-archer">&#xe606;</span>
                 SSTI
             </span>
+            <span class="sidebar-tag-name" data-tags="Misc">
+                <span class="iconfont-archer">&#xe606;</span>
+                Misc
+            </span>
     </div>
     <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
     <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
@@ -895,14 +888,6 @@ stdin 0 –&gt; /dev/tty0stdout 1 –&gt; /dev/tty0stderr 2 –&gt; /dev/tty0
             <span class="iconfont-archer">&#xe60a;</span>
             DedeCMS
         </span>
-        <span class="sidebar-category-name" data-categories="渗透">
-            <span class="iconfont-archer">&#xe60a;</span>
-            渗透
-        </span>
-        <span class="sidebar-category-name" data-categories="RFC">
-            <span class="iconfont-archer">&#xe60a;</span>
-            RFC
-        </span>
         <span class="sidebar-category-name" data-categories="CTF">
             <span class="iconfont-archer">&#xe60a;</span>
             CTF
@@ -910,6 +895,10 @@ stdin 0 –&gt; /dev/tty0stdout 1 –&gt; /dev/tty0stderr 2 –&gt; /dev/tty0
         <span class="sidebar-category-name" data-categories="SRC">
             <span class="iconfont-archer">&#xe60a;</span>
             SRC
+        </span>
+        <span class="sidebar-category-name" data-categories="渗透">
+            <span class="iconfont-archer">&#xe60a;</span>
+            渗透
         </span>
     </div>
     <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
