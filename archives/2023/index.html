@@ -399,6 +399,32 @@
                 <main class="main index-page">
             
         <article class="index-post">
+            <a class="abstract-title" href="/2023/11/27/Windows%E4%B8%8B%E5%9F%BA%E4%BA%8ENTLM%E7%9A%84%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%E8%A7%A3%E8%AF%BB/">
+                <span class="abstract-title-text">Windows下基于NTLM的认证流程解读</span>
+            </a>
+            <div class="abstract-content">
+                
+NT(New Technology) LAN(Local Area Network) Manager Authentication Protocol
+
+零、序
+首先需要讲解一下非常容易与NTLM协议混淆在一起的那些Hash名称
+
+根据年代不同, 密码哈希的存储方式也会有所不同, 并且这些哈希名称和NTLM身份认证协议这个名称也十分相似(比如说: Net-NTLMv2 Hash和Net-NTLMv2, 前者是密码Hash, 而后者则是身份认证协议)
+
+过去: 我们为了解决用户需求，现在有14个标准正在运行。设计师A: 14个?太荒谬了吧???我们需要制定一个能解决所有人问题的通用标准。设...
+            </div>
+            <!-- read more -->
+            <div class="abstract-post-meta">
+                <!-- date -->
+                <div class="abstract-date" title="Last updated: 2023/11/27">
+                    <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2023/11/27</span>
+                </div>
+                <!-- tags -->
+            </div>
+        </article>
+        <div class="index-post-divider"></div>
+            
+        <article class="index-post">
             <a class="abstract-title" href="/2023/10/01/DedeCMS%E5%90%8E%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2023-5301/">
                 <span class="abstract-title-text">DedeCMS后台代码执行 CVE-2023-5301</span>
             </a>
@@ -580,9 +606,10 @@ $arr_password[$id] = &quot;&#123;$timestamp&#125;&q...
         
         
         
+        
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 16
+        Total : 17
         </div>
         <!-- search  -->
             <div class="site-search site-search-loading popup-trigger">
@@ -592,6 +619,10 @@ $arr_password[$id] = &quot;&#123;$timestamp&#125;&q...
     <div class="post-archive">
             <div class="archive-year"> 2023 </div>
             <ul class="year-list">
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/27</span>
+            <a class="archive-post-title" href="/2023/11/27/Windows%E4%B8%8B%E5%9F%BA%E4%BA%8ENTLM%E7%9A%84%E8%AE%A4%E8%AF%81%E6%B5%81%E7%A8%8B%E8%A7%A3%E8%AF%BB/">Windows下基于NTLM的认证流程解读</a>
+        </li>
         <li class="archive-post-item">
             <span class="archive-post-date">10/01</span>
             <a class="archive-post-title" href="/2023/10/01/DedeCMS%E5%90%8E%E5%8F%B0%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-CVE-2023-5301/">DedeCMS后台代码执行 CVE-2023-5301</a>
@@ -682,6 +713,10 @@ $arr_password[$id] = &quot;&#123;$timestamp&#125;&q...
                 <span class="iconfont-archer">&#xe606;</span>
                 SQL注入
             </span>
+            <span class="sidebar-tag-name" data-tags="Misc">
+                <span class="iconfont-archer">&#xe606;</span>
+                Misc
+            </span>
             <span class="sidebar-tag-name" data-tags="信息收集">
                 <span class="iconfont-archer">&#xe606;</span>
                 信息收集
@@ -698,10 +733,6 @@ $arr_password[$id] = &quot;&#123;$timestamp&#125;&q...
                 <span class="iconfont-archer">&#xe606;</span>
                 SSTI
             </span>
-            <span class="sidebar-tag-name" data-tags="Misc">
-                <span class="iconfont-archer">&#xe606;</span>
-                Misc
-            </span>
     </div>
     <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
     <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
@@ -716,6 +747,10 @@ $arr_password[$id] = &quot;&#123;$timestamp&#125;&q...
             <span class="iconfont-archer">&#xe60a;</span>
             DedeCMS
         </span>
+        <span class="sidebar-category-name" data-categories="渗透">
+            <span class="iconfont-archer">&#xe60a;</span>
+            渗透
+        </span>
         <span class="sidebar-category-name" data-categories="CTF">
             <span class="iconfont-archer">&#xe60a;</span>
             CTF
@@ -723,10 +758,6 @@ $arr_password[$id] = &quot;&#123;$timestamp&#125;&q...
         <span class="sidebar-category-name" data-categories="SRC">
             <span class="iconfont-archer">&#xe60a;</span>
             SRC
-        </span>
-        <span class="sidebar-category-name" data-categories="渗透">
-            <span class="iconfont-archer">&#xe60a;</span>
-            渗透
         </span>
     </div>
     <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
